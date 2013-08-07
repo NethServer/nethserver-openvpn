@@ -33,7 +33,7 @@ name_opt 	= ca_default		# Subject Name options
 cert_opt 	= ca_default		# Certificate field options
 
 #crl_extensions	= crl_ext
-default_days	= 3650
+default_days	= 365
 default_crl_days= 30
 default_md	= default		# use public key default MD
 preserve	= no			# keep passed DN ordering

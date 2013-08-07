@@ -25,7 +25,6 @@ use esmith::ConfigDB;
 use Getopt::Std;
 
 my %opts;
-my @extraArgs;
 my $crtFile = "/etc/pki/tls/certs/NSRV.crt";
 my $keyFile = "/etc/pki/tls/private/NSRV.key";
 my $outputDir = "/etc/openvpn/certs";
@@ -41,15 +40,14 @@ sub die_help()
 pki-vpncert: Generate NethServer OpenVPN client certfificate.
 
 Usage:
-   pki-vpncert [-s] [-f <filename>] [-h] <commonName>
+   pki-vpncert [-h] <commonName>
 
-   -s Outputs a sample the certificate subject
    -h this help
 \n";
    exit 1;
 }
 
-getopts('sh', \%opts);
+getopts('h', \%opts);
 
 if($opts{'h'}) { die_help() }
 
@@ -60,11 +58,6 @@ if ( $#ARGV < 0 ) {
     $csrOut = "$outputDir/$commonName.csr";
     $keyOut = "$outputDir/$commonName.key";
     $crtOut = "$outputDir/$commonName.crt";
-}
-
-if($opts{'s'}) {
-    # Print subject
-    @extraArgs = ('-noout', '-subject', '2>/dev/null');
 }
 
 if ( ! -r $keyFile ) {
@@ -103,10 +96,9 @@ open(FH, '|-', join(' ', '/usr/bin/openssl',
 		    '-days', $certificateDuration,
 		    '-utf8',
 		    '-new',
-                    '-nodes',
+            '-nodes',
 		    '-keyout', $keyOut,
-                    '-out', $csrOut,
-		    @extraArgs
+            '-out', $csrOut
 		    )
     ) || die("Could not connect to openssl: $!\n");
 
@@ -127,7 +119,7 @@ foreach (
 $errors += close(FH);
 
 # Generate signed certificate
-$errors += system("/usr/bin/openssl ca  -notext  -in $csrOut -out $crtOut -batch -config $outputDir/ca.cnf");
+$errors += system("/usr/bin/openssl ca  -notext  -in $csrOut -out $crtOut -days $certificateDuration -batch -config $outputDir/ca.cnf");
 
 
 

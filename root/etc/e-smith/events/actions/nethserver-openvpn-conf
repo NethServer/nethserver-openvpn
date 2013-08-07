@@ -5,7 +5,7 @@
 if [ ! -f /etc/openvpn/certs/serial ]; then
     echo 01 > /etc/openvpn/certs/serial
 fi
-if [ ! -f /etc/openvpn/certs/serial ]; then
+if [ ! -f /etc/openvpn/certs/crlnumber ]; then
     echo 01 > /etc/openvpn/certs/crlnumber
 fi
 if [ ! -f /etc/openvpn/certs/certindex.attr ]; then
