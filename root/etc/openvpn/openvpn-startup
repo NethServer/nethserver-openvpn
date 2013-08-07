@@ -1,0 +1,20 @@
+#!/bin/sh
+
+mode=$(/sbin/e-smith/config getprop openvpn Mode)
+
+if [ $mode != "bridged" ]; then
+    exit 0
+fi
+
+br=$(/sbin/e-smith/config getprop openvpn BridgeName)
+
+tap=$(/sbin/e-smith/config getprop openvpn TapInterface)
+
+/usr/sbin/openvpn --mktun --dev $tap
+
+/usr/sbin/brctl show | grep -q $tap
+if [ $? -ne 0 ]; then
+    /usr/sbin/brctl addif $br $tap
+fi
+
+/sbin/ifconfig $tap 0.0.0.0 up

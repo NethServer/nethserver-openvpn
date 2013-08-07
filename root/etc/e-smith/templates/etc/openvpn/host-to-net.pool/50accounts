@@ -1,0 +1,15 @@
+{
+    use esmith::AccountsDB;
+
+    my $adb = esmith::AccountsDB->open_ro() 
+	or die "Couldnt' open AccountsDB\n";
+
+    my @accounts = $adb->get('admin');
+    push @accounts, $adb->users;
+
+    foreach my $account (@accounts)
+    {
+        next unless (($account->prop('OpenVpnIp') || 'no') ne 'no');
+        $OUT .= $account->key . "," . $account->prop('OpenVpnIp') . "\n";
+    }
+}

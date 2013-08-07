@@ -1,0 +1,30 @@
+{
+    use esmith::NetworksDB;
+    my $ndb = esmith::NetworksDB->open_ro();
+    my $green = $ndb->green();
+    my $IPAddress = $green->prop('ipaddr');
+
+    $OUT  = "";
+
+    if($openvpn{ClientToClient} eq 'enabled')
+    {
+        $OUT .= "client-to-client\n";
+    }
+
+    $OUT .= "push \"dhcp-option DOMAIN $DomainName\"\n";
+    $OUT .= "push \"dhcp-option DNS $IPAddress\"\n";
+    $OUT .= "push \"dhcp-option WINS $IPAddress\"\n";
+    $OUT .= "push \"dhcp-option NBT 2\"\n";
+    $OUT .= "push \"dhcp-option NBDD $IPAddress\"\n";
+
+    foreach my $network_entry ($ndb->networks())
+    {
+        my $network = $network_entry->key();
+        my $netmask = $network_entry->prop('Mask');
+
+        if(not $network eq $openvpn{Network})
+        {
+            $OUT .= "push \"route ".$network." ".$netmask."\"\n";
+        }
+    }
+}

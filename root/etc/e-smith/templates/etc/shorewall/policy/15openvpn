@@ -1,0 +1,9 @@
+loc            vpn           ACCEPT
+vpn            loc           ACCEPT
+vpn            fw            ACCEPT
+{
+    $route = $openvpn{RouteToVPN) || 'disbled';
+    if($route -eq 'enabled') {
+        $OUT.="vpn            net           ACCEPT\n";
+    }
+}

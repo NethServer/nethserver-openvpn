@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# OpenVPN pki initialization
+
+if [ ! -f /etc/openvpn/certs/serial ]; then
+    echo 01 > /etc/openvpn/certs/serial
+fi
+if [ ! -f /etc/openvpn/certs/serial ]; then
+    echo 01 > /etc/openvpn/certs/crlnumber
+fi
+if [ ! -f /etc/openvpn/certs/certindex.attr ]; then
+    touch /etc/openvpn/certs/certindex.attr
+fi
+if [ ! -f /etc/openvpn/certs/certindex ]; then
+    touch /etc/openvpn/certs/certindex
+fi
+if [ ! -f /etc/openvpn/certs/dh1024.pem ]; then
+    /usr/bin/openssl dhparam -out /etc/openvpn/certs/dh1024.pem 1024 2> /dev/null
+fi
+if [ ! -f /etc/openvpn/certs/crl.pem ]; then
+     /usr/bin/openssl ca -gencrl -out /etc/openvpn/certs/crl.pem -config /etc/openvpn/certs/ca.cnf
+fi

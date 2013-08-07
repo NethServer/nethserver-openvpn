@@ -1,0 +1,9 @@
+{
+    $mode = $openvpn{'Mode'} || 'routed';
+    if ($mode eq 'routed') {
+        $OUT.="dev tun\n";
+    } elsif ($mode eq 'bridged') {
+        $OUT.="dev tap\n";
+    }
+}
+client

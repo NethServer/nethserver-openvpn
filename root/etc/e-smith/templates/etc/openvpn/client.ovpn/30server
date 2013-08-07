@@ -1,0 +1,5 @@
+{
+    $OUT .= "remote $SystemName.$DomainName\n";
+}
+port {$openvpn{UDPPort}}
+float

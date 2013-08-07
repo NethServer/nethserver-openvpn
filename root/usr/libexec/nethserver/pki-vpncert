@@ -1,0 +1,134 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::ConfigDB;
+use Getopt::Std;
+
+my %opts;
+my @extraArgs;
+my $crtFile = "/etc/pki/tls/certs/NSRV.crt";
+my $keyFile = "/etc/pki/tls/private/NSRV.key";
+my $outputDir = "/etc/openvpn/certs";
+my $csrOut = "";
+my $crtOut = "";
+my $keyOut = "";
+my $commonName = "";
+my $errors = 0;
+
+sub die_help()
+{
+    print "
+pki-vpncert: Generate NethServer OpenVPN client certfificate.
+
+Usage:
+   pki-vpncert [-s] [-f <filename>] [-h] <commonName>
+
+   -s Outputs a sample the certificate subject
+   -h this help
+\n";
+   exit 1;
+}
+
+getopts('sh', \%opts);
+
+if($opts{'h'}) { die_help() }
+
+if ( $#ARGV < 0 ) {
+   die_help();
+} else {
+    $commonName = $ARGV[0];
+    $csrOut = "$outputDir/$commonName.csr";
+    $keyOut = "$outputDir/$commonName.key";
+    $crtOut = "$outputDir/$commonName.crt";
+}
+
+if($opts{'s'}) {
+    # Print subject
+    @extraArgs = ('-noout', '-subject', '2>/dev/null');
+}
+
+if ( ! -r $keyFile ) {
+    die("Could not read $keyFile\n");
+}
+if ( ! -r $crtFile ) {
+    die("Could not read $crtFile\n");
+}
+
+
+my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
+my %conf = $configDb->as_hash();
+
+
+my $contact = $conf{OrganizationContact};
+my $pki = $conf{pki};
+my $certificateDuration = $pki->{CertificateDuration} || "30";
+
+if ($certificateDuration < 7) {
+    warn "WARNING: pki CertificateDuration is less than 7 days! Check configuration DB.\n";
+}
+
+my $fqdn = join('.', $conf{SystemName}{type}, $conf{DomainName}{type});
+my $countryCode = substr($contact->{CountryCode} || '--', 0, 2);
+my $state = substr($contact->{State} || 'SomeState', 0, 32);
+my $city = substr($contact->{City} || 'SomeCity', 0, 64);
+my $company = substr($contact->{Company} || 'SomeCompany', 0, 64);
+my $department = substr($contact->{Department} || 'SomeDepartment', 0, 64);
+my $email = substr($conf{admin}{EmailAddress} || 'admin@' . $fqdn, 0, 64);
+
+
+# Generte Certificate Signing Request
+
+open(FH, '|-', join(' ', '/usr/bin/openssl',
+		    'req',
+		    '-days', $certificateDuration,
+		    '-utf8',
+		    '-new',
+                    '-nodes',
+		    '-keyout', $keyOut,
+                    '-out', $csrOut,
+		    @extraArgs
+		    )
+    ) || die("Could not connect to openssl: $!\n");
+
+foreach (
+    $countryCode,
+    $state,
+    $city,
+    $company,
+    $department,
+    $commonName,
+    $email,
+    '',
+    ''
+) {
+    print FH ($_ . "\n");
+}
+
+$errors += close(FH);
+
+# Generate signed certificate
+$errors += system("/usr/bin/openssl ca  -notext  -in $csrOut -out $crtOut -batch -config $outputDir/ca.cnf");
+
+
+
+exit (1 ? $errors > 0 : 0);
