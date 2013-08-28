@@ -1,12 +1,13 @@
 {
     $mode = $openvpn{'Mode'} || 'routed';
+    $routeToVPN = $openvpn{'RouteToVPN'} || 'disabled';
     if ($mode eq 'routed') {
         $OUT.="dev tun\n";
         if(defined $openvpn{Network} and defined $openvpn{Netmask})
         {
     	    $OUT .= "server ".$openvpn{Network}." ".$openvpn{Netmask}."\n";
         }
-        if ($route eq 'enabled') {
+        if ($routeToVPN eq 'enabled') {
             $OUT.="push \"redirect-gateway def1\"\n";
         }
     } elsif ($mode eq 'bridged') {
@@ -22,8 +23,8 @@
         my $route = $openvpn{'RouteToVPN'} || 'disabled';
 
         $OUT.="dev $tap\n";
-        $OUT.="mode server\n"
-        $OUT.="tls-server\n"
+        $OUT.="mode server\n";
+        $OUT.="tls-server\n";
         $OUT.="ifconfig-pool $start $end $netmkas\n"
     }
     $OUT.="ifconfig-pool-persist host-to-net.pool 0\n";
