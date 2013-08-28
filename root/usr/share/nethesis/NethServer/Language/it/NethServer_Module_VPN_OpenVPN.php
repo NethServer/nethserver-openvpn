@@ -3,7 +3,7 @@
 $L['status_label'] = 'Abilita OpenVPN';
 $L['OpenVPN_Description'] = 'Configurazione OpenVPN';
 $L['OpenVPN_Tags'] = 'vpn virtual private network openvpn';
-$L['OpenVPN_Title'] = 'OpenVPN';
+$L['OpenVPN_Title'] = 'Server OpenVPN';
 $L['AuthMode_label'] = 'Modalità autenticazione';
 $L['password_mode_label'] = 'Password';
 $L['certificate_mode_label'] = 'Certificato';
@@ -17,5 +17,5 @@ $L['Mode_routed_label'] = 'Modalità routed';
 $L['RouteToVPN_label'] = 'Dirotta traffico dei client attraverso la VPN';
 $L['Mode_bridged_label'] = 'Modalità bridged';
 $L['BridgeStartIP_label'] = 'Primo IP dell\'intervallo';
-$L['BridgeStartIP_label'] = 'Ultimo IP dell\'intervallo';
+$L['BridgeEndIP_label'] = 'Ultimo IP dell\'intervallo';
 
