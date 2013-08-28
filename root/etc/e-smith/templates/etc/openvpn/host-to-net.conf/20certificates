@@ -1,5 +1,5 @@
-dh /etc/openvpn/certs/dh1024.pem
+dh /var/lib/nethserver/certs/dh1024.pem
 ca /etc/pki/tls/certs/NSRV.crt
 cert /etc/pki/tls/certs/NSRV.crt
 key /etc/pki/tls/private/NSRV.key
-crl-verify /etc/openvpn/certs/crl.pem
+crl-verify /var/lib/nethserver/certs/crl.pem

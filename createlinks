@@ -31,7 +31,6 @@ my $event = "nethserver-openvpn-update";
 
 event_actions($event, 
     'initialize-default-databases' => '00',
-    'nethserver-openvpn-conf' => '20',
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
