@@ -53,6 +53,16 @@ event_services($event, 'openvpn' => 'reload');
 
 
 #--------------------------------------------------
+# actions for interface-update event
+#--------------------------------------------------
+
+$event = "interface-update";
+
+templates2events("/etc/openvpn/host-to-net.conf",  $event);
+event_services($event, 'openvpn' => 'reload');
+
+
+#--------------------------------------------------
 # actions for network-create,network-modify,network-delete events
 #--------------------------------------------------
 
