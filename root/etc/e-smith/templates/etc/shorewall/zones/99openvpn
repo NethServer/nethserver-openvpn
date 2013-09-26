@@ -1,1 +1,5 @@
-vpn     ipv4
+#
+# 99openvpn
+#
+ovpn     ipv4
+

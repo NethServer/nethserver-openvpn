@@ -1,9 +1,12 @@
+#
+# 99openvpn
+#
 {
     $mode = $openvpn{'Mode'} || 'routed';
     if ($mode eq 'routed') {
-        $OUT.="vpn         tun+\n";
+        $OUT .= "ovpn        tun+\n";
     } elsif ($mode eq 'bridged') {
         my $tap = $openvpn{'TapInterface'} || 'tap0';
-        $OUT.="dev $tap\n";
+        $OUT .= "dev $tap\n";
     }
 }
