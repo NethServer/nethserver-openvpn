@@ -50,7 +50,7 @@ event_actions($event,
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
-event_services($event, 'openvpn' => 'reload');
+event_services($event, 'openvpn' => 'restart');
 
 
 #--------------------------------------------------
@@ -60,7 +60,7 @@ event_services($event, 'openvpn' => 'reload');
 $event = "interface-update";
 
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
-event_services($event, 'openvpn' => 'reload');
+event_services($event, 'openvpn' => 'restart');
 
 
 #--------------------------------------------------
@@ -76,7 +76,7 @@ templates2events("/etc/openvpn/host-to-net.pool",
 event_services(qw(network-create
 		  network-modify
 		  network-delete
-		), 'openvpn' => 'reload');
+		), 'openvpn' => 'restart');
 
 
 #--------------------------------------------------
