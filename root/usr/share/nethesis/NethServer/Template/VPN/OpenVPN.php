@@ -1,6 +1,6 @@
 <?php
 
-echo $view->fieldsetSwitch('status', 'enabled',  $view::FIELDSETSWITCH_CHECKBOX)
+echo $view->fieldsetSwitch('ServerStatus', 'enabled',  $view::FIELDSETSWITCH_CHECKBOX)
         ->setAttribute('uncheckedValue', 'disabled')
     ->insert($view->selector('AuthMode'))
     ->insert($view->fieldsetSwitch('Mode', 'routed', $view::FIELDSETSWITCH_EXPANDABLE)
