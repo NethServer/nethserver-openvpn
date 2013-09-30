@@ -25,7 +25,7 @@
         $OUT.="dev $tap\n";
         $OUT.="mode server\n";
         $OUT.="tls-server\n";
-        $OUT.="ifconfig-pool $start $end $netmkas\n"
+        $OUT.="ifconfig-pool $start $end $netmask\n";
     }
     $OUT.="ifconfig-pool-persist host-to-net.pool 0\n";
 }

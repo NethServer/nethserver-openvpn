@@ -9,7 +9,6 @@ if ($mode eq 'password') {
 } elsif ($mode eq 'password-certificate') {
     $OUT.= "# Authentication: certificate + password \n";
     $OUT.="plugin /usr/lib64/openvpn/plugin/lib/openvpn-auth-pam.so /etc/pam.d/login\n";
-    $OUT.="client-cert-not-required\n";
 } elsif ($mode eq 'certificate') {
     $OUT.= "# Authentication: certificate\n";
 }
