@@ -62,6 +62,7 @@ if ($mode eq 'bridged' && $device_type ne 'bridged') {
    $device->delete_prop('netmask');
    $device->delete_prop('bootproto');
    $device->delete_prop('gateway');
+
+   system('/sbin/e-smith/signal-event interface-update');
 } 
 
-system('/sbin/e-smith/signal-event interface-update');
