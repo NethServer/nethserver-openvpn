@@ -3,7 +3,8 @@
 #
 loc            vpn           ACCEPT
 vpn            loc           ACCEPT
-vpn            fw            ACCEPT
+vpn            $FW           ACCEPT
+$FW            vpn           ACCEPT
 {
     if($openvpn{'RouteToVPN'} eq 'enabled') {
         $OUT .= "vpn            net           ACCEPT";
