@@ -45,6 +45,7 @@ $event = "nethserver-openvpn-save";
 
 event_actions($event, 
     'nethserver-openvpn-bridge' => 20,
+    'nethserver-openvpn-delserver' => 30,
     'firewall-adjust' => '80'
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
