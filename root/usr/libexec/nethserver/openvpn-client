@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+
+use esmith::ConfigDB;
+use strict;
+
+sub cat {
+    my $file = shift;
+    my $str = "";
+    open(FILE, $file) || warn "Can't open file: $file\n";
+    while (<FILE>) {
+        $str .= "$_";
+    }
+    close(FILE);
+    return $str;
+}
+
+my $name = shift || die ("Please insert an account name");
+
+my $cdb = esmith::ConfigDB->open_ro('/var/lib/nethserver/db/vpn');
+
+my $OUT = "######### NethServer OpenVPN client configuration #########\n\n";
+my $openvpn = $cdb->get($name);
+if ($openvpn->prop('VPNType') ne 'openvpn') {
+    die("Invalid VPN type: it must be 'openvpn'");
+}
+my $RemoteHost = $openvpn->prop('RemoteHost');
+my $RemotePort = $openvpn->prop('RemotePort') || '1194';
+
+my $mode = $openvpn->prop('Mode') || 'routed';
+if ($mode eq 'routed') {
+    $OUT.="dev tun\n";
+} elsif ($mode eq 'bridged') {
+    $OUT.="dev tap\n";
+}
+
+$OUT .= "client\n";
+$OUT .= "remote $RemoteHost\n";
+$OUT .= "rport $RemotePort \n";
+$OUT .= "float\n";
+$OUT .= "nobind\n";
+
+my $mode = $openvpn->prop('AuthMode') || 'password';
+if ($mode eq 'password' or $mode eq 'password-certificate') {
+    $OUT.="auth-user-pass\n";
+} elsif ($mode eq 'certificate') {
+    $OUT.= "# Authentication: certificate\n";
+}
+
+
+$OUT .= "explicit-exit-notify 1\n";
+$OUT .= "verb 3\n";
+
+print "$OUT\n";
