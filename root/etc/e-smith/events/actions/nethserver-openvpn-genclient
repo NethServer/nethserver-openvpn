@@ -1,0 +1,72 @@
+#!/usr/bin/perl
+
+use esmith::ConfigDB;
+use strict;
+
+sub cat {
+    my $file = shift;
+    my $str = "";
+    open(FILE, $file) || warn "Can't open file: $file\n";
+    while (<FILE>) {
+        $str .= "$_";
+    }
+    close(FILE);
+    return $str;
+}
+
+my $name = shift || die ("Please insert an account name");
+
+my $cdb = esmith::ConfigDB->open_ro('/var/lib/nethserver/db/vpn');
+my $cert = "/var/lib/nethserver/certs/clients/$name.pem";
+my $authFile = "/etc/openvpn/$name.auth";
+my $outFile = "/etc/openvpn/$name.conf";
+my $uid = getpwnam('admin');
+my $gid = getgrnam('admin');
+
+my $OUT = "######### NethServer OpenVPN client configuration #########\n\n";
+my $openvpn = $cdb->get($name);
+if ($openvpn->prop('VPNType') ne 'openvpn') {
+    die("Invalid VPN type: it must be 'openvpn'");
+}
+my $RemoteHost = $openvpn->prop('RemoteHost');
+my $RemotePort = $openvpn->prop('RemotePort') || '1194';
+
+my $mode = $openvpn->prop('Mode') || 'routed';
+if ($mode eq 'routed') {
+    $OUT.="dev tun\n";
+} elsif ($mode eq 'bridged') {
+    $OUT.="dev tap\n";
+}
+
+$OUT .= "client\n";
+$OUT .= "remote $RemoteHost\n";
+$OUT .= "rport $RemotePort \n";
+$OUT .= "float\n";
+$OUT .= "nobind\n";
+
+my $mode = $openvpn->prop('AuthMode') || 'password';
+if ($mode eq 'password' or $mode eq 'password-certificate') {
+    $OUT.="auth-user-pass $authFile\n";
+    open (FILE, ">$authFile");
+    print FILE $openvpn->prop('User')."\n";
+    print FILE $openvpn->prop('Password')."\n";
+    close FILE;
+    chmod 640 $authFile;
+    chown $uid, $gid, $authFile;
+}
+if ($mode eq 'certificate' or $mode eq 'password-certificate') {
+    $OUT.= "# Authentication: certificate\n";
+    $OUT .= "cert $cert\n";
+    $OUT .= "key $cert\n";
+}
+
+$OUT .= "ca $cert\n";
+
+$OUT .= "explicit-exit-notify 1\n";
+$OUT .= "verb 3\n";
+
+open (FILE, ">$outFile");
+print FILE $OUT;
+close FILE;
+chmod 640 $outFile;
+chown $uid, $gid, $outFile;

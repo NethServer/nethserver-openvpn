@@ -1,0 +1,17 @@
+#!/bin/bash
+
+name=$1
+
+if [ -z $1 ]; then
+    exit 1
+fi
+
+if [ -f /etc/openvpn/$name.conf ]; then
+    rm -f /etc/openvpn/$name.conf
+fi
+if [ -f /etc/openvpn/$name.auth ]; then
+    rm -f /etc/openvpn/$name.auth
+fi
+if [ -f /var/lib/nethserver/certs/clients/$name.pem ]; then
+    rm -f /var/lib/nethserver/certs/clients/$name.pem
+fi

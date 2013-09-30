@@ -78,4 +78,41 @@ event_services(qw(network-create
 		), 'openvpn' => 'reload');
 
 
+#--------------------------------------------------
+# actions for nethserver-vpn-create event
+#--------------------------------------------------
+
+$event = "nethserver-vpn-create";
+
+event_actions($event,
+    'nethserver-openvpn-genclient' => '30',
+);
+
+event_services($event, 'openvpn' => 'restart');
+
+
+#--------------------------------------------------
+# actions for nethserver-vpn-update event
+#--------------------------------------------------
+
+$event = "nethserver-vpn-update";
+
+event_actions($event,
+    'nethserver-openvpn-genclient' => '30',
+);
+
+event_services($event, 'openvpn' => 'restart');
+
+#--------------------------------------------------
+# actions for nethserver-vpn-delete event
+#--------------------------------------------------
+
+$event = "nethserver-vpn-delete";
+
+event_actions($event,
+    'nethserver-openvpn-delclient' => '30',
+);
+
+event_services($event, 'openvpn' => 'restart');
+
 
