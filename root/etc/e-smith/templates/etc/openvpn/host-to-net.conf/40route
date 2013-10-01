@@ -1,5 +1,6 @@
 {
     use esmith::NetworksDB;
+    use esmith::util;
     my $ndb = esmith::NetworksDB->open_ro();
     my $green = $ndb->green();
     my $IPAddress = $green->prop('ipaddr');
@@ -27,4 +28,9 @@
             $OUT .= "push \"route ".$network." ".$netmask."\"\n";
         }
     }
+    
+    my $greenNetwork = esmith::util::computeLocalNetworkSpec($green->prop('ipaddr'),$green->prop('netmask'));
+    $greenNetwork =~ s/\// /g;
+    $OUT .= "push \"route $greenNetwork\"\n";
+
 }
