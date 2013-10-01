@@ -19,3 +19,4 @@ $L['Mode_bridged_label'] = 'Modalità bridged';
 $L['BridgeStartIP_label'] = 'Inizio range IP';
 $L['BridgeEndIP_label'] = 'Fine range IP';
 $L['RoutedAdvanced_label'] = 'Avanzate';
+$L['Compression_label'] = 'Abilita compressione LZO';

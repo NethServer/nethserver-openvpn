@@ -62,6 +62,11 @@ if ($mode eq 'certificate' or $mode eq 'password-certificate') {
 
 $OUT .= "ca $cert\n";
 
+my $compression = $openvpn->prop('Compression') || 'enabled';
+if ($compression eq 'enabled') {
+    $OUT .= "comp-lzo\n";
+}
+
 $OUT .= "explicit-exit-notify 1\n";
 $OUT .= "verb 3\n";
 

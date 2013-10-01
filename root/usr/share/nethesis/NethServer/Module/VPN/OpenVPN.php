@@ -40,7 +40,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         parent::initialize();
         $authModes = $this->createValidator()->memberOf(array('password', 'certificate','password-certificate'));
         $modes = $this->createValidator()->memberOf(array('bridged', 'routed'));
-        $this->declareParameter('ServerStatus', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ServerStatus'));
+        $this->declareParameter('status', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'status'));
         $this->declareParameter('AuthMode', $authModes, array('configuration', 'openvpn', 'AuthMode'));
         $this->declareParameter('Mode', $modes, array('configuration', 'openvpn', 'Mode'));
         $this->declareParameter('ClientToClient', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ClientToClient'));
@@ -49,6 +49,8 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $this->declareParameter('BridgeEndIP', Validate::IPv4, array('configuration', 'openvpn', 'BridgeEndIP'));
         $this->declareParameter('Netmask', Validate::NETMASK, array('configuration', 'openvpn', 'Netmask'));
         $this->declareParameter('Network', "/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0)$/", array('configuration', 'openvpn', 'Network'));
+        $this->declareParameter('Compression', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'Compression'));
+
     }
 
     protected function onParametersSaved($changes)
@@ -60,14 +62,6 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
     {
         parent::prepareView($view);
 
-        $view['ClientToClientDatasource'] = array(
-            array('enabled',$view->translate('enabled_label')),
-            array('disabled',$view->translate('disabled_label'))
-        );
-        $view['RouteToVPNDatasource'] = array(
-            array('enabled',$view->translate('enabled_label')),
-            array('disabled',$view->translate('disabled_label'))
-        );
         $view['AuthModeDatasource'] = array(
             array('password',$view->translate('password_mode_label')),
             array('certificate',$view->translate('certificate_mode_label')),
