@@ -1,6 +1,6 @@
 <?php
 
-$L['status_label'] = 'Enable OpenVPN';
+$L['ServerStatus_label'] = 'Enable OpenVPN';
 $L['OpenVPN_Description'] = 'OpenVPN configuration';
 $L['OpenVPN_Tags'] = 'vpn virtual private network openvpn';
 $L['OpenVPN_Title'] = 'OpenVPN Server';
