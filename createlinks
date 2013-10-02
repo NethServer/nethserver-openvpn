@@ -93,10 +93,10 @@ event_services($event, 'openvpn' => 'restart');
 
 
 #--------------------------------------------------
-# actions for nethserver-vpn-update event
+# actions for nethserver-vpn-modify event
 #--------------------------------------------------
 
-$event = "nethserver-vpn-update";
+$event = "nethserver-vpn-modify";
 
 event_actions($event,
     'nethserver-openvpn-genclient' => '30',
