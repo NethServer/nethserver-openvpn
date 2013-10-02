@@ -1,13 +1,13 @@
 #
 # 15openvpn
 #
-loc            vpn           ACCEPT
-vpn            loc           ACCEPT
-vpn            $FW           ACCEPT
-$FW            vpn           ACCEPT
+loc            ovpn           ACCEPT
+ovpn           loc            ACCEPT
+ovpn           $FW            ACCEPT
+$FW            ovpn           ACCEPT
 {
     if($openvpn{'RouteToVPN'} eq 'enabled') {
-        $OUT .= "vpn            net           ACCEPT";
+        $OUT .= "ovpn           net           ACCEPT";
     } else {
 	$OUT = "# openvpn/RouteToVPN is disabled";
     }
