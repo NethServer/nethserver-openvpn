@@ -34,7 +34,6 @@ event_actions($event,
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
-templates2events("/etc/openvpn/client.ovpn",  $event);
 event_services($event, 'openvpn' => 'restart');
 
 #--------------------------------------------------
@@ -116,4 +115,15 @@ event_actions($event,
 
 event_services($event, 'openvpn' => 'restart');
 
+#--------------------------------------------------
+# actions for nethserver-vpn-save event
+#--------------------------------------------------
+
+$event = "nethserver-vpn-save";
+
+event_actions($event,
+    'nethserver-openvpn-net2net' => '30',
+);
+
+event_services($event, 'openvpn' => 'restart');
 

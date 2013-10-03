@@ -1,0 +1,24 @@
+#!/usr/bin/perl
+
+use esmith::AccountsDB;
+my $path = "/etc/openvpn/ccd";
+
+my $adb = esmith::AccountsDB->open_ro or die "Couldn't open AccountsDB\n";
+
+for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
+{
+    my $OUT = '';
+    my $outFile = $path . "/" . $acc->key; 
+    my %props = $acc->props;
+    $props{VPNRemoteNetwork} ||= '';
+    $props{VPNRemoteNetmask} ||= '';
+
+    next unless ($props{VPNRemoteNetwork} ne '');
+
+    $OUT .= "iroute " . $props{VPNRemoteNetwork} . " " . $props{VPNRemoteNetmask} . "\n";
+
+
+    open (FILE, ">$outFile");
+    print FILE $OUT;
+    close FILE;
+}

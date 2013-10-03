@@ -1,0 +1,18 @@
+{
+    use esmith::AccountsDB;
+
+    my $adb = esmith::AccountsDB->open_ro or die "Couldn't open AccountsDB\n";
+    $OUT = '';
+
+    for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
+    {
+        my %props = $acc->props;
+        $props{VPNRemoteNetwork} ||= '';
+        $props{VPNRemoteNetmask} ||= '';
+        
+        next unless ($props{VPNRemoteNetwork} ne '');
+
+        $OUT .= "route " . $props{VPNRemoteNetwork} . " " . $props{VPNRemoteNetmask} . "\n";
+    }
+
+}
