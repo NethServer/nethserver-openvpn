@@ -3,12 +3,10 @@
 use esmith::AccountsDB;
 my $path = "/etc/openvpn/ccd";
 
-my $adb = esmith::AccountsDB->open_ro or die "Couldn't open AccountsDB\n";
-
-for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
-{
+sub write_route($) {
+    my $acc = shift;
     my $OUT = '';
-    my $outFile = $path . "/" . $acc->key; 
+    my $outFile = $path . "/" . $acc->key;
     my %props = $acc->props;
     $props{VPNRemoteNetwork} ||= '';
     $props{VPNRemoteNetmask} ||= '';
@@ -21,4 +19,15 @@ for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
     open (FILE, ">$outFile");
     print FILE $OUT;
     close FILE;
+}
+
+my $adb = esmith::AccountsDB->open_ro or die "Couldn't open AccountsDB\n";
+
+for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
+{
+    write_route($acc);
+}
+for my $user ( $adb->get_all_by_prop('type' => 'user') )
+{
+    write_route($user);
 }
