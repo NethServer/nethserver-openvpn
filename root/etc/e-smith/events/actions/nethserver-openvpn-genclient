@@ -51,7 +51,7 @@ if ($mode eq 'password' or $mode eq 'password-certificate') {
     print FILE $openvpn->prop('User')."\n";
     print FILE $openvpn->prop('Password')."\n";
     close FILE;
-    chmod 640 $authFile;
+    chmod 640, $authFile;
     chown $uid, $gid, $authFile;
 }
 if ($mode eq 'certificate' or $mode eq 'password-certificate') {
@@ -73,5 +73,5 @@ $OUT .= "verb 3\n";
 open (FILE, ">$outFile");
 print FILE $OUT;
 close FILE;
-chmod 640 $outFile;
+chmod 640, $outFile;
 chown $uid, $gid, $outFile;
