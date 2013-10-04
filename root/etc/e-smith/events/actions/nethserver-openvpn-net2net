@@ -23,10 +23,15 @@ sub write_route($) {
 
 my $adb = esmith::AccountsDB->open_ro or die "Couldn't open AccountsDB\n";
 
+# clean dir
+unlink (glob("$path/*")); 
+
+# create ccd config files for vpn accounts
 for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
 {
     write_route($acc);
 }
+# create ccd config files for user accounts
 for my $user ( $adb->get_all_by_prop('type' => 'user') )
 {
     write_route($user);
