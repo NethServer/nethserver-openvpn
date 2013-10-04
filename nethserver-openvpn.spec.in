@@ -25,7 +25,7 @@ perl createlinks
 %install
 rm -rf $RPM_BUILD_ROOT
 (cd root; find . -depth -print | cpio -dump $RPM_BUILD_ROOT)
-%{genfilelist} $RPM_BUILD_ROOT  --dir /etc/openvpn/ccd 'attr(0640,admin,admin)' > %{name}-%{version}-filelist
+%{genfilelist} $RPM_BUILD_ROOT  --dir /etc/openvpn/ccd 'attr(0740,admin,admin)' > %{name}-%{version}-filelist
 echo "%doc COPYING" >> %{name}-%{version}-filelist
 
 %post
