@@ -40,7 +40,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         parent::initialize();
         $authModes = $this->createValidator()->memberOf(array('password', 'certificate','password-certificate'));
         $modes = $this->createValidator()->memberOf(array('bridged', 'routed'));
-        $this->declareParameter('status', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'status'));
+        $this->declareParameter('ServerStatus', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ServerStatus'));
         $this->declareParameter('AuthMode', $authModes, array('configuration', 'openvpn', 'AuthMode'));
         $this->declareParameter('Mode', $modes, array('configuration', 'openvpn', 'Mode'));
         $this->declareParameter('ClientToClient', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ClientToClient'));
