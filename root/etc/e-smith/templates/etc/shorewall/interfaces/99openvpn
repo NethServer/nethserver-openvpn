@@ -6,7 +6,6 @@
     if ($mode eq 'routed') {
         $OUT .= "ovpn        tun+\n";
     } elsif ($mode eq 'bridged') {
-        my $tap = $openvpn{'TapInterface'} || 'tap0';
-        $OUT .= "dev $tap\n";
+        $OUT .= "ovpn tap+\n";
     }
 }
