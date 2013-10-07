@@ -39,7 +39,7 @@ my $br_name = $openvpn->prop('BridgeName') || 'br0';
 my $device = $idb->get_by_role($role) || die("No $role device found");
 my $device_type = $device->prop('type');
 
-if ($mode eq 'bridged' && $device_type ne 'bridged') {
+if ( $mode eq 'bridged' && $device_type ne 'bridged' && $device_type ne 'bridge' ) { # skip if bridge already exits
    # A bridge is needed:
    #   - create a bridge with green role
    #   - attach current green ethernet to the bridge
@@ -54,7 +54,6 @@ if ($mode eq 'bridged' && $device_type ne 'bridged') {
        onboot => 'yes',
        role => $role
    });
-
    
    $idb->set_prop($device->key, 'role', 'bridged');
    $idb->set_prop($device->key, 'bridge', 'br0');
@@ -63,6 +62,7 @@ if ($mode eq 'bridged' && $device_type ne 'bridged') {
    $device->delete_prop('bootproto');
    $device->delete_prop('gateway');
 
+   system('/sbin/service openvpn stop');
    system('/sbin/e-smith/signal-event interface-update');
 } 
 
