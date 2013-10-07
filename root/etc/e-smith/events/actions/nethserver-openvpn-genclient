@@ -14,7 +14,7 @@ sub cat {
     return $str;
 }
 
-my $name = shift || die ("Please insert an account name");
+my $name = $ARGV[1] || die ("Please insert an account name");
 
 my $cdb = esmith::ConfigDB->open_ro('/var/lib/nethserver/db/vpn');
 my $cert = "/var/lib/nethserver/certs/clients/$name.pem";
@@ -51,7 +51,7 @@ if ($mode eq 'password' or $mode eq 'password-certificate') {
     print FILE $openvpn->prop('User')."\n";
     print FILE $openvpn->prop('Password')."\n";
     close FILE;
-    chmod 640, $authFile;
+    chmod 0640, $authFile;
     chown $uid, $gid, $authFile;
 }
 if ($mode eq 'certificate' or $mode eq 'password-certificate') {
@@ -73,5 +73,5 @@ $OUT .= "verb 3\n";
 open (FILE, ">$outFile");
 print FILE $OUT;
 close FILE;
-chmod 640, $outFile;
+chmod 0640, $outFile;
 chown $uid, $gid, $outFile;
