@@ -1,1 +1,2 @@
 status /var/log/openvpn/host-to-net-status.log
+log-append /var/log/openvpn/openvpn.log

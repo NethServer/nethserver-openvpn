@@ -6,3 +6,5 @@
 }
 keepalive 20 120
 client-config-dir ccd
+persist-key
+persist-tun
