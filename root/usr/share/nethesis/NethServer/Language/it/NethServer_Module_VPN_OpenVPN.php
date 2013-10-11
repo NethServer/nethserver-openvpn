@@ -1,9 +1,9 @@
 <?php
 
-$L['ServerStatus_label'] = 'Abilita OpenVPN';
+$L['ServerStatus_label'] = 'Abilita server roadwarrior';
 $L['OpenVPN_Description'] = 'Configurazione OpenVPN';
-$L['OpenVPN_Tags'] = 'vpn virtual private network openvpn';
-$L['OpenVPN_Title'] = 'Server OpenVPN';
+$L['OpenVPN_Tags'] = 'vpn virtual private network openvpn roadwarrior';
+$L['OpenVPN_Title'] = 'OpenVPN';
 $L['AuthMode_label'] = 'Modalità autenticazione';
 $L['password_mode_label'] = 'Nome utente e password';
 $L['certificate_mode_label'] = 'Certificato';
