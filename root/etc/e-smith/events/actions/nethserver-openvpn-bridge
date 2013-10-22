@@ -57,6 +57,7 @@ if ( $mode eq 'bridged' && $device_type ne 'bridged' && $device_type ne 'bridge'
    
    $idb->set_prop($device->key, 'role', 'bridged');
    $idb->set_prop($device->key, 'bridge', 'br0');
+   $idb->set_prop($device->key, 'device', $device->key);
    $device->delete_prop('ipaddr');
    $device->delete_prop('netmask');
    $device->delete_prop('bootproto');
