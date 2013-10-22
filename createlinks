@@ -122,8 +122,10 @@ event_services($event, 'openvpn' => 'restart');
 $event = "nethserver-vpn-save";
 
 event_actions($event,
+    'nethserver-openvpn-delserver' => 20,
     'nethserver-openvpn-net2net' => '30',
 );
 
 event_services($event, 'openvpn' => 'restart');
+templates2events("/etc/openvpn/host-to-net.conf",  $event);
 
