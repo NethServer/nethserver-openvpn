@@ -1,8 +1,9 @@
 #!/bin/bash
 
-name=$1
+event=$1
+name=$2
 
-if [ -z $1 ]; then
+if [ -z $name ]; then
     exit 1
 fi
 
