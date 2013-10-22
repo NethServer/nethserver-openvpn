@@ -69,6 +69,8 @@ if ($compression eq 'enabled') {
 
 $OUT .= "explicit-exit-notify 1\n";
 $OUT .= "verb 3\n";
+$OUT .= "log-append /var/log/openvpn/openvpn.log\n";
+
 
 open (FILE, ">$outFile");
 print FILE $OUT;
