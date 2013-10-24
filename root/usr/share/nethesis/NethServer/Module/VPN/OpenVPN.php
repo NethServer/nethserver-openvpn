@@ -55,7 +55,8 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('nethserver-openvpn-save@post-process');
+        // execute event in background to avoid errors on bridge creation
+        $this->getPlatform()->signalEvent('nethserver-openvpn-save@post-response &');
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
