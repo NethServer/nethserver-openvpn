@@ -36,6 +36,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Thu Oct 24 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.0.1-1.ns6
+- Avoid event block during bridge creation #1956
+
 * Wed Oct 23 2013 Davide Principi <davide.principi@nethesis.it> - 1.0.0-1.ns6
 - VPN: add support for OpenVPN net2net - Feature #1958 [NethServer]
 - VPN: support for OpenVPN roadwarrior - Feature #1956 [NethServer]
