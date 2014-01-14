@@ -1,10 +1,16 @@
+# temporary fix for #2525
 {
     use esmith::NetworksDB;
     use esmith::util;
     my $ndb = esmith::NetworksDB->open_ro();
     my $green = $ndb->green();
     my $IPAddress = $green->prop('ipaddr');
-    my $DNS = $dns{'NameServers'} || $IPAddress;
+    my @dns;
+    if ($dns{'role'} eq 'resolver') {
+        push(@dns, $IPAddress);
+    } else {
+        @dns = split(',', ($dns{NameServers} || ''), 2);
+    }
 
     $OUT  = "";
 
@@ -14,10 +20,12 @@
     }
 
     $OUT .= "push \"dhcp-option DOMAIN $DomainName\"\n";
-    $OUT .= "push \"dhcp-option DNS $DNS\"\n";
-    $OUT .= "push \"dhcp-option WINS $DNS\"\n";
+    foreach my $dns (@dns) {
+        $OUT .= "push \"dhcp-option DNS $dns\"\n";
+        $OUT .= "push \"dhcp-option WINS $dns\"\n";
+        $OUT .= "push \"dhcp-option NBDD $dns\"\n";
+    }
     $OUT .= "push \"dhcp-option NBT 2\"\n";
-    $OUT .= "push \"dhcp-option NBDD $IPAddress\"\n";
 
     foreach my $network_entry ($ndb->networks())
     {
