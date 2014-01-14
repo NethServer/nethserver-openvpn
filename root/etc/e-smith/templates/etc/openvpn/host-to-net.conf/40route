@@ -4,6 +4,7 @@
     my $ndb = esmith::NetworksDB->open_ro();
     my $green = $ndb->green();
     my $IPAddress = $green->prop('ipaddr');
+    my $DNS = $dns{'NameServers'} || $IPAddress;
 
     $OUT  = "";
 
@@ -13,8 +14,8 @@
     }
 
     $OUT .= "push \"dhcp-option DOMAIN $DomainName\"\n";
-    $OUT .= "push \"dhcp-option DNS $IPAddress\"\n";
-    $OUT .= "push \"dhcp-option WINS $IPAddress\"\n";
+    $OUT .= "push \"dhcp-option DNS $DNS\"\n";
+    $OUT .= "push \"dhcp-option WINS $DNS\"\n";
     $OUT .= "push \"dhcp-option NBT 2\"\n";
     $OUT .= "push \"dhcp-option NBDD $IPAddress\"\n";
 
