@@ -1,0 +1,54 @@
+#!/usr/bin/perl -w
+use strict;
+use Socket;
+use IO::Handle;
+use JSON;
+
+sub exit_error() {
+    my $json = JSON->new;
+    my $json_text   = $json->encode( {result => 'ERROR'} );
+    print $json_text;
+    exit(1);
+}
+
+sub help() {
+    print "Usage: openvpn-status <socket> \n\n";
+    print "   Example: openvpn-status /var/spool/openvpn/host-to-net\n\n";
+    exit(1);
+}
+
+# flush after every write
+$| = 1;
+
+if (scalar(@ARGV) < 1) {
+    help();
+}
+my $socket = $ARGV[0];
+exit_error() unless (-e $socket);
+
+socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
+connect(TSOCK, sockaddr_un($socket)) or exit_error();
+my %results;
+while (defined(my $msg = <TSOCK>)) {
+        print TSOCK "status\n";
+        TSOCK->flush;
+        exit(1) if $msg =~ /ERROR/;
+        last if $msg =~ /END/;
+        next if $msg =~ /^Common Name/;
+        next if $msg =~ /^Virtual Address/;
+        my @tmp = split(',', $msg);
+        if (scalar(@tmp) == 5) {
+            #Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since
+            $tmp[4] =~ s/\s+$//g; #rtrim
+            $results{$tmp[0]} = { cn => $tmp[0], real_address => $tmp[1], rcvd => $tmp[2], sent => $tmp[3], since => $tmp[4]};
+        }
+        if (scalar(@tmp) == 4) {
+            #Virtual Address,Common Name,Real Address,Last Ref
+            $results{$tmp[1]}{'virtual_address'} = $tmp[0];
+        }
+}
+
+my $json = JSON->new;
+my $json_text   = $json->encode( \%results );
+print $json_text;
+exit(0);

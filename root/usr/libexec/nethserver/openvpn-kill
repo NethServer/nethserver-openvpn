@@ -1,0 +1,39 @@
+#!/usr/bin/perl -w
+use strict;
+use Socket;
+use IO::Handle;
+use JSON;
+
+sub exit_error() {
+    my $json = JSON->new;
+    my $json_text   = $json->encode( {result => 'ERROR'} );
+    print $json_text;
+    exit(1);
+}
+
+sub help() {
+    print "Usage: openvpn-kill <socket> <clientid> \n\n";
+    print "   Example: openvpn-kill /var/spool/openvpn/host-to-net myclient\n\n";
+    exit(1);
+}
+
+# flush after every write
+$| = 1;
+
+if (scalar(@ARGV) < 2) {
+    help();
+}
+my $socket = $ARGV[0];
+my $clientid = $ARGV[1];
+exit_error() unless (-e $socket);
+
+socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
+connect(TSOCK, sockaddr_un($socket)) or exit_error();
+while (defined(my $msg = <TSOCK>)) {
+        print TSOCK "kill $clientid\n";
+        TSOCK->flush;
+        exit(1) if $msg =~ /ERROR/;
+        exit(0) if $msg =~ /SUCCESS/;
+}
+
+exit(0);

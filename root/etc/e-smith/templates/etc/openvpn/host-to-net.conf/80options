@@ -8,3 +8,4 @@ keepalive 20 120
 client-config-dir ccd
 persist-key
 persist-tun
+management /var/spool/openvpn/host-to-net unix
