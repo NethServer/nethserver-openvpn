@@ -20,8 +20,8 @@ my $cdb = esmith::ConfigDB->open_ro('/var/lib/nethserver/db/vpn');
 my $cert = "/var/lib/nethserver/certs/clients/$name.pem";
 my $authFile = "/etc/openvpn/$name.auth";
 my $outFile = "/etc/openvpn/$name.conf";
-my $uid = getpwnam('admin');
-my $gid = getgrnam('admin');
+my $uid = getpwnam('srvmgr');
+my $gid = getgrnam('adm');
 
 my $OUT = "######### NethServer OpenVPN client configuration #########\n\n";
 my $openvpn = $cdb->get($name);
