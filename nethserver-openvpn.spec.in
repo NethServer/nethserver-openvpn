@@ -36,6 +36,12 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Wed Feb 05 2014 Davide Principi <davide.principi@nethesis.it> - 1.0.2-1.ns6
+- OpenVPN Downloaded client configuration contains a bad directive - Bug #2624 [NethServer]
+- OpenVPN name resolution - Bug #2525 [NethServer]
+- Move admin user in LDAP DB - Feature #2492 [NethServer]
+- Dashboard:  OpenVPN status widget - Enhancement #2300 [NethServer]
+
 * Thu Oct 24 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.0.1-1.ns6
 - Avoid event block during bridge creation #1956
 
