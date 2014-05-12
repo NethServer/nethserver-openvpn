@@ -1,0 +1,23 @@
+#
+# 20policy_openvpn
+#
+loc            ovpn           ACCEPT
+ovpn           loc            ACCEPT
+ovpn           $FW            ACCEPT
+$FW            ovpn           ACCEPT
+{
+    my $routeToVPN = $openvpn{'RouteToVPN'} || 'disabled';
+    my $nfqueue = $firewall{'nfqueue'} || 'disabled';
+    my $action = 'ACCEPT';
+    if ($nfqueue eq 'enabled') {
+        $action = 'NFQUEUE';
+    } 
+
+    if($routeToVPN eq 'enabled') {
+        $OUT .= "ovpn           net            $action";
+    } else {
+	$OUT = "# openvpn/RouteToVPN is disabled";
+    }
+}
+
+
