@@ -1,2 +1,5 @@
-ovpn    tun+
-ovpn    tap+
+#
+# 99openvpn
+#
+ovpn     ipv4
+
