@@ -1,11 +1,2 @@
-#
-# 99openvpn
-#
-{
-    $mode = $openvpn{'Mode'} || 'routed';
-    if ($mode eq 'routed') {
-        $OUT .= "ovpn        tun+\n";
-    } elsif ($mode eq 'bridged') {
-        $OUT .= "ovpn tap+\n";
-    }
-}
+ovpn    tun+
+ovpn    tap+
