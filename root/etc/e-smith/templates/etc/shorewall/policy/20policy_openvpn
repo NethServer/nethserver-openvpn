@@ -10,7 +10,7 @@ $FW            ovpn           ACCEPT
     my $nfqueue = $firewall{'nfqueue'} || 'disabled';
     my $action = 'ACCEPT';
     if ($nfqueue eq 'enabled') {
-        $action = 'NFQUEUE';
+        $action = 'ACCEPT:NFQBY';
     } 
 
     if($routeToVPN eq 'enabled') {
