@@ -36,6 +36,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 04 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.1-1.ns6
+- Firewall fallback when IPS is not running - Enhancement #2935 [NethServer]
+
 * Wed Aug 20 2014 Davide Principi <davide.principi@nethesis.it> - 1.1.0-1.ns6
 - OpenVPN: firewall rules for tun/tap devices - Enhancement #2813 [NethServer]
 - IDS/IPS (snort) - Feature #1771 [NethServer]
