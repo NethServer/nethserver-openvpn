@@ -2,11 +2,13 @@
 {
     use esmith::NetworksDB;
     use esmith::util;
+    use NethServer::Service;
     my $ndb = esmith::NetworksDB->open_ro();
     my $green = $ndb->green();
     my $IPAddress = $green->prop('ipaddr');
     my @dns;
-    if ($dns{'role'} eq 'resolver') {
+    my $s = new NethServer::Service('dnsmasq');
+    if( $s->is_owned() && $s->is_enabled() ) {
         push(@dns, $IPAddress);
     } else {
         @dns = split(',', ($dns{NameServers} || ''), 2);
