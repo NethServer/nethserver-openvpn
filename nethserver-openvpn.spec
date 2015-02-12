@@ -1,7 +1,7 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: @@VERSION@@
-Release: @@RELEASE@@
+Version: 1.1.2
+Release: 1
 License: GPL
 URL: %{url_prefix}/%{name} 
 Source0: %{name}-%{version}.tar.gz
