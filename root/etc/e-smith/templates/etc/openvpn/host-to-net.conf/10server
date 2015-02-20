@@ -14,18 +14,15 @@
         $tap =  $openvpn{'TapInterface'} || 'tap0';
         use esmith::NetworksDB;
         my $ndb = esmith::NetworksDB->open_ro();
-        my $role = $openvpn{'BridgeRole'} || 'green';
-        my $device = $ndb->get_by_role($role) || die("No $role device found");
+        my $br = $openvpn{'BridgeName'} || 'br0';
+        my $device = $ndb->get($br) || die("No $br device found");
         my $netmask = $device->prop('netmask');
-        my $gateway = $device->prop('gateway');
+        my $ip = $device->prop('ipaddr') || die("No ip address for $br");
         my $start = $openvpn{'BridgeStartIP'};
         my $end = $openvpn{'BridgeEndIP'};
-        my $route = $openvpn{'RouteToVPN'} || 'disabled';
 
-        $OUT.="dev $tap\n";
-        $OUT.="mode server\n";
-        $OUT.="tls-server\n";
-        $OUT.="ifconfig-pool $start $end $netmask\n";
+        $OUT.="dev tap\n";
+        $OUT.="server-bridge $ip $netmask $start $end\n";
     }
     $OUT.="ifconfig-pool-persist host-to-net.pool 0\n";
 }

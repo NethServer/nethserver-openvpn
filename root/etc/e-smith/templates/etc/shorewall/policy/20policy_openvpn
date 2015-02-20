@@ -15,10 +15,10 @@ $FW            ovpn           ACCEPT
         $action = 'ACCEPT:NFQBY';
     }
     if (defined($ndb->blue())) {
-        $OUT .= "openvpn        blue           ACCEPT\n"; 
+        $OUT .= "ovpn        blue           ACCEPT\n"; 
     }
     if (defined($ndb->orange())) {
-        $OUT .= "openvpn        orang          ACCEPT\n";
+        $OUT .= "ovpn        orang          ACCEPT\n";
     }
 
     if($routeToVPN eq 'enabled') {
