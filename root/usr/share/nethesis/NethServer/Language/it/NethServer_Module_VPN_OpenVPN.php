@@ -16,6 +16,7 @@ $L['disabled_label'] = 'No';
 $L['Mode_routed_label'] = 'Modalità routed';
 $L['RouteToVPN_label'] = 'Dirotta traffico dei client attraverso la VPN';
 $L['Mode_bridged_label'] = 'Modalità bridged';
+$L['Bridge'] = 'Bridge';
 $L['BridgeStartIP_label'] = 'Inizio range IP';
 $L['BridgeEndIP_label'] = 'Fine range IP';
 $L['RoutedAdvanced_label'] = 'Avanzate';

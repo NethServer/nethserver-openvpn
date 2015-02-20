@@ -29,20 +29,44 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class OpenVPN extends \Nethgui\Controller\AbstractController
 {
+    private $bridges = array();
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Configuration', 30);
     }
 
+    private function readBridges()
+    {
+        $db = $this->getPlatform()->getDatabase('networks');
+        $devices = $db->getAll();
+
+        $ret = array();
+
+        foreach ($devices as $dev=>$val) {
+            if (preg_match('/bridge/',$val['type'])) {
+                if (isset($val['role'])) {
+                    $ret[$dev] = $val['role'];
+                }
+            }
+        } 
+
+        return $ret;
+    }
+
     public function initialize()
     {
         parent::initialize();
+        if (!$this->bridges) {
+            $this->bridges = $this->readBridges();
+        }
         $authModes = $this->createValidator()->memberOf(array('password', 'certificate','password-certificate'));
         $modes = $this->createValidator()->memberOf(array('bridged', 'routed'));
+        $bridges = $this->createValidator()->memberOf(array_keys($this->bridges));
         $this->declareParameter('ServerStatus', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ServerStatus'));
         $this->declareParameter('AuthMode', $authModes, array('configuration', 'openvpn', 'AuthMode'));
         $this->declareParameter('Mode', $modes, array('configuration', 'openvpn', 'Mode'));
+        $this->declareParameter('Bridge', $bridges, array('configuration', 'openvpn', 'BridgeName'));
         $this->declareParameter('ClientToClient', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ClientToClient'));
         $this->declareParameter('RouteToVPN', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'RouteToVPN'));
         $this->declareParameter('BridgeStartIP', Validate::IPv4, array('configuration', 'openvpn', 'BridgeStartIP'));
@@ -62,6 +86,9 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        if (!$this->bridges) {
+            $this->bridges = $this->readBridges();
+        }
 
         $view['AuthModeDatasource'] = array(
             array('password',$view->translate('password_mode_label')),
@@ -72,6 +99,12 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
             array('bridged',$view->translate('bridged_label')),
             array('routed',$view->translate('routed_label')),
         );
+        $bridges = array();
+        foreach ($this->bridges as $dev => $role) {
+            $bridges[] = array($dev, "$dev ($role)");
+        }
+        $view['BridgeDatasource'] = $bridges; 
+
         $view['priorityDatasource'] = array(array('1',$view->translate('1_label')),array('2',$view->translate('2_label')),array('3',$view->translate('3_label')));
 
     }
