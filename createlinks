@@ -68,13 +68,9 @@ event_services($event, 'openvpn' => 'restart');
 
 templates2events("/etc/openvpn/host-to-net.pool",
 			qw(
-				network-create
-				network-modify
-				network-delete
+				static-routes-save
 			));
-event_services(qw(network-create
-		  network-modify
-		  network-delete
+event_services(qw(static-routes-save
 		), 'openvpn' => 'restart');
 
 
