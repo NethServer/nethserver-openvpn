@@ -43,7 +43,6 @@ event_services($event, 'openvpn' => 'restart');
 $event = "nethserver-openvpn-save";
 
 event_actions($event, 
-    'nethserver-openvpn-bridge' => 20,
     'nethserver-openvpn-delserver' => 30,
     'firewall-adjust' => '80'
 );
