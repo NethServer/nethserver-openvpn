@@ -1,9 +1,11 @@
-# temporary fix for #2525
 {
     use esmith::NetworksDB;
+    use esmith::ConfigDB;
     use esmith::util;
     use NethServer::Service;
     my $ndb = esmith::NetworksDB->open_ro();
+    my $rdb = esmith::ConfigDB->open_ro('routes');
+
     my $green = $ndb->green();
     my $IPAddress = $green->prop('ipaddr');
     my @dns;
@@ -29,7 +31,8 @@
     }
     $OUT .= "push \"dhcp-option NBT 2\"\n";
 
-    foreach my $network_entry ($ndb->networks())
+    my @routes = $rdb->get_all_by_prop( type => 'static');
+    foreach my $network_entry (@routes)
     {
         my $network = $network_entry->key();
         my $netmask = $network_entry->prop('Mask');
