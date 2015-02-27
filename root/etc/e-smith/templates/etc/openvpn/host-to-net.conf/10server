@@ -29,3 +29,4 @@
 port {$openvpn{UDPPort}}
 script-security 3
 float
+multihome

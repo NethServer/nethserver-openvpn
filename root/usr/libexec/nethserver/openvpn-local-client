@@ -62,5 +62,6 @@ $OUT .= "explicit-exit-notify 1\n";
 $OUT .= "verb 3\n";
 $OUT .= "persist-key\n";
 $OUT .= "persist-tun\n";
+$OUT .= "nobind\n";
 
 print "$OUT\n";
