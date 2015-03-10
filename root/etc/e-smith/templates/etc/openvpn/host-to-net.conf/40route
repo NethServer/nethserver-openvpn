@@ -43,8 +43,11 @@
         }
     }
     
-    my $greenNetwork = esmith::util::computeLocalNetworkSpec($green->prop('ipaddr'),$green->prop('netmask'));
-    $greenNetwork =~ s/\// /g;
-    $OUT .= "push \"route $greenNetwork\"\n";
+    $mode = $openvpn{'Mode'} || 'routed';
+    if ($mode ne 'bridged') {
+        my $greenNetwork = esmith::util::computeLocalNetworkSpec($green->prop('ipaddr'),$green->prop('netmask'));
+        $greenNetwork =~ s/\// /g;
+        $OUT .= "push \"route $greenNetwork\"\n";
+   }
 
 }
