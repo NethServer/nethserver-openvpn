@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.1.2
+Version: 1.2.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -36,6 +36,13 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 11 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.0-1
+- OpenVPN roadwarrior doesn't work with MultiWan configured - Bug #3061 [NethServer]
+- VPN: missing firewall policy - Bug #3052 [NethServer]
+- OpenVPN in bridged mode - missing gateway - Bug #3048 [NethServer]
+- Adding a route should re-create vpn config files - Feature #3037 [NethServer]
+- Template fragment for /etc/openvpn/host-to-net.conf add push for network added in networks db  - Bug #3018 [NethServer]
+
 * Tue Dec 09 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.2-1.ns6
 - DNS: remove role property from dns db key - Enhancement #2915 [NethServer]
 
