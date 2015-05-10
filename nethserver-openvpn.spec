@@ -1,7 +1,7 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
 Version: 1.2.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
 Source0: %{name}-%{version}.tar.gz
@@ -36,6 +36,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Sun May 10 2015 stephane de Labrusse <stephdl@de-labrusse.fr> - 1.2.0-2.ns6
+- Add an input box to change UDPPort in nethgui
+
 * Wed Mar 11 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.0-1
 - OpenVPN roadwarrior doesn't work with MultiWan configured - Bug #3061 [NethServer]
 - VPN: missing firewall policy - Bug #3052 [NethServer]

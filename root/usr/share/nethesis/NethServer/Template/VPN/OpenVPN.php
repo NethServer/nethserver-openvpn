@@ -16,7 +16,8 @@ echo $view->fieldsetSwitch('ServerStatus', 'enabled',  $view::FIELDSETSWITCH_CHE
                  ->insert($view->selector('Bridge', $view::SELECTOR_DROPDOWN))
                  ->insert($view->textInput('BridgeStartIP'))
                  ->insert($view->textInput('BridgeEndIP'))))
-    ->insert($view->checkbox('Compression','enabled')->setAttribute('uncheckedValue', 'disabled'));
-
+    ->insert($view->checkbox('Compression','enabled')->setAttribute('uncheckedValue', 'disabled'))
+    ->insert($view->textInput('port'))
+;
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP);
