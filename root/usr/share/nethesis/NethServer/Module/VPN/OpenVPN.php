@@ -74,7 +74,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $this->declareParameter('Netmask', Validate::NETMASK, array('configuration', 'openvpn', 'Netmask'));
         $this->declareParameter('Network', "/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0)$/", array('configuration', 'openvpn', 'Network'));
         $this->declareParameter('Compression', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'Compression'));
-
+        $this->declareParameter('port', Validate::PORTNUMBER, array('configuration', 'openvpn', 'UDPPort')); 
     }
 
     protected function onParametersSaved($changes)
