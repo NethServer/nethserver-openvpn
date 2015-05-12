@@ -21,3 +21,4 @@ $L['BridgeStartIP_label'] = 'IP range start';
 $L['BridgeEndIP_label'] = 'IP range stop';
 $L['RoutedAdvanced_label'] = 'Advanced';
 $L['Compression_label'] = 'Enable LZO compression';
+$L['Bridge_label'] = 'Bridge';
