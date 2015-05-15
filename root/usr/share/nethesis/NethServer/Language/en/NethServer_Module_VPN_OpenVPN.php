@@ -24,3 +24,4 @@ $L['Compression_label'] = 'Enable LZO compression';
 $L['Bridge_label'] = 'Bridge';
 $L['port_label'] = 'UDP port';
 $L['AdvancedConfiguration_label'] = 'Advanced configuration';
+$L['used_network'] = 'Network already in use';
