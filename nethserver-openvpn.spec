@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.2.0
+Version: 1.2.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -36,6 +36,12 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Tue May 19 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.1-1
+- OpenVPN fixed ip support via standard db prop - Feature #3169 [NethServer]
+- OpenVPN: add UDP port to web interface - Enhancement #3164 [NethServer]
+- Incorrect OpenVPN pushed DNS - Bug #3158 [NethServer]
+- Network access via green lost if OpenVPN has a bad configuration - Bug #3074 [NethServer]
+
 * Wed Mar 11 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.0-1
 - OpenVPN roadwarrior doesn't work with MultiWan configured - Bug #3061 [NethServer]
 - VPN: missing firewall policy - Bug #3052 [NethServer]
