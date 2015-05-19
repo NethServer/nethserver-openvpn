@@ -142,7 +142,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
             if(isset($props['role']) && isset($props['ipaddr']) ) {
                 $cidr = $this->parameters['Network']."/".$this->maskToCidr($this->parameters['Netmask']);
                 if ($this->ipInRange($props['ipaddr'], $cidr)) {
-                    $report->addValidationErrorMessage($this, 'Network', 'used_network', array($this->parameters['Network']));
+                    $report->addValidationErrorMessage($this, 'Network', 'used_network', array($this->parameters['network']));
                 }
             }
         }
