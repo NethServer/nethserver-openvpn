@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\VPN;
+namespace NethServer\Module\VpnRoadwarrior;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -31,9 +31,9 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
 {
     private $bridges = array();
 
-    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $a)
     {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Configuration', 30);
+        return new \NethServer\Tool\CustomModuleAttributesProvider($a, array('languageCatalog' => 'NethServer_Module_VPN_OpenVPN'));
     }
 
     private function readBridges()
