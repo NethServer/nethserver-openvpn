@@ -62,7 +62,7 @@ event_services($event, 'openvpn' => 'restart');
 
 
 #--------------------------------------------------
-# actions for network-create,network-modify,network-delete events
+# actions for static-routes-save event
 #--------------------------------------------------
 
 $event = "static-routes-save";
