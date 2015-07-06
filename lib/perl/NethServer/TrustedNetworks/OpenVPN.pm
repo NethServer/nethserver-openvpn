@@ -42,6 +42,10 @@ sub openvpn_networks
     my $net = $config_db->get_prop('openvpn', 'Network') || '';
     my $msk = $config_db->get_prop('openvpn', 'Netmask') || '';
 
+    if(! $net || ! $msk) {
+        return;
+    }
+
     my $cidr = esmith::util::computeLocalNetworkShortSpec($net, $msk);
 
     if($cidr) {
