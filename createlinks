@@ -117,6 +117,7 @@ $event = "nethserver-vpn-save";
 event_actions($event,
     'nethserver-openvpn-delserver' => 20,
     'nethserver-openvpn-net2net' => '30',
+    'trusted-networks-modify' => '95'
 );
 
 event_services($event, 'openvpn' => 'restart');
