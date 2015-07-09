@@ -26,6 +26,7 @@ use esmith::DB::db;
 use esmith::util;
 
 register_callback(\&openvpn_networks);
+register_callback(\&openvpn_tunnels);
 
 #
 # Push OpenVPN roadwarrior networks
@@ -52,4 +53,23 @@ sub openvpn_networks
         push(@$results, {'cidr' => $cidr, 'provider' => 'OpenVPN'});
     }
 
+}
+
+#
+# Push OpenVPN tunnel networks
+#
+sub openvpn_tunnels
+{
+    my $results = shift;
+
+    my $vpn_db = esmith::DB::db->open_ro('accounts');
+    foreach ($vpn_db->get_all_by_prop('type' => 'vpn')) {
+        my $net = $_->prop('VPNRemoteNetwork') || next;
+        my $msk = $_->prop('VPNRemoteNetmask') || next;
+        my $cidr = esmith::util::computeLocalNetworkShortSpec($net, $msk);
+
+        if($cidr) {
+            push(@$results, {'cidr' => $cidr, 'provider' => 'OpenVPN'});
+        }
+    }
 }
