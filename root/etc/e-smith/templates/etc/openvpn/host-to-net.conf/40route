@@ -7,13 +7,13 @@
     my $rdb = esmith::ConfigDB->open_ro('routes');
     my $mode = $openvpn{'Mode'} || 'routed';
 
-    my $green = $ndb->green();
     my @dns;
     my $s = new NethServer::Service('dnsmasq');
     if( $s->is_owned() && $s->is_enabled() ) {
         if ($mode eq 'bridged') { # use green address
-            my $IPAddress = $green->prop('ipaddr');
-            push(@dns, $IPAddress);
+            foreach ($ndb->get_all_by_prop('role' => 'green')) {
+                push(@dns, $_->prop('ipaddr'));
+            }
         } else { # use tun address
             my ($tot, $first, $last) = esmith::util::computeHostRange($openvpn{Network},  $openvpn{Netmask});
             $first = esmith::util::IPquadToAddr($first); # convert to integer
@@ -52,9 +52,11 @@
     }
     
     if ($mode ne 'bridged') {
-        my $greenNetwork = esmith::util::computeLocalNetworkSpec($green->prop('ipaddr'),$green->prop('netmask'));
-        $greenNetwork =~ s/\// /g;
-        $OUT .= "push \"route $greenNetwork\"\n";
+        foreach ($ndb->get_all_by_prop('role' => 'green')) {
+            my $greenNetwork = esmith::util::computeLocalNetworkSpec($_->prop('ipaddr'),$_->prop('netmask'));
+            $greenNetwork =~ s/\// /g;
+            $OUT .= "push \"route $greenNetwork\"\n";
+        }
    }
 
 }
