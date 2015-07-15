@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.2.1
+Version: 1.2.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -38,6 +38,10 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Wed Jul 15 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.2-1
+- Event trusted-networks-modify - Enhancement #3195 [NethServer]
+- With multiple GREEN networks configured, missing the route in host-to-net.conf for OpenVPN Client - Enhancement #3189 [NethServer]
+
 * Tue May 19 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.1-1
 - OpenVPN fixed ip support via standard db prop - Feature #3169 [NethServer]
 - OpenVPN: add UDP port to web interface - Enhancement #3164 [NethServer]
