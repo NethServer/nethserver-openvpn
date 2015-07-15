@@ -20,6 +20,7 @@ NethServer OpenVPN configuration
 %setup
 
 %build
+%{makedocs}
 perl createlinks
 mkdir -p root%{perl_vendorlib}
 mv -v lib/perl/NethServer root%{perl_vendorlib}
