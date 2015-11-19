@@ -22,6 +22,7 @@ my $OUT = "######### NethServer OpenVPN client configuration #########\n\n";
 my $openvpn = $cdb->get('openvpn');
 my $SystemName = $cdb->get('SystemName')->value();
 my $DomainName = $cdb->get('DomainName')->value();
+my $remote = $openvpn->prop('Remote') || "";
 
 my $mode = $openvpn->prop('Mode') || 'routed';
 if ($mode eq 'routed') {
@@ -31,7 +32,13 @@ if ($mode eq 'routed') {
 }
 
 $OUT .= "client\n";
-$OUT .= "remote $SystemName.$DomainName\n";
+if ($remote eq '') {
+    $OUT .= "remote $SystemName.$DomainName\n";
+} else {
+    foreach (split(',',$remote)) {
+        $OUT .= "remote $_\n";
+    }
+}
 $OUT .= "port ".$openvpn->prop('UDPPort')."\n";
 $OUT .= "float\n";
 
