@@ -75,6 +75,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $this->declareParameter('Network', "/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0)$/", array('configuration', 'openvpn', 'Network'));
         $this->declareParameter('Compression', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'Compression'));
         $this->declareParameter('port', Validate::PORTNUMBER, array('configuration', 'openvpn', 'UDPPort')); 
+        $this->declareParameter('Remote', Validate::ANYTHING, array('configuration', 'openvpn', 'Remote')); 
 
     }
 
@@ -107,7 +108,10 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $view['BridgeDatasource'] = $bridges; 
 
         $view['priorityDatasource'] = array(array('1',$view->translate('1_label')),array('2',$view->translate('2_label')),array('3',$view->translate('3_label')));
-
+ 
+        $s = $this->getPlatform()->getDatabase('configuration')->getType('SystemName');
+        $d = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
+        $view['RemoteDefault'] = "$s.$d"; 
     }
 
     private function maskToCidr($mask){
@@ -143,6 +147,15 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
                 $cidr = $this->parameters['Network']."/".$this->maskToCidr($this->parameters['Netmask']);
                 if ($this->ipInRange($props['ipaddr'], $cidr)) {
                     $report->addValidationErrorMessage($this, 'Network', 'used_network', array($this->parameters['network']));
+                }
+            }
+        }
+
+        if (isset($this->parameters['Remote']) && $this->parameters['Remote']) {
+            $v = $this->createValidator(Validate::HOSTADDRESS);
+            foreach(explode(',',$this->parameters['Remote']) as $r) {
+                if ( ! $v->evaluate($r) ) {
+                    $report->addValidationError($this, 'Remote', $v);
                 }
             }
         }

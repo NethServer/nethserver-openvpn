@@ -17,8 +17,9 @@ echo $view->fieldsetSwitch('ServerStatus', 'enabled',  $view::FIELDSETSWITCH_CHE
                  ->insert($view->textInput('BridgeStartIP'))
                  ->insert($view->textInput('BridgeEndIP'))))
     ->insert($view->checkbox('Compression','enabled')->setAttribute('uncheckedValue', 'disabled'))
-    ->insert($view->fieldset(NULL, $view::FIELDSET_EXPANDABLE)
-        ->setAttribute('template', $T('AdvancedConfiguration_label'))
+    ->insert($view->fieldset()
+        ->setAttribute('template', $T('Connection_label'))
+        ->insert($view->textInput('Remote')->setAttribute('placeholder', $view['RemoteDefault']))
         ->insert($view->textInput('port')))
 ;
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP);
