@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.2.4
+Version: 1.3.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -39,6 +39,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 20 2015 Davide Principi <davide.principi@nethesis.it> - 1.3.0-1
+- Public IP text field for OpenVPN - Enhancement #2635 [NethServer]
+
 * Thu Aug 27 2015 Davide Principi <davide.principi@nethesis.it> - 1.2.4-1
 - Firewall rules: support hosts within VPN zones - Enhancement #3233 [NethServer]
 
