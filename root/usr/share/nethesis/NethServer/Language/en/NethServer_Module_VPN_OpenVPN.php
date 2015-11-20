@@ -26,5 +26,5 @@ $L['port_label'] = 'UDP port';
 $L['AdvancedConfiguration_label'] = 'Advanced configuration';
 $L['used_network'] = 'Network already in use';
 $L['Connection_label'] = 'Connection parameters';
-$L['Remote_label'] = 'Contact this server on public IP / host:';
+$L['Remote_label'] = 'Contact this server on public IP / host';
 

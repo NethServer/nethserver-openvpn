@@ -54,5 +54,10 @@ Allow client-to-client network traffic
 Enable LZO compression
     Enable LZO compression. This options must be enabled both on client and server.
 
+Contact this server on public IP / host 
+    Specify a comma separated list of IP and host names that the OpenVPN
+    clients will attempt to contact this server.  If this value is
+    changed the client configuration must be downloaded again.
+
 UDP port
     Change server UDP port. Default is 1194.
