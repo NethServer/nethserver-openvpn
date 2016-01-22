@@ -20,6 +20,7 @@ my $cdb = esmith::ConfigDB->open_ro('/var/lib/nethserver/db/vpn');
 my $cert = "/var/lib/nethserver/certs/clients/$name.pem";
 my $authFile = "/etc/openvpn/$name.auth";
 my $outFile = "/etc/openvpn/$name.conf";
+my $psk = "/var/lib/nethserver/certs/clients/$name.key";
 my $uid = getpwnam('srvmgr');
 my $gid = getgrnam('adm');
 
@@ -38,7 +39,6 @@ if ($mode eq 'routed') {
     $OUT.="dev tap\n";
 }
 
-$OUT .= "client\n";
 $OUT .= "remote $RemoteHost\n";
 $OUT .= "rport $RemotePort \n";
 $OUT .= "float\n";
@@ -46,7 +46,9 @@ $OUT .= "nobind\n";
 
 my $mode = $openvpn->prop('AuthMode') || 'password';
 if ($mode eq 'password' or $mode eq 'password-certificate') {
+    $OUT .= "client\n";
     $OUT.="auth-user-pass $authFile\n";
+    $OUT .= "ca $cert\n";
     open (FILE, ">$authFile");
     print FILE $openvpn->prop('User')."\n";
     print FILE $openvpn->prop('Password')."\n";
@@ -55,12 +57,16 @@ if ($mode eq 'password' or $mode eq 'password-certificate') {
     chown $uid, $gid, $authFile;
 }
 if ($mode eq 'certificate' or $mode eq 'password-certificate') {
+    $OUT .= "client\n";
     $OUT.= "# Authentication: certificate\n";
     $OUT .= "cert $cert\n";
     $OUT .= "key $cert\n";
+    $OUT .= "ca $cert\n";
 }
-
-$OUT .= "ca $cert\n";
+if ($mode eq 'psk') {
+    $OUT.= "# Authentication: PSK\n";
+    $OUT .= "secret $psk\n";
+}
 
 my $compression = $openvpn->prop('Compression') || 'enabled';
 if ($compression eq 'enabled') {
@@ -77,3 +83,8 @@ print FILE $OUT;
 close FILE;
 chmod 0640, $outFile;
 chown $uid, $gid, $outFile;
+
+my $instance = 'openvpn@'.$name;
+symlink('/usr/lib/systemd/system/openvpn@.service', '/usr/lib/systemd/system/'.$instance.'.service');
+system("systemctl -f enable $instance");
+system("systemctl start $instance");

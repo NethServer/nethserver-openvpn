@@ -16,3 +16,5 @@ fi
 if [ -f /var/lib/nethserver/certs/clients/$name.pem ]; then
     rm -f /var/lib/nethserver/certs/clients/$name.pem
 fi
+systemctl stop openvpn@$name
+systemctl -f disable openvpn@$name

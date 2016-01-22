@@ -82,8 +82,6 @@ event_actions($event,
     'nethserver-openvpn-genclient' => '30',
 );
 
-event_services($event, 'openvpn' => 'restart');
-
 
 #--------------------------------------------------
 # actions for nethserver-vpn-modify event
@@ -95,8 +93,6 @@ event_actions($event,
     'nethserver-openvpn-genclient' => '30',
 );
 
-event_services($event, 'openvpn' => 'restart');
-
 #--------------------------------------------------
 # actions for nethserver-vpn-delete event
 #--------------------------------------------------
@@ -106,8 +102,6 @@ $event = "nethserver-vpn-delete";
 event_actions($event,
     'nethserver-openvpn-delclient' => '30',
 );
-
-event_services($event, 'openvpn' => 'restart');
 
 #--------------------------------------------------
 # actions for nethserver-vpn-save event
