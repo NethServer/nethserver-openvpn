@@ -34,7 +34,7 @@ event_actions($event,
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
-event_services($event, 'openvpn' => 'restart');
+event_services($event, 'openvpn@host-to-net' => 'restart');
 
 #--------------------------------------------------
 # actions for nethserver-openvpn-save event
@@ -43,13 +43,13 @@ event_services($event, 'openvpn' => 'restart');
 $event = "nethserver-openvpn-save";
 
 event_actions($event, 
-    'nethserver-openvpn-delserver' => 30,
+    'nethserver-openvpn-server' => 30,
     'firewall-adjust' => '80',
     'trusted-networks-modify' => '95'
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
-event_services($event, 'openvpn' => 'restart');
+event_services($event, 'openvpn@host-to-net' => 'restart');
 
 
 #--------------------------------------------------
@@ -59,7 +59,7 @@ event_services($event, 'openvpn' => 'restart');
 $event = "interface-update";
 
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
-event_services($event, 'openvpn' => 'restart');
+event_services($event, 'openvpn@host-to-net' => 'restart');
 
 
 #--------------------------------------------------
@@ -69,7 +69,7 @@ event_services($event, 'openvpn' => 'restart');
 $event = "static-routes-save";
 
 templates2events("/etc/openvpn/host-to-net.conf", $event);
-event_services($event, 'openvpn' => 'restart');
+event_services($event, 'openvpn@host-to-net' => 'restart');
 
 
 #--------------------------------------------------
@@ -116,11 +116,11 @@ event_services($event, 'openvpn' => 'restart');
 $event = "nethserver-vpn-save";
 
 event_actions($event,
-    'nethserver-openvpn-delserver' => 20,
+    'nethserver-openvpn-server' => 20,
     'nethserver-openvpn-net2net' => '30',
     'trusted-networks-modify' => '95'
 );
 
-event_services($event, 'openvpn' => 'restart');
+event_services($event, 'openvpn@host-to-net' => 'restart');
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 

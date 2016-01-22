@@ -1,0 +1,5 @@
+#!/bin/bash
+
+status=`/sbin/e-smith/config getprop openvpn ServerStatus`
+
+/sbin/e-smith/config setprop openvpn@host-to-net status $status

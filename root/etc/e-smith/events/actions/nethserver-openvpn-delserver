@@ -1,9 +1,0 @@
-#!/bin/bash
-
-status=`/sbin/e-smith/config getprop openvpn ServerStatus`
-
-if [ $status = "disabled" ]; then
-   if [ -f /etc/openvpn/host-to-net.conf ]; then
-       rm -f /etc/openvpn/host-to-net.conf
-   fi
-fi
