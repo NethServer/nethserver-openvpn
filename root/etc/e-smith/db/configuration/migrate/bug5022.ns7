@@ -1,0 +1,20 @@
+{
+    #
+    # bug5022.ns7 -- migrate ns6 openvpn props into openvpn@
+    #
+
+    my $status = $DB->get_prop('openvpn', 'status');
+    my $serverStatus = $DB->get_prop('openvpn', 'ServerStatus') || 'disabled';
+    my $port = $DB->get_prop('openvpn', 'UDPPort');
+    if($status && $port) {
+        my $oldRecord = $DB->get('openvpn');
+        my %props = $oldRecord->props;
+        $props{'type'} = 'service';
+        $props{'status'} = ($status eq 'enabled' && $serverStatus eq 'enabled') ? 'enabled' : 'disabled';
+        delete $props{'ServerStatus'};
+        $DB->new_record('openvpn@host-to-net', \%props);
+        $oldRecord->delete();
+    }
+
+    '';
+}

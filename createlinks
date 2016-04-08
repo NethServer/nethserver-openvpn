@@ -42,8 +42,7 @@ event_services($event, 'openvpn@host-to-net' => 'restart');
 
 $event = "nethserver-openvpn-save";
 
-event_actions($event, 
-    'nethserver-openvpn-server' => 30,
+event_actions($event,
     'firewall-adjust' => '80',
     'trusted-networks-modify' => '95'
 );
@@ -110,7 +109,6 @@ event_actions($event,
 $event = "nethserver-vpn-save";
 
 event_actions($event,
-    'nethserver-openvpn-server' => 20,
     'nethserver-openvpn-net2net' => '30',
     'trusted-networks-modify' => '95'
 );

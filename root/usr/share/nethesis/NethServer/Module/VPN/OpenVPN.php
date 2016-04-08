@@ -63,19 +63,19 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $authModes = $this->createValidator()->memberOf(array('password', 'certificate','password-certificate'));
         $modes = $this->createValidator()->memberOf(array('bridged', 'routed'));
         $bridges = $this->createValidator()->memberOf(array_keys($this->bridges));
-        $this->declareParameter('ServerStatus', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ServerStatus'));
-        $this->declareParameter('AuthMode', $authModes, array('configuration', 'openvpn', 'AuthMode'));
-        $this->declareParameter('Mode', $modes, array('configuration', 'openvpn', 'Mode'));
-        $this->declareParameter('Bridge', $bridges, array('configuration', 'openvpn', 'BridgeName'));
-        $this->declareParameter('ClientToClient', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'ClientToClient'));
-        $this->declareParameter('RouteToVPN', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'RouteToVPN'));
-        $this->declareParameter('BridgeStartIP', Validate::IPv4, array('configuration', 'openvpn', 'BridgeStartIP'));
-        $this->declareParameter('BridgeEndIP', Validate::IPv4, array('configuration', 'openvpn', 'BridgeEndIP'));
-        $this->declareParameter('Netmask', Validate::NETMASK, array('configuration', 'openvpn', 'Netmask'));
-        $this->declareParameter('Network', "/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0)$/", array('configuration', 'openvpn', 'Network'));
-        $this->declareParameter('Compression', Validate::SERVICESTATUS, array('configuration', 'openvpn', 'Compression'));
-        $this->declareParameter('port', Validate::PORTNUMBER, array('configuration', 'openvpn', 'UDPPort')); 
-        $this->declareParameter('Remote', Validate::ANYTHING, array('configuration', 'openvpn', 'Remote')); 
+        $this->declareParameter('ServerStatus', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'status'));
+        $this->declareParameter('AuthMode', $authModes, array('configuration', 'openvpn@host-to-net', 'AuthMode'));
+        $this->declareParameter('Mode', $modes, array('configuration', 'openvpn@host-to-net', 'Mode'));
+        $this->declareParameter('Bridge', $bridges, array('configuration', 'openvpn@host-to-net', 'BridgeName'));
+        $this->declareParameter('ClientToClient', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'ClientToClient'));
+        $this->declareParameter('RouteToVPN', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'RouteToVPN'));
+        $this->declareParameter('BridgeStartIP', Validate::IPv4, array('configuration', 'openvpn@host-to-net', 'BridgeStartIP'));
+        $this->declareParameter('BridgeEndIP', Validate::IPv4, array('configuration', 'openvpn@host-to-net', 'BridgeEndIP'));
+        $this->declareParameter('Netmask', Validate::NETMASK, array('configuration', 'openvpn@host-to-net', 'Netmask'));
+        $this->declareParameter('Network', "/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0)$/", array('configuration', 'openvpn@host-to-net', 'Network'));
+        $this->declareParameter('Compression', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'Compression'));
+        $this->declareParameter('port', Validate::PORTNUMBER, array('configuration', 'openvpn@host-to-net', 'UDPPort'));
+        $this->declareParameter('Remote', Validate::ANYTHING, array('configuration', 'openvpn@host-to-net', 'Remote'));
 
     }
 
