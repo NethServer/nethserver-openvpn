@@ -1,0 +1,8 @@
+{
+    #
+    # 00template_vars
+    #
+    
+    %openvpn = $DB->get('openvpn@host-to-net')->props;
+    '';
+}
