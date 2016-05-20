@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.3.0
+Version: 1.3.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -40,6 +40,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Fri May 20 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.1-1
+- Openvpn n2n not working after restore - Bug #3387 [NethServer]
+
 * Fri Nov 20 2015 Davide Principi <davide.principi@nethesis.it> - 1.3.0-1
 - Public IP text field for OpenVPN - Enhancement #2635 [NethServer]
 
