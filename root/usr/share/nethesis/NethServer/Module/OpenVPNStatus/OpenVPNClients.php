@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\Dashboard\VPN;
+namespace NethServer\Module\OpenVPNStatus;
 
 /*
  * Copyright (C) 2013 Nethesis S.r.l.
@@ -46,7 +46,7 @@ class OpenVPNClients extends \Nethgui\Controller\TableController
         $this
             ->setTableAdapter(new \Nethgui\Adapter\LazyLoaderAdapter(array($this, 'readClients')))
             ->setColumns($columns)
-            ->addRowAction(new \NethServer\Module\Dashboard\VPN\OpenVPNClients\Kill())
+            ->addRowAction(new \NethServer\Module\OpenVPNStatus\OpenVPNClients\Kill())
 
         ;
 

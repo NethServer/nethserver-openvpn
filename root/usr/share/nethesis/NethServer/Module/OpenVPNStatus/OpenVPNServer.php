@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\Dashboard\VPN;
+namespace NethServer\Module\OpenVPNStatus;
 
 /*
  * Copyright (C) 2013 Nethesis S.r.l.

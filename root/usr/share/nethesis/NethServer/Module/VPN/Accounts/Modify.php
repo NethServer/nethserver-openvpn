@@ -32,11 +32,15 @@ class Modify extends \Nethgui\Controller\Table\Modify
 {
     public function initialize()
     {
+        $nv = $this->createValidator()->orValidator(
+                  $this->createValidator(Validate::USERNAME), 
+                  $this->createValidator(Validate::HOSTADDRESS)
+        );
         $parameterSchema = array(
-            array('name', $this->createValidator()->orValidator($this->createValidator(Validate::USERNAME), $this->createValidator(Validate::HOSTADDRESS))->platform('vpn-create'), \Nethgui\Controller\Table\Modify::KEY),
+            array('name', $nv, \Nethgui\Controller\Table\Modify::KEY),
             array('VPNRemoteNetmask', Validate::IPv4_NETMASK_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
             array('VPNRemoteNetwork',  Validate::IPv4_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
-            array('User', $this->createValidator()->orValidator($this->createValidator(Validate::USERNAME), $this->createValidator(Validate::EMPTYSTRING)), \Nethgui\Controller\Table\Modify::FIELD), // used only in UI
+            array('User', VALIDATE::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD), // used only in UI
             array('AccountType', $this->createValidator()->memberOf(array('user','vpn')), \Nethgui\Controller\Table\Modify::FIELD) //used only in UI
         );
 
@@ -55,10 +59,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
         );
         $view->setTemplate($templates[$this->getIdentifier()]);
 
-        $users = $this->getPlatform()->getDatabase('accounts')->getAll('user');
         $tmp = array();
-        foreach($users as $user => $props) {
-            if (!isset($props['VPNClientAccess']) || $props['VPNClientAccess'] == 'no' ) {
+        foreach($this->getParent()->getUsers() as $user => $props) {
+            $vpn_access = $this->getPlatform()->getDatabase('accounts')->getProp($user, 'VPNClientAccess');
+            if (!$vpn_access || $vpn_access == 'no' ) {
                 $tmp[] = array($user,$user);
             }
         }
@@ -89,7 +93,8 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
     private function updateUser($name, $status, $network = '', $netmask = '')
     {
-        $this->getPlatform()->getDatabase('accounts')->setProp($name, 
+        
+        $this->getPlatform()->getDatabase('accounts')->setKey($name, 'vpn-user',
             array('VPNClientAccess' => $status, 'VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask)
         );
     }

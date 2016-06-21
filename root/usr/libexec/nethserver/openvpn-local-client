@@ -19,7 +19,7 @@ my $name = shift || die ("Please insert an account name");
 my $cdb = esmith::ConfigDB->open_ro();
 
 my $OUT = "######### NethServer OpenVPN client configuration #########\n\n";
-my $openvpn = $cdb->get('openvpn');
+my $openvpn = $cdb->get('openvpn@host-to-net');
 my $SystemName = $cdb->get('SystemName')->value();
 my $DomainName = $cdb->get('DomainName')->value();
 my $remote = $openvpn->prop('Remote') || "";

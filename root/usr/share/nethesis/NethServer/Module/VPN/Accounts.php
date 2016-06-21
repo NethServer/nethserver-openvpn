@@ -31,6 +31,17 @@ use Nethgui\System\PlatformInterface as Validate;
 class Accounts extends \Nethgui\Controller\TableController
 {
     private $certindex = "/var/lib/nethserver/certs/certindex";
+    private $users = array();
+
+    public function getUsers()
+    {
+        if(!$this->users) {
+            $provider = new \NethServer\Tool\UserProvider($this->getPlatform());
+            $this->users = $provider->getUsers();
+        }
+        return $this->users;
+    }
+
 
     public function initialize()
     {
@@ -80,9 +91,10 @@ class Accounts extends \Nethgui\Controller\TableController
         $loader = new \ArrayObject();
 
         // get all users with VPNClientAccess enabled
-        $users = $this->getPlatform()->getDatabase('accounts')->getAll('user');
+        $users = $this->getUsers();
         foreach($users as $user => $props) {
-            if (isset($props['VPNClientAccess']) && $props['VPNClientAccess'] == 'yes' ) {
+            $vpn_access = $this->getPlatform()->getDatabase('accounts')->getProp($user, 'VPNClientAccess');
+            if ($vpn_access && $vpn_access == 'yes' ) {
                 $loader[$user] = array(
                     'name' => $user,
                     'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],

@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\Dashboard;
+namespace NethServer\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -23,10 +23,15 @@ namespace NethServer\Module\Dashboard;
 /**
  * VPN dashboard with plugin behaviour
  */
-class VPN extends \Nethgui\Controller\ListComposite
+class OpenVPNStatus extends \Nethgui\Controller\ListComposite
 {
   
-    public $sortId = 50;
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
+    {
+        return new \NethServer\Tool\CustomModuleAttributesProvider($attributes, array(
+            'category' => 'Status')
+        );
+    }
 
     public function initialize()
     {

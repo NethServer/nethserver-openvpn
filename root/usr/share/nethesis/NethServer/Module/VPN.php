@@ -28,7 +28,7 @@ class VPN extends \Nethgui\Controller\TabsController
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
-        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Configuration', 20);
+        return \Nethgui\Module\SimpleModuleAttributesProvider::extendModuleAttributes($base, 'Gateway', 20);
     }
 
     public function initialize()
