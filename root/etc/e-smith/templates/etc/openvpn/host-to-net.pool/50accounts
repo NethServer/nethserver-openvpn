@@ -5,7 +5,7 @@
 	or die "Couldnt' open AccountsDB\n";
 
     my @vpn_accounts = $adb->get_all_by_prop( type => 'vpn' );
-    foreach ($adb->get_all_by_prop( type => 'user' )) {
+    foreach ($adb->get_all_by_prop( type => 'vpn-user' )) {
         my $enabled = $_->prop('VPNClientAccess') || next;
         if ($enabled eq 'yes') {
             push(@vpn_accounts, $_);

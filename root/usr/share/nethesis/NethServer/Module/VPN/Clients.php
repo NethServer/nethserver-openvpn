@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\Dashboard\VPN\OpenVPNClients;
+namespace NethServer\Module\VPN;
 
 /*
  * Copyright (C) 2013 Nethesis S.r.l.
@@ -23,34 +23,34 @@ namespace NethServer\Module\Dashboard\VPN\OpenVPNClients;
 use Nethgui\System\PlatformInterface as Validate;
 
 /**
- * Download VPN client configuration
+ * Manage VPN clients (tunnels).
  *
  * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
  * @since 1.0
  */
-class Kill extends \Nethgui\Controller\Table\RowAbstractAction
+class Clients extends \Nethgui\Controller\TableController
 {
-    public function bind(\Nethgui\Controller\RequestInterface $request)
-    {
-        parent::bind($request);
-    }
-
-    public function process() { 
-        $name = \Nethgui\array_head($this->getRequest()->getPath());
-        $this->getPlatform()->exec('/usr/libexec/nethserver/openvpn-kill /var/spool/openvpn/host-to-net '.$name);
-    }
     public function initialize()
     {
-        $parameterSchema = array(
-            array('name', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::KEY),
+
+        $columns = array(
+            'Key',
+            'VPNType',
+            'RemoteHost',
+            'Actions'
         );
 
-        $this->setSchema($parameterSchema);
+        $this
+            ->setTableAdapter($this->getPlatform()->getTableAdapter('vpn','tunnel'))
+            ->setColumns($columns)
+            ->addTableAction(new \NethServer\Module\VPN\Clients\Modify('create'))
+            ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
+            ->addRowAction(new \NethServer\Module\VPN\Clients\Modify('update'))
+            ->addRowAction(new \NethServer\Module\VPN\Clients\Modify('delete'))
 
-    }
+        ;
 
-    public function prepareView(\Nethgui\View\ViewInterface $view)
-    {
+        parent::initialize();
     }
 
 }
