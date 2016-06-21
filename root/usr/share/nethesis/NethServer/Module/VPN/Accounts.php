@@ -49,8 +49,8 @@ class Accounts extends \Nethgui\Controller\TableController
         $columns = array(
             'Key',
             'Expiration',
-            'VPNRemoteNetwork',
-            'VPNRemoteNetmask',
+            'OpenVpnIp',
+            'RemoteNetwork',
             'Actions'
         );
 
@@ -99,6 +99,7 @@ class Accounts extends \Nethgui\Controller\TableController
                     'name' => $user,
                     'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],
                     'VPNRemoteNetmask' => $props['VPNRemoteNetmask'],
+                    'OpenVpnIp' => $props['OpenVpnIp'],
                 );
             }
         }
@@ -109,7 +110,8 @@ class Accounts extends \Nethgui\Controller\TableController
             $loader[$user] = array(
                 'name' => $user,
                 'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],
-                'VPNRemoteNetmask' => $props['VPNRemoteNetmask']
+                'VPNRemoteNetmask' => $props['VPNRemoteNetmask'],
+                'OpenVpnIp' => $props['OpenVpnIp'],
             );
         }
 
@@ -132,4 +134,11 @@ class Accounts extends \Nethgui\Controller\TableController
         return $loader;
     }
 
+    public function prepareViewForColumnRemoteNetwork(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        if (isset($values['VPNRemoteNetwork']) && $values['VPNRemoteNetwork']) {
+            return $values['VPNRemoteNetwork'].'/'.$values['VPNRemoteNetmask'];
+        }
+        return '';
+    }
 }

@@ -36,10 +36,13 @@ class Modify extends \Nethgui\Controller\Table\Modify
                   $this->createValidator(Validate::USERNAME), 
                   $this->createValidator(Validate::HOSTADDRESS)
         );
+        $ipv = $this->createValidator()->orValidator($this->createValidator(Validate::IPv4), $this->createValidator(Validate::EMPTYSTRING));
+
         $parameterSchema = array(
             array('name', $nv, \Nethgui\Controller\Table\Modify::KEY),
             array('VPNRemoteNetmask', Validate::IPv4_NETMASK_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
             array('VPNRemoteNetwork',  Validate::IPv4_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
+            array('OpenVpnIp',  $ipv, \Nethgui\Controller\Table\Modify::FIELD),
             array('User', VALIDATE::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD), // used only in UI
             array('AccountType', $this->createValidator()->memberOf(array('user','vpn')), \Nethgui\Controller\Table\Modify::FIELD) //used only in UI
         );
@@ -91,18 +94,18 @@ class Modify extends \Nethgui\Controller\Table\Modify
     }
 
 
-    private function updateUser($name, $status, $network = '', $netmask = '')
+    private function updateUser($name, $status, $network = '', $netmask = '', $ip = '')
     {
         
         $this->getPlatform()->getDatabase('accounts')->setKey($name, 'vpn-user',
-            array('VPNClientAccess' => $status, 'VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask)
+            array('VPNClientAccess' => $status, 'VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip)
         );
     }
     
-    private function updateVPNAccount($name, $network, $netmask)
+    private function updateVPNAccount($name, $network, $netmask, $ip)
     {
         $this->getPlatform()->getDatabase('accounts')->setKey($name, 'vpn',  
-            array('VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask)
+            array('VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip)
         );
     }
 
@@ -127,9 +130,9 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
         if ($this->getIdentifier() === 'create' && $this->getRequest()->isMutation()) {
             if ($this->parameters['AccountType'] === 'user' ) {
-                $this->updateUser($cn, 'yes', $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask']);
+                $this->updateUser($cn, 'yes', $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
             } else {
-                $this->updateVPNAccount($cn, $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask']);
+                $this->updateVPNAccount($cn, $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
             }
             $this->generateCert($cn);
         }
@@ -137,9 +140,9 @@ class Modify extends \Nethgui\Controller\Table\Modify
         if ($this->getIdentifier() === 'update' && $this->getRequest()->isMutation()) {
             $type = $this->getPlatform()->getDatabase('accounts')->getType($cn);
             if ($type === 'user') {
-                $this->updateUser($cn, 'yes', $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask']);
+                $this->updateUser($cn, 'yes', $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
             } else {
-                $this->updateVPNAccount($cn, $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask']);
+                $this->updateVPNAccount($cn, $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
             }
         }
         

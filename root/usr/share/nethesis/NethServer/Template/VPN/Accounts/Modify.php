@@ -10,14 +10,8 @@ if ($view->getModule()->getIdentifier() == 'update') {
             ->insert($view->textInput('name')));
     $panel->insert($view->fieldsetSwitch('AccountType', 'user',  $view::FIELDSET_EXPANDABLE)
             ->insert($view->selector('User', $view::SELECTOR_DROPDOWN)));
-
-/*    $panel->insert($view->fieldset()->setAttribute('template', $T('AccountType_label'))
-        ->insert($view->fieldsetSwitch('AccountType', 'vpn', $view::FIELDSETSWITCH_EXPANDABLE)
-            ->insert($view->textInput('name')))
-        ->insert($view->fieldsetSwitch('AccountType', 'user', $view::FIELDSETSWITCH_EXPANDABLE)
-            ->insert($view->selector('User', $view::SELECTOR_DROPDOWN))));*/
 }
-
+$panel->insert($view->textInput('OpenVpnIp'));
 
 $panel->insert($view->fieldset()->setAttribute('template', $T('RemoteNetwork_label'))
         ->insert($view->textInput('VPNRemoteNetwork'))

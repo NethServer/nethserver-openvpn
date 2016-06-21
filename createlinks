@@ -74,26 +74,6 @@ templates2events("/etc/openvpn/host-to-net.conf", $event);
 event_services($event, 'openvpn@host-to-net' => 'restart');
 
 
-#--------------------------------------------------
-# actions for nethserver-vpn-create event
-#--------------------------------------------------
-
-$event = "nethserver-vpn-create";
-
-event_actions($event,
-    'nethserver-openvpn-genclient' => '30',
-);
-
-
-#--------------------------------------------------
-# actions for nethserver-vpn-modify event
-#--------------------------------------------------
-
-$event = "nethserver-vpn-modify";
-
-event_actions($event,
-    'nethserver-openvpn-genclient' => '30',
-);
 
 #--------------------------------------------------
 # actions for nethserver-vpn-delete event
@@ -103,7 +83,9 @@ $event = "nethserver-vpn-delete";
 
 event_actions($event,
     'nethserver-openvpn-delclient' => '30',
+    'firewall-adjust' => '80',
 );
+templates2events("/etc/openvpn/host-to-net.pool",  $event);
 
 #--------------------------------------------------
 # actions for nethserver-vpn-save event
@@ -118,6 +100,7 @@ event_actions($event,
 
 event_services($event, 'openvpn@host-to-net' => 'restart');
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
+templates2events("/etc/openvpn/host-to-net.pool",  $event);
 
 #--------------------------------------------------
 # actions for nethserver-vpn-create event
@@ -126,8 +109,12 @@ templates2events("/etc/openvpn/host-to-net.conf",  $event);
 $event = "nethserver-vpn-create";
 
 event_actions($event,
+    'nethserver-openvpn-genclient' => '30',
     'firewall-adjust' => '80',
 );
+
+templates2events("/etc/openvpn/host-to-net.pool",  $event);
+
 
 #--------------------------------------------------
 # actions for nethserver-vpn-modify event
@@ -136,21 +123,14 @@ event_actions($event,
 $event = "nethserver-vpn-modify";
 
 event_actions($event,
+    'nethserver-openvpn-genclient' => '30',
     'firewall-adjust' => '80',
 );
-
-#--------------------------------------------------
-# actions for nethserver-vpn-delete event
-#--------------------------------------------------
-
-$event = "nethserver-vpn-delete";
-
-event_actions($event,
-    'firewall-adjust' => '80',
-);
+templates2events("/etc/openvpn/host-to-net.pool",  $event);
 
 # actions for user-create validator
 validator_actions('vpn-create', qw(
                   uniq-account 20
 ));
+
 
