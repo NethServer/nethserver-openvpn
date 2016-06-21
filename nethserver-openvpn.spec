@@ -8,7 +8,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildArch: noarch
 
 Requires: openvpn, bridge-utils
-Requires: nethserver-firewall-base, nethserver-vpn
+Requires: nethserver-firewall-base
 
 BuildRequires: perl
 BuildRequires: nethserver-devtools 
@@ -28,7 +28,10 @@ mv -v lib/perl/NethServer root%{perl_vendorlib}
 %install
 rm -rf %{buildroot}
 (cd root; find . -depth -print | cpio -dump %{buildroot})
-%{genfilelist} %{buildroot} --dir /var/spool/openvpn 'attr(0700,srvmgr,srvmgr)' --dir /etc/openvpn/ccd 'attr(0740,srvmgr,srvmgr)' > %{name}-%{version}-filelist
+%{genfilelist} %{buildroot} \
+  --dir /var/spool/openvpn 'attr(0700,srvmgr,srvmgr)' \
+  --dir /var/lib/nethserver/certs/clients 'attr(0740,srvmgr,adm)' \
+  --dir /etc/openvpn/ccd 'attr(0740,srvmgr,srvmgr)' > %{name}-%{version}-filelist
 echo "%doc COPYING" >> %{name}-%{version}-filelist
 
 %post

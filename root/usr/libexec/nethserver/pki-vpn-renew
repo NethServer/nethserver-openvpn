@@ -1,0 +1,99 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::ConfigDB;
+use Getopt::Std;
+
+my %opts;
+my $crtFile = "/etc/pki/tls/certs/NSRV.crt";
+my $keyFile = "/etc/pki/tls/private/NSRV.key";
+my $outputDir = "/var/lib/nethserver/certs";
+my $csrOut = "";
+my $crtOut = "";
+my $keyOut = "";
+my $pkcsOut = "";
+my $commonName = "";
+my $errors = 0;
+
+sub die_help()
+{
+    print "
+pki-vpn-renew: Renew client certificate.
+
+Usage:
+   pki-vpn-renew [-h] <commonName>
+
+   -h this help
+\n";
+   exit 1;
+}
+
+getopts('hd', \%opts);
+
+if($opts{'h'}) { die_help() }
+
+if ( $#ARGV < 0 ) {
+   die_help();
+} else {
+    $commonName = $ARGV[0];
+    $csrOut = "$outputDir/$commonName.csr";
+    $keyOut = "$outputDir/$commonName.key";
+    $crtOut = "$outputDir/$commonName.crt";
+    $pkcsOut = "$outputDir/$commonName.p12";
+}
+
+if ( ! -r $keyFile ) {
+    die("Could not read $keyFile\n");
+}
+if ( ! -r $crtFile ) {
+    die("Could not read $crtFile\n");
+}
+
+my $ret = system("/usr/bin/openssl verify -CAfile $crtFile -crl_check -CRLfile $outputDir/crl.pem $crtOut 2>1 | /bin/grep -q revoked");
+if ($ret == 0) {
+    die("Certificate $commonName already revoked!\n");
+}
+
+# Revoke certificate
+$errors += system("/usr/bin/openssl ca -revoke  $crtOut  -config $outputDir/ca.cnf");
+$errors += system("/usr/bin/openssl ca -gencrl -out  $outputDir/crl.pem -config $outputDir/ca.cnf");
+
+my $configDb = esmith::ConfigDB->open_ro() || die("Could not open ConfigDB");
+my %conf = $configDb->as_hash();
+my $pki = $conf{pki};
+my $certificateDuration = $pki->{CertificateDuration} || "30";
+if ($certificateDuration < 7) {
+    warn "WARNING: pki CertificateDuration is less than 7 days! Check configuration DB.\n";
+}
+
+# Generate signed certificate
+$errors += system("/usr/bin/openssl ca -notext  -in $csrOut -out $crtOut -days $certificateDuration -batch -config $outputDir/ca.cnf");
+
+# Generate pkcs12 certificate
+$errors += system("/usr/bin/openssl pkcs12 -export -in $crtOut -inkey $keyOut -certfile $crtFile -name '$commonName' -out $pkcsOut -password pass:$commonName");
+
+my $gid = getgrnam('adm');
+chown(0,$gid,$keyOut);
+chmod(0640,$keyOut);
+
+exit (1 ? $errors > 0 : 0);

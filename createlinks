@@ -31,10 +31,12 @@ my $event = "nethserver-openvpn-update";
 
 event_actions($event, 
     'initialize-default-databases' => '00',
+    'nethserver-vpn-conf' => '20',
     'nethserver-openvpn-net2net' => '40',
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
+templates2events("/etc/sudoers",  $event);
 event_services($event, 'openvpn@host-to-net' => 'restart');
 
 #--------------------------------------------------
@@ -116,4 +118,39 @@ event_actions($event,
 
 event_services($event, 'openvpn@host-to-net' => 'restart');
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
+
+#--------------------------------------------------
+# actions for nethserver-vpn-create event
+#--------------------------------------------------
+
+$event = "nethserver-vpn-create";
+
+event_actions($event,
+    'firewall-adjust' => '80',
+);
+
+#--------------------------------------------------
+# actions for nethserver-vpn-modify event
+#--------------------------------------------------
+
+$event = "nethserver-vpn-modify";
+
+event_actions($event,
+    'firewall-adjust' => '80',
+);
+
+#--------------------------------------------------
+# actions for nethserver-vpn-delete event
+#--------------------------------------------------
+
+$event = "nethserver-vpn-delete";
+
+event_actions($event,
+    'firewall-adjust' => '80',
+);
+
+# actions for user-create validator
+validator_actions('vpn-create', qw(
+                  uniq-account 20
+));
 

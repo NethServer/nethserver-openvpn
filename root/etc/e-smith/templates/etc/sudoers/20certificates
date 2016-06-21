@@ -1,0 +1,7 @@
+{
+    push @cmnd_alias_httpd_admin, qw(
+        /usr/libexec/nethserver/pki-vpn-gencert
+        /usr/libexec/nethserver/pki-vpn-revoke
+    );
+    '';
+}
