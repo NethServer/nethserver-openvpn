@@ -14,7 +14,7 @@ if ($view['server']['status'] == 'enabled') {
 
 } else {
     echo "<div class='vpn-item'>";
-    echo "<h2>".$T('vpn_disabled')."</h2>";
+    echo "<h2>".$T('ovpn_disabled')."</h2>";
     echo "</div>";
 
 }
