@@ -34,8 +34,8 @@ class OpenVPNServer extends \Nethgui\Controller\AbstractController
     
     private function readVPNs() {
          $vpn = array();
-         $openvpn = $this->getPlatform()->getDatabase('configuration')->getKey('openvpn'); 
-         $vpn['server']['status'] = $openvpn['ServerStatus'];
+         $openvpn = $this->getPlatform()->getDatabase('configuration')->getKey('openvpn@host-to-net'); 
+         $vpn['server']['status'] = $openvpn['status'];
          $vpn['server']['port'] = $openvpn['UDPPort'];
          $vpn['server']['auth'] = $openvpn['AuthMode'];
          $vpn['server']['mode'] = $openvpn['Mode'];
