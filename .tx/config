@@ -1,19 +1,19 @@
 [main]
 host = https://www.transifex.com
 
-[nethserver.Dashboard_VPN_OpenVPNClients]
+[nethserver-v6.Dashboard_VPN_OpenVPNClients]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_VPN_OpenVPNClients.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.Dashboard_VPN_OpenVPNServer]
+[nethserver-v6.Dashboard_VPN_OpenVPNServer]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_VPN_OpenVPNServer.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
 
-[nethserver.VPN_OpenVPN]
+[nethserver-v6.VPN_OpenVPN]
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_VPN_OpenVPN.php
 source_lang = en
 type = PHP_ALT_ARRAY
