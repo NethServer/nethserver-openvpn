@@ -2,7 +2,7 @@
     $mode = $openvpn{'Mode'} || 'routed';
     $routeToVPN = $openvpn{'RouteToVPN'} || 'disabled';
     if ($mode eq 'routed') {
-        $OUT.="dev tun\n";
+        $OUT.="dev tunrw\n";
         if(defined $openvpn{Network} and defined $openvpn{Netmask})
         {
     	    $OUT .= "server ".$openvpn{Network}." ".$openvpn{Netmask}."\n";
