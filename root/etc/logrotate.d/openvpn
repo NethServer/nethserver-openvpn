@@ -1,0 +1,6 @@
+/var/log/openvpn/openvpn.log {
+ missingok
+ notifempty
+ copytruncate
+ create 0600 root root
+}
