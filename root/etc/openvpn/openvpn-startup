@@ -1,14 +1,14 @@
 #!/bin/sh
 
-mode=$(/sbin/e-smith/config getprop openvpn Mode)
+mode=$(/sbin/e-smith/config getprop openvpn@host-to-net Mode)
 
 if [ $mode != "bridged" ]; then
     exit 0
 fi
 
-br=$(/sbin/e-smith/config getprop openvpn BridgeName)
+br=$(/sbin/e-smith/config getprop openvpn@host-to-net BridgeName)
 
-tap=$(/sbin/e-smith/config getprop openvpn TapInterface)
+tap=$(/sbin/e-smith/config getprop openvpn@host-to-net TapInterface)
 
 /usr/sbin/openvpn --mktun --dev $tap
 
