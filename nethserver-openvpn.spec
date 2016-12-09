@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.4.2
+Version: 1.4.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -43,6 +43,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Fri Dec 09 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.3-1
+- OpenVPN: bridged mode doesn't work - NethServer/dev#5173
+
 * Tue Oct 04 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.2-1
 - Handle advanced static routes - NethServer/dev#5079
 
