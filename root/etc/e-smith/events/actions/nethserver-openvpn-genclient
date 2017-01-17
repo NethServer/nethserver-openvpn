@@ -85,6 +85,9 @@ chmod 0640, $outFile;
 chown $uid, $gid, $outFile;
 
 my $instance = 'openvpn@'.$name;
-symlink('/usr/lib/systemd/system/openvpn@.service', '/usr/lib/systemd/system/'.$instance.'.service');
-system("systemctl -f enable $instance");
-system("systemctl start $instance");
+my $lfh;
+open($lfh, '>', '/etc/systemd/system/openvpn@.service.d/'.$name.'.conf') or die "Unable to create $instance : $!";
+close($lfh) or die "Unable to close $instance file:  $!";
+system("/usr/bin/systemctl daemon-reload");
+system("/usr/bin/systemctl -f enable $instance");
+system("/usr/bin/systemctl start $instance");

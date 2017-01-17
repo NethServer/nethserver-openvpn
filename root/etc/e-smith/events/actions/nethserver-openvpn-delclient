@@ -18,3 +18,4 @@ if [ -f /var/lib/nethserver/certs/clients/$name.pem ]; then
 fi
 systemctl stop openvpn@$name
 systemctl -f disable openvpn@$name
+rm -f "/etc/systemd/system/openvpn@.service.d/"$name".conf"
