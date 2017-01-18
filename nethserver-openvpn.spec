@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.4.3
+Version: 1.4.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -45,6 +45,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Wed Jan 18 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.4-1
+- OpenVPN: client not starting at boot - Bug NethServer/dev#5198
+
 * Fri Dec 09 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.3-1
 - OpenVPN: bridged mode doesn't work - NethServer/dev#5173
 
