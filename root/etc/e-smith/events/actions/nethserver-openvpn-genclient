@@ -90,4 +90,4 @@ open($lfh, '>', '/etc/systemd/system/openvpn@.service.d/'.$name.'.conf') or die 
 close($lfh) or die "Unable to close $instance file:  $!";
 system("/usr/bin/systemctl daemon-reload");
 system("/usr/bin/systemctl -f enable $instance");
-system("/usr/bin/systemctl start $instance");
+system("/usr/bin/systemctl restart $instance");
