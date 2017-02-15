@@ -73,7 +73,6 @@ Authentication
 
     * Certificate: paste the content of the certificate inside the text area.
       The text must contain both client and CA (Certification Authority) certificates.
-    * User and password: insert user name and password
     * User, password and certificate: insert user name password and
       past the content of  both client and CA (Certification Authority) certificates
     * Pre-shared key: encryption key shared between client and server (unsafe)
