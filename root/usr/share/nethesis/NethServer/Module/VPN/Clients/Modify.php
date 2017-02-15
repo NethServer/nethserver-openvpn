@@ -42,7 +42,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('User', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
             array('Compression', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
             array('VPNType', $this->createValidator()->memberOf(array('openvpn','ipsec')), \Nethgui\Controller\Table\Modify::FIELD),
-            array('AuthMode', $this->createValidator()->memberOf(array('certificate','password','psk','password-certificate')), \Nethgui\Controller\Table\Modify::FIELD)
+            array('AuthMode', $this->createValidator()->memberOf(array('certificate','psk','password-certificate')), \Nethgui\Controller\Table\Modify::FIELD)
         );
         
         $this->declareParameter('Crt', Validate::ANYTHING, $this->getPlatform()->getMapAdapter(
@@ -135,7 +135,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         if ($event == "update") {
             $event = "modify";
         }
-        $this->getPlatform()->signalEvent(sprintf('nethserver-vpn-%s@post-process', $event), array($this->parameters['name']));
+        $this->getPlatform()->signalEvent(sprintf('nethserver-vpn-%s &', $event), array($this->parameters['name']));
     }
 
 }

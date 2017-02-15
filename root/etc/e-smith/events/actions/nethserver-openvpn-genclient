@@ -44,8 +44,8 @@ $OUT .= "rport $RemotePort \n";
 $OUT .= "float\n";
 $OUT .= "nobind\n";
 
-my $mode = $openvpn->prop('AuthMode') || 'password';
-if ($mode eq 'password' or $mode eq 'password-certificate') {
+my $mode = $openvpn->prop('AuthMode') || 'certificate';
+if ($mode eq 'password-certificate') {
     $OUT .= "client\n";
     $OUT.="auth-user-pass $authFile\n";
     $OUT .= "ca $cert\n";
