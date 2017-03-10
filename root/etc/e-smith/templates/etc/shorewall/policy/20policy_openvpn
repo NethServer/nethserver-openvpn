@@ -8,7 +8,7 @@ $FW            ovpn           ACCEPT
 {
     use esmith::NetworksDB;
     my $ndb = esmith::NetworksDB->open_ro();
-    my $routeToVPN = $openvpn{'RouteToVPN'} || 'disabled';
+    my $routeToVPN = ${'openvpn@host-to-net'}{'RouteToVPN'} || 'disabled';
     my $nfqueue = $firewall{'nfqueue'} || 'disabled';
     my $action = 'ACCEPT';
     if ($nfqueue eq 'enabled') {
