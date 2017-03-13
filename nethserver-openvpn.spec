@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.4.5
+Version: 1.4.6
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -45,6 +45,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Wed Feb 15 2017 Davide Principi <davide.principi@nethesis.it> - 1.4.6-1
+- OpenVPN: remove net2net client mode with user name and password authentication - NethServer/dev#5219
+
 * Tue Feb 14 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.5-1
 - OpenVPN: clients not restarted after modification - Bug NethServer/dev#5213
 
