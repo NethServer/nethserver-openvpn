@@ -40,8 +40,8 @@ sub openvpn_networks
         return '';
     }
 
-    my $net = $config_db->get_prop('openvpn', 'Network') || return '';
-    my $msk = $config_db->get_prop('openvpn', 'Netmask') || return '';
+    my $net = $config_db->get_prop('openvpn@host-to-net', 'Network') || return '';
+    my $msk = $config_db->get_prop('openvpn@host-to-net', 'Netmask') || return '';
     my $cidr = esmith::util::computeLocalNetworkShortSpec($net, $msk);
 
     if (Net::IPv4Addr::ipv4_in_network($cidr, $value)) {
