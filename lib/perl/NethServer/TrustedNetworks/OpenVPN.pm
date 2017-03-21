@@ -40,8 +40,8 @@ sub openvpn_networks
         return;
     }
 
-    my $net = $config_db->get_prop('openvpn', 'Network') || '';
-    my $msk = $config_db->get_prop('openvpn', 'Netmask') || '';
+    my $net = $config_db->get_prop('openvpn@host-to-net', 'Network') || '';
+    my $msk = $config_db->get_prop('openvpn@host-to-net', 'Netmask') || '';
 
     if(! $net || ! $msk) {
         return;
