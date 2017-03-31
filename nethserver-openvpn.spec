@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.4.7
+Version: 1.4.8
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -45,6 +45,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Fri Mar 31 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.8-1
+- OpenVPN: road warrior network not added to trusted networks - NethServer/dev#5246
+
 * Tue Mar 14 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.7-1
 - OpenVPN: no internet access if Route all client traffic through VPN is on - Bug NethServer/dev#5238
 
