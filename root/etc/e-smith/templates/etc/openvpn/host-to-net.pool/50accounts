@@ -1,8 +1,8 @@
 {
-    use esmith::AccountsDB;
+    use esmith::ConfigDB;
 
-    my $adb = esmith::AccountsDB->open_ro() 
-	or die "Couldnt' open AccountsDB\n";
+    my $adb = esmith::ConfigDB->open_ro('vpn') 
+	or die "Couldnt' open VPN DB\n";
 
     my @vpn_accounts = $adb->get_all_by_prop( type => 'vpn' );
     foreach ($adb->get_all_by_prop( type => 'vpn-user' )) {
