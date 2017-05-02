@@ -44,7 +44,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('VPNRemoteNetwork',  Validate::IPv4_OR_EMPTY, \Nethgui\Controller\Table\Modify::FIELD),
             array('OpenVpnIp',  $ipv, \Nethgui\Controller\Table\Modify::FIELD),
             array('User', VALIDATE::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD), // used only in UI
-            array('AccountType', $this->createValidator()->memberOf(array('user','vpn')), \Nethgui\Controller\Table\Modify::FIELD) //used only in UI
+            array('AccountType', $this->createValidator()->memberOf(array('vpn-user','vpn')), \Nethgui\Controller\Table\Modify::FIELD) //used only in UI
         );
 
         $this->setSchema($parameterSchema);
@@ -94,60 +94,32 @@ class Modify extends \Nethgui\Controller\Table\Modify
     }
 
 
-    private function updateUser($name, $status, $network = '', $netmask = '', $ip = '')
-    {
-        
-        $this->getPlatform()->getDatabase('vpn')->setKey($name, 'vpn-user',
-            array('VPNClientAccess' => $status, 'VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip)
-        );
-    }
-    
-    private function updateVPNAccount($name, $network, $netmask, $ip)
-    {
-        $this->getPlatform()->getDatabase('vpn')->setKey($name, 'vpn',  
-            array('VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip)
-        );
-    }
-
-    private function deleteAccount($name)
-    {
-        $type = $this->getPlatform()->getDatabase('vpn')->getType($name);
-        if ($type === 'vpn') {  //delete vpn account
-            $this->getPlatform()->getDatabase('vpn')->deleteKey($name, 'vpn');  
-        } else {
-            $this->updateUser($name, 'no');
-        }
-    }
 
     public function process()
     {
         $cn = '';
-        if ($this->parameters['AccountType'] === 'user' ) {
+        if ($this->parameters['AccountType'] === 'vpn-user' ) {
             $cn = $this->parameters['User'];
         } else {
             $cn = $this->parameters['name'];
         }
 
         if ($this->getIdentifier() === 'create' && $this->getRequest()->isMutation()) {
-            if ($this->parameters['AccountType'] === 'user' ) {
-                $this->updateUser($cn, 'yes', $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
-            } else {
-                $this->updateVPNAccount($cn, $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
+            $props = array('VPNRemoteNetwork' => $this->parameters['VPNRemoteNetwork'], 'VPNRemoteNetmask' => $this->parameters['VPNRemoteNetmask'], 'OpenVpnIp' => $this->parameters['OpenVpnIp']);
+            if ($this->parameters['AccountType'] === 'vpn-user' ) {
+                $props['VPNClientAccess'] = 'yes';
             }
+            $this->getPlatform()->getDatabase('vpn')->setKey($cn, $this->parameters['AccountType'], $props);
             $this->generateCert($cn);
         }
         
         if ($this->getIdentifier() === 'update' && $this->getRequest()->isMutation()) {
             $type = $this->getPlatform()->getDatabase('vpn')->getType($cn);
-            if ($type === 'user') {
-                $this->updateUser($cn, 'yes', $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
-            } else {
-                $this->updateVPNAccount($cn, $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
-            }
+            $this->getPlatform()->getDatabase('vpn')->setProp($cn, array('VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip));
         }
         
         if ($this->getIdentifier() === 'delete' && $this->getRequest()->isMutation()) {
-            $this->deleteAccount($cn);
+            $this->getPlatform()->getDatabase('vpn')->deleteKey($cn);
             $this->revokeCert($cn);
         }
         if($this->getRequest()->isMutation()) {
