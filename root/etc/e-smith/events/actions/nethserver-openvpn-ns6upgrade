@@ -26,6 +26,7 @@
 use strict;
 use esmith::AccountsDB;
 use esmith::ConfigDB;
+use File::Basename;
 
 my $adb = esmith::AccountsDB->open() || die ("Could not open AccountsDB");
 my $vdb = esmith::ConfigDB->open('vpn') || die ("Could not open VPN DB");
@@ -42,6 +43,14 @@ foreach my $user ($adb->users()) {
         $dst_user_key = $user->key;
     } else {
         $dst_user_key = $user->key."@".$domain;
+    }
+
+    # Rename existing certificates
+    my $base_cert_name = $user->key;
+    $base_cert_name =~ s/@.*$//;
+    foreach my $f (glob("/var/lib/nethserver/certs/".$base_cert_name.".*")) {
+        my($filename, $dirs, $suffix) = fileparse($f, ('crt','csr','key','p12'));
+        rename($f, $dirs."$dst_user_key.$suffix");
     }
 
     my %new_props;
