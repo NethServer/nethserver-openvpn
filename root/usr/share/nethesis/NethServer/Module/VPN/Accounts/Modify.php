@@ -64,7 +64,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
         $tmp = array();
         foreach($this->getParent()->getUsers() as $user => $props) {
-            $vpn_access = $this->getPlatform()->getDatabase('accounts')->getProp($user, 'VPNClientAccess');
+            $vpn_access = $this->getPlatform()->getDatabase('vpn')->getProp($user, 'VPNClientAccess');
             if (!$vpn_access || $vpn_access == 'no' ) {
                 $tmp[] = array($user,$user);
             }
@@ -97,23 +97,23 @@ class Modify extends \Nethgui\Controller\Table\Modify
     private function updateUser($name, $status, $network = '', $netmask = '', $ip = '')
     {
         
-        $this->getPlatform()->getDatabase('accounts')->setKey($name, 'vpn-user',
+        $this->getPlatform()->getDatabase('vpn')->setKey($name, 'vpn-user',
             array('VPNClientAccess' => $status, 'VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip)
         );
     }
     
     private function updateVPNAccount($name, $network, $netmask, $ip)
     {
-        $this->getPlatform()->getDatabase('accounts')->setKey($name, 'vpn',  
+        $this->getPlatform()->getDatabase('vpn')->setKey($name, 'vpn',  
             array('VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip)
         );
     }
 
     private function deleteAccount($name)
     {
-        $type = $this->getPlatform()->getDatabase('accounts')->getType($name);
+        $type = $this->getPlatform()->getDatabase('vpn')->getType($name);
         if ($type === 'vpn') {  //delete vpn account
-            $this->getPlatform()->getDatabase('accounts')->deleteKey($name, 'vpn');  
+            $this->getPlatform()->getDatabase('vpn')->deleteKey($name, 'vpn');  
         } else {
             $this->updateUser($name, 'no');
         }
@@ -138,7 +138,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         }
         
         if ($this->getIdentifier() === 'update' && $this->getRequest()->isMutation()) {
-            $type = $this->getPlatform()->getDatabase('accounts')->getType($cn);
+            $type = $this->getPlatform()->getDatabase('vpn')->getType($cn);
             if ($type === 'user') {
                 $this->updateUser($cn, 'yes', $this->parameters['VPNRemoteNetwork'], $this->parameters['VPNRemoteNetmask'], $this->parameters['OpenVpnIp']);
             } else {

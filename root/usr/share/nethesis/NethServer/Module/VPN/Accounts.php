@@ -93,7 +93,7 @@ class Accounts extends \Nethgui\Controller\TableController
         // get all users with VPNClientAccess enabled
         $users = $this->getUsers();
         foreach($users as $user => $props) {
-            $vpn_access = $this->getPlatform()->getDatabase('accounts')->getProp($user, 'VPNClientAccess');
+            $vpn_access = $this->getPlatform()->getDatabase('vpn')->getProp($user, 'VPNClientAccess');
             if ($vpn_access && $vpn_access == 'yes' ) {
                 $loader[$user] = array(
                     'name' => $user,
@@ -105,7 +105,7 @@ class Accounts extends \Nethgui\Controller\TableController
         }
 
         // get all vpn accounts
-        $users = $this->getPlatform()->getDatabase('accounts')->getAll('vpn');
+        $users = $this->getPlatform()->getDatabase('vpn')->getAll('vpn');
         foreach($users as $user => $props) {
             $loader[$user] = array(
                 'name' => $user,
