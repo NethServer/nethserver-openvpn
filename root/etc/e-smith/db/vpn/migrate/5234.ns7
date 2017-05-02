@@ -1,0 +1,20 @@
+{
+    #
+    # Migrate vpn-user and vpn records from accounts db to vpn db
+    #
+    use esmith::AccountsDB;
+
+    $cdb = esmith::ConfigDB->open('vpn');
+    $adb = esmith::AccountsDB->open();
+    foreach my $vpn ($adb->get_all_by_prop(type => 'vpn')) {
+        my %props = $vpn->props;
+        $cdb->new_record($vpn->key, \%props);
+        $vpn->delete();
+    }
+    foreach my $vpn ($adb->get_all_by_prop(type => 'vpn-user')) {
+        my %props = $vpn->props;
+        $cdb->new_record($vpn->key, \%props);
+        $vpn->delete();
+    }
+}
+
