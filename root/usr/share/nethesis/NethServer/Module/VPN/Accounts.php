@@ -89,6 +89,7 @@ class Accounts extends \Nethgui\Controller\TableController
     public function readCertIndexAccounts()
     {
         $loader = new \ArrayObject();
+        $domain = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
 
         // get all users with VPNClientAccess enabled
         $users = $this->getUsers();
@@ -121,8 +122,15 @@ class Accounts extends \Nethgui\Controller\TableController
             foreach ($lines as $line) {
                 list($status, $exp_date, $rev_date, $index, $name, $cn) = explode("\t", trim($line, "\n"));
                 $cn = $this->parseCN($cn);
-                if (!isset($loader[$cn])) {
-                    continue;
+                if ( !isset($loader[$cn]) ) {
+                    # check certificates from NS 6
+                    #   user = goofy@nethserver.org
+                    #   cn = goofy
+                    if ( !isset($loader[$cn."@$domain"]) ) {
+                        continue;
+                    } else { # map to full user name
+                        $cn = $cn."@$domain";
+                    }
                 }
                 $loader[$cn]['Expiration'] = $this->formatDate($exp_date);
                 $loader[$cn]['Status'] = $status;
