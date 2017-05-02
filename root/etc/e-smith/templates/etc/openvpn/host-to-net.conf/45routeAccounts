@@ -1,7 +1,7 @@
 {
-    use esmith::AccountsDB;
+    use esmith::ConfigDB;
 
-    my $adb = esmith::AccountsDB->open_ro or die "Couldn't open AccountsDB\n";
+    my $adb = esmith::ConfigDB->open_ro('vpn') or die "Couldn't open VPN DB\n";
     $OUT = '';
 
     for my $acc ( $adb->get_all() )
@@ -9,7 +9,7 @@
         my %props = $acc->props;
         if ( 
              ($props{'type'} eq 'vpn') || 
-             ( $props{'type'} eq 'user' && defined($props{'VPNClientAccess'}) && $props{'VPNClientAccess'} eq 'yes') 
+             ( $props{'type'} eq 'vpn-user' && defined($props{'VPNClientAccess'}) && $props{'VPNClientAccess'} eq 'yes') 
             ) {
             my $network = $props{VPNRemoteNetwork} || next;
             my $mask = $props{VPNRemoteNetmask} || next;
