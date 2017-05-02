@@ -1,6 +1,7 @@
 {
     #
     # Migrate vpn-user and vpn records from accounts db to vpn db
+    # Also removes all VPNClientAccess props
     #
     use esmith::AccountsDB;
 
@@ -15,6 +16,12 @@
         my %props = $vpn->props;
         $cdb->new_record($vpn->key, \%props);
         $vpn->delete();
+    }
+
+    $cdb->reload();
+    foreach my $vpn ($cdb->get_all(type => 'vpn-user')) {
+        my $v = $vpn->prop('VPNClientAccess') || next;
+        $vpn->delete_prop('VPNClientAccess');
     }
 }
 

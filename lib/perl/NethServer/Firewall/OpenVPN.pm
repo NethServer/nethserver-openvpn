@@ -69,8 +69,6 @@ sub openvpn_tunnels
     }
 
     foreach ($vpn_db->get_all_by_prop('type' => 'vpn-user')) {
-        my $vpn = $_->prop('VPNClientAccess') || 'no';
-        next if ($vpn eq 'no');
         my $net = $_->prop('VPNRemoteNetwork') || next;
         my $msk = $_->prop('VPNRemoteNetmask') || next;
         my $cidr = esmith::util::computeLocalNetworkShortSpec($net, $msk);

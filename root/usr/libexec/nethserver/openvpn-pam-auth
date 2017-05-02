@@ -71,14 +71,6 @@ if(not defined $user_account)
     exit 1;
 }
 
-$VPNClientAccess = $user_account->prop('VPNClientAccess') || 'no';
-
-if(not $VPNClientAccess eq 'yes')
-{
-    print "Account $username has no VPN access granted\n";
-    exit 1;
-}
-
 # Initialize PAM object
 
 if (!ref($pamh = new Authen::PAM($service, $username, \&my_conv_func))) {

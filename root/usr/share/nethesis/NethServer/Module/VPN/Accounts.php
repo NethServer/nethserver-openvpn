@@ -91,11 +91,11 @@ class Accounts extends \Nethgui\Controller\TableController
         $loader = new \ArrayObject();
         $domain = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
 
-        // get all users with VPNClientAccess enabled
+        // get all vpn-users linked to system users
         $users = $this->getUsers();
         foreach($users as $user => $props) {
-            $vpn_access = $this->getPlatform()->getDatabase('vpn')->getProp($user, 'VPNClientAccess');
-            if ($vpn_access && $vpn_access == 'yes' ) {
+            $vpn_user = $this->getPlatform()->getDatabase('vpn')->getKey($user);
+            if ($vpn_user) {
                 $loader[$user] = array(
                     'name' => $user,
                     'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],

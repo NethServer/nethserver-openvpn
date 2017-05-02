@@ -59,7 +59,9 @@ foreach my $user ($adb->users()) {
         if ( grep(/VPN|OpenVpn/,$key) ) {
             # remove VPN-related props from user records
             $user->delete_prop($key);
-            $new_props{$key} = $old_props{$key};
+            if ($key ne 'VPNClientAccess') {
+                $new_props{$key} = $old_props{$key};
+            }
         }
     }
 

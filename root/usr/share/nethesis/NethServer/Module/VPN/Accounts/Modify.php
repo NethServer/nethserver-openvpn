@@ -64,8 +64,8 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
         $tmp = array();
         foreach($this->getParent()->getUsers() as $user => $props) {
-            $vpn_access = $this->getPlatform()->getDatabase('vpn')->getProp($user, 'VPNClientAccess');
-            if (!$vpn_access || $vpn_access == 'no' ) {
+            $vpn_user = $this->getPlatform()->getDatabase('vpn')->getKey($user);
+            if (!$vpn_user) {
                 $tmp[] = array($user,$user);
             }
         }
@@ -106,9 +106,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
         if ($this->getIdentifier() === 'create' && $this->getRequest()->isMutation()) {
             $props = array('VPNRemoteNetwork' => $this->parameters['VPNRemoteNetwork'], 'VPNRemoteNetmask' => $this->parameters['VPNRemoteNetmask'], 'OpenVpnIp' => $this->parameters['OpenVpnIp']);
-            if ($this->parameters['AccountType'] === 'vpn-user' ) {
-                $props['VPNClientAccess'] = 'yes';
-            }
             $this->getPlatform()->getDatabase('vpn')->setKey($cn, $this->parameters['AccountType'], $props);
             $this->generateCert($cn);
         }

@@ -7,10 +7,7 @@
     for my $acc ( $adb->get_all() )
     {
         my %props = $acc->props;
-        if ( 
-             ($props{'type'} eq 'vpn') || 
-             ( $props{'type'} eq 'vpn-user' && defined($props{'VPNClientAccess'}) && $props{'VPNClientAccess'} eq 'yes') 
-            ) {
+        if ( $props{'type'} eq 'vpn' || $props{'type'} eq 'vpn-user' ) {
             my $network = $props{VPNRemoteNetwork} || next;
             my $mask = $props{VPNRemoteNetmask} || next;
         
