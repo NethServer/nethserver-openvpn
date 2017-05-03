@@ -89,12 +89,13 @@ class Accounts extends \Nethgui\Controller\TableController
     public function readCertIndexAccounts()
     {
         $loader = new \ArrayObject();
+        $domain = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
 
-        // get all users with VPNClientAccess enabled
+        // get all vpn-users linked to system users
         $users = $this->getUsers();
         foreach($users as $user => $props) {
-            $vpn_access = $this->getPlatform()->getDatabase('accounts')->getProp($user, 'VPNClientAccess');
-            if ($vpn_access && $vpn_access == 'yes' ) {
+            $vpn_user = $this->getPlatform()->getDatabase('vpn')->getKey($user);
+            if ($vpn_user) {
                 $loader[$user] = array(
                     'name' => $user,
                     'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],
@@ -105,7 +106,7 @@ class Accounts extends \Nethgui\Controller\TableController
         }
 
         // get all vpn accounts
-        $users = $this->getPlatform()->getDatabase('accounts')->getAll('vpn');
+        $users = $this->getPlatform()->getDatabase('vpn')->getAll('vpn');
         foreach($users as $user => $props) {
             $loader[$user] = array(
                 'name' => $user,
@@ -121,8 +122,15 @@ class Accounts extends \Nethgui\Controller\TableController
             foreach ($lines as $line) {
                 list($status, $exp_date, $rev_date, $index, $name, $cn) = explode("\t", trim($line, "\n"));
                 $cn = $this->parseCN($cn);
-                if (!isset($loader[$cn])) {
-                    continue;
+                if ( !isset($loader[$cn]) ) {
+                    # check certificates from NS 6
+                    #   user = goofy@nethserver.org
+                    #   cn = goofy
+                    if ( !isset($loader[$cn."@$domain"]) ) {
+                        continue;
+                    } else { # map to full user name
+                        $cn = $cn."@$domain";
+                    }
                 }
                 $loader[$cn]['Expiration'] = $this->formatDate($exp_date);
                 $loader[$cn]['Status'] = $status;

@@ -21,17 +21,10 @@
 #   * May need to be run as root in order to
 #     access username/password file.
 
-# NOTES
-#   * This script is provided mostly as a demonstration of the
-#     --auth-user-pass-verify script capability in OpenVPN.
-#     For real world usage, see the auth-pam module in the plugin
-#     folder.
-
 #use strict;
 
 use Authen::PAM;
 use POSIX;
-use esmith::AccountsDB;
 use esmith::ConfigDB;
 
 # This "conversation function" will pass
@@ -63,7 +56,7 @@ if (!$username || !$password) {
     exit 1;
 }
 
-our $accountdb = esmith::AccountsDB->open();
+our $accountdb = esmith::ConfigDB->open('vpn');
 
 if(not $accountdb)
 {
@@ -74,15 +67,7 @@ if(not $accountdb)
 my $user_account = $accountdb->get($username);
 if(not defined $user_account)
 {
-    print "Account $username not present in the system\n";
-    exit 1;
-}
-
-$VPNClientAccess = $user_account->prop('VPNClientAccess') || 'no';
-
-if(not $VPNClientAccess eq 'yes')
-{
-    print "Account $username has no VPN access granted\n";
+    print "Account $username not present in vpn db\n";
     exit 1;
 }
 

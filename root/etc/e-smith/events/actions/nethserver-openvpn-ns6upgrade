@@ -1,0 +1,70 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+#
+# Move VPN system users to vpn database to avoid name clash
+#
+
+use strict;
+use esmith::AccountsDB;
+use esmith::ConfigDB;
+use File::Basename;
+
+my $adb = esmith::AccountsDB->open() || die ("Could not open AccountsDB");
+my $vdb = esmith::ConfigDB->open('vpn') || die ("Could not open VPN DB");
+my $domain = `hostname -d`;
+chomp $domain;
+
+foreach my $user ($adb->users()) {
+    my $vpn_access = $user->prop('VPNClientAccess') || 'no';
+    next if ($vpn_access eq 'no');
+
+    # add domain part, if needed
+    my $dst_user_key = '';
+    if ($user->key =~ /@/) {
+        $dst_user_key = $user->key;
+    } else {
+        $dst_user_key = $user->key."@".$domain;
+    }
+
+    # Rename existing certificates
+    my $base_cert_name = $user->key;
+    $base_cert_name =~ s/@.*$//;
+    foreach my $f (glob("/var/lib/nethserver/certs/".$base_cert_name.".*")) {
+        my($filename, $dirs, $suffix) = fileparse($f, ('crt','csr','key','p12'));
+        rename($f, $dirs."$dst_user_key.$suffix");
+    }
+
+    my %new_props;
+    my %old_props = $user->props;
+    foreach my $key (keys %old_props) {
+        if ( grep(/VPN|OpenVpn/,$key) ) {
+            # remove VPN-related props from user records
+            $user->delete_prop($key);
+            if ($key ne 'VPNClientAccess') {
+                $new_props{$key} = $old_props{$key};
+            }
+        }
+    }
+
+    # create new vpn-user record inside vpn db
+    $vdb->new_record($dst_user_key, { type => 'vpn-user', %new_props });
+}

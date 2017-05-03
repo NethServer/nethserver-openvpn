@@ -62,7 +62,7 @@ sub openvpn_tunnels
 {
     my $results = shift;
 
-    my $vpn_db = esmith::DB::db->open_ro('accounts');
+    my $vpn_db = esmith::DB::db->open_ro('vpn');
     foreach ($vpn_db->get_all_by_prop('type' => 'vpn')) {
         my $net = $_->prop('VPNRemoteNetwork') || next;
         my $msk = $_->prop('VPNRemoteNetmask') || next;

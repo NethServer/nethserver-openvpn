@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use esmith::AccountsDB;
+use esmith::ConfigDB;
 my $path = "/etc/openvpn/ccd";
 
 sub write_route($) {
@@ -21,7 +21,7 @@ sub write_route($) {
     close FILE;
 }
 
-my $adb = esmith::AccountsDB->open_ro or die "Couldn't open AccountsDB\n";
+my $adb = esmith::ConfigDB->open_ro('vpn') or die "Couldn't open VPN DB\n";
 
 # clean dir
 unlink (glob("$path/*")); 
@@ -32,7 +32,7 @@ for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
     write_route($acc);
 }
 # create ccd config files for user accounts
-for my $user ( $adb->get_all_by_prop('type' => 'user') )
+for my $user ( $adb->get_all_by_prop('type' => 'vpn-user') )
 {
     write_route($user);
 }

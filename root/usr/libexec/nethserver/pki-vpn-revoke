@@ -31,6 +31,7 @@ my $outputDir = "/var/lib/nethserver/certs";
 my $csrOut = "";
 my $crtOut = "";
 my $keyOut = "";
+my $p12Out = "";
 my $commonName = "";
 my $delete = 0;
 my $errors = 0;
@@ -62,6 +63,7 @@ if ( $#ARGV < 0 ) {
     $csrOut = "$outputDir/$commonName.csr";
     $keyOut = "$outputDir/$commonName.key";
     $crtOut = "$outputDir/$commonName.crt";
+    $p12Out = "$outputDir/$commonName.p12";
 }
 
 if ( ! -r $keyFile ) {
@@ -85,6 +87,7 @@ if ($delete) {
     unlink($csrOut);
     unlink($keyOut);
     unlink($crtOut);
+    unlink($p12Out);
     open(FILE, "$outputDir/certindex");
     while (<FILE>) {
         if ($_=~/CN=$commonName/) { # find revoked certificate
