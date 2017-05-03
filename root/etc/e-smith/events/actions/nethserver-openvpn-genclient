@@ -26,9 +26,6 @@ my $gid = getgrnam('adm');
 
 my $OUT = "######### NethServer OpenVPN client configuration #########\n\n";
 my $openvpn = $cdb->get($name);
-if ($openvpn->prop('VPNType') ne 'openvpn') {
-    die("Invalid VPN type: it must be 'openvpn'");
-}
 my $RemoteHost = $openvpn->prop('RemoteHost');
 my $RemotePort = $openvpn->prop('RemotePort') || '1194';
 

@@ -41,7 +41,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('RemotePort', Validate::PORTNUMBER, \Nethgui\Controller\Table\Modify::FIELD),
             array('User', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
             array('Compression', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
-            array('VPNType', $this->createValidator()->memberOf(array('openvpn','ipsec')), \Nethgui\Controller\Table\Modify::FIELD),
             array('AuthMode', $this->createValidator()->memberOf(array('certificate','psk','password-certificate')), \Nethgui\Controller\Table\Modify::FIELD)
         );
         
@@ -54,7 +53,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('Mode', 'routed');
-        $this->setDefaultValue('VPNType', 'openvpn');
         $this->setDefaultValue('AuthMode', 'certificate');
 
         parent::initialize();

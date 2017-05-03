@@ -35,7 +35,6 @@ class Clients extends \Nethgui\Controller\TableController
 
         $columns = array(
             'Key',
-            'VPNType',
             'RemoteHost',
             'Actions'
         );
