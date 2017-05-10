@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.4.9
+Version: 1.5.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -45,6 +45,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Wed May 10 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.5.0-1
+- Upgrade from NS 6 via backup and restore - NethServer/dev#5234
+
 * Thu Apr 20 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.9-1
 - OpenVPN 2.4 breaks CRL (Certificate Revocation List) - Bug NethServer/dev#5271
 
