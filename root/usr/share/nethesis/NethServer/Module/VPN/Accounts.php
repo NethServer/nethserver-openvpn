@@ -98,9 +98,9 @@ class Accounts extends \Nethgui\Controller\TableController
             if ($vpn_user) {
                 $loader[$user] = array(
                     'name' => $user,
-                    'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],
-                    'VPNRemoteNetmask' => $props['VPNRemoteNetmask'],
-                    'OpenVpnIp' => $props['OpenVpnIp'],
+                    'VPNRemoteNetwork' => $vpn_user['VPNRemoteNetwork'],
+                    'VPNRemoteNetmask' => $vpn_user['VPNRemoteNetmask'],
+                    'OpenVpnIp' => $vpn_user['OpenVpnIp'],
                 );
             }
         }

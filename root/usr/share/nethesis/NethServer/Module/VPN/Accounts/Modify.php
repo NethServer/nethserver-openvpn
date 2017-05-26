@@ -97,8 +97,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
     public function process()
     {
-        $cn = '';
-        if ($this->parameters['AccountType'] === 'vpn-user' ) {
+        if ($this->parameters['User']) {
             $cn = $this->parameters['User'];
         } else {
             $cn = $this->parameters['name'];
@@ -111,8 +110,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         }
         
         if ($this->getIdentifier() === 'update' && $this->getRequest()->isMutation()) {
-            $type = $this->getPlatform()->getDatabase('vpn')->getType($cn);
-            $this->getPlatform()->getDatabase('vpn')->setProp($cn, array('VPNRemoteNetwork' => $network, 'VPNRemoteNetmask' => $netmask, 'OpenVpnIp' => $ip));
+            $this->getPlatform()->getDatabase('vpn')->setProp($cn, array('VPNRemoteNetwork' => $this->parameters['VPNRemoteNetwork'], 'VPNRemoteNetmask' => $this->parameters['VPNRemoteNetmask'], 'OpenVpnIp' => $this->parameters['OpenVpnIp']));
         }
         
         if ($this->getIdentifier() === 'delete' && $this->getRequest()->isMutation()) {
