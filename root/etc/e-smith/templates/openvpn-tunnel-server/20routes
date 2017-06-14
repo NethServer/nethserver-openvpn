@@ -1,0 +1,8 @@
+push "topology subnet"
+{
+    use NetAddr::IP;
+    foreach (split(',',$server->prop('LocalNetworks'))) {
+        my $net = NetAddr::IP->new($_);
+        $OUT .= sprintf("push \"route %s %s\"\n",$net->addr(),$net->mask());
+    }
+}

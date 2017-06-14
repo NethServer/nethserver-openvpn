@@ -1,0 +1,11 @@
+<secret>
+{
+    my $key = "/var/lib/nethserver/openvpn-tunnels/$name.key";
+    open(my $fh, '<:encoding(UTF-8)', $key);
+
+    while( my $line = <$fh>)  {   
+        $OUT .= "$line";
+    }
+
+    close $fh;
+}</secret>

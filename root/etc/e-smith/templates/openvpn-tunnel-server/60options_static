@@ -1,0 +1,4 @@
+keepalive 10 60
+ping-timer-rem
+persist-key
+verb 3

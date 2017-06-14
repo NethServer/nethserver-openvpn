@@ -157,3 +157,32 @@ $event = "post-restore-config";
 event_actions($event,
     'nethserver-openvpn-ns6upgrade' => '60',
 );
+
+
+#---------------------------------------------------------
+# actions for openvpn-tunnel-{create,modify,delete} events
+#---------------------------------------------------------
+
+event_actions('openvpn-tunnel-create',
+    'nethserver-openvpn-tunnels' => '30',
+    'firewall-adjust' => '80',
+);
+
+event_actions('openvpn-tunnel-modify',
+    'nethserver-openvpn-tunnels' => '30',
+    'firewall-adjust' => '80',
+);
+
+event_actions('openvpn-tunnel-delete',
+    'nethserver-openvpn-tunnels' => '30',
+    'firewall-adjust' => '80',
+);
+
+#--------------------------------------------------
+# actions for openvpn-tunnel-upload event
+#--------------------------------------------------
+
+event_actions('openvpn-tunnel-upload',
+    'nethserver-openvpn-upload-client' => '30',
+    'firewall-adjust' => '80',
+);

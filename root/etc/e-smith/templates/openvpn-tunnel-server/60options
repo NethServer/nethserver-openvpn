@@ -1,0 +1,10 @@
+{
+    my $cipher = $server->prop('Cipher') || '';
+    my $compression = $server->prop('Compression') || 'disabled';
+    if ($cipher ne '') {
+        $OUT .= "cipher $cipher\n";
+    }
+    if ($compression ne 'disabled') {
+        $OUT .= "comp-lzo\n";
+    }
+}

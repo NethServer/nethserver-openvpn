@@ -1,0 +1,117 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use esmith::templates;
+use esmith::ConfigDB;
+use File::Glob ':glob';
+
+my $event = shift or die("Missing event name");
+my $name = shift or die("Missing vpn name argument");
+our $vdb = esmith::ConfigDB->open_ro('vpn') || die("Can't open vpn db");
+our $cdb = esmith::ConfigDB->open() || die("Can't open config db");
+
+sub enable
+{
+    my $name = shift;
+    my $instance = 'openvpn@'.$name;
+    open(my $lfh, '>', '/etc/systemd/system/openvpn@.service.d/'.$name.'.conf') or die "Unable to create $instance : $!";
+    close($lfh) or die "Unable to close $instance file:  $!";
+    system("/usr/bin/systemctl daemon-reload");
+    system("/usr/bin/systemctl -f enable $instance");
+    system("/usr/bin/systemctl restart $instance");
+}
+
+sub disable
+{
+    my $name = shift;
+    my $instance = 'openvpn@'.$name;
+    system("/usr/bin/systemctl disable $instance");
+    unlink('/etc/systemd/system/openvpn@.service.d/'.$name.'.conf');
+    system("/usr/bin/systemctl daemon-reload");
+}
+
+sub toggle
+{
+    my $name = shift;
+    my $status = shift;
+    my $instance = 'openvpn@'.$name;
+    
+    if ($status eq 'enabled') {
+        enable($name, $systemd_name);
+    } else {
+        disable($name, $systemd_name);
+    }
+}
+
+sub update_fw_record
+{
+    my $name = shift;
+    my $port = shift;
+    my $protocol = shift;
+    my $status = shift;
+
+    delete_fw_record($name);
+    $cdb->new_record('openvpn@'.$name, {type => 'service', uc($protocol).'Port' => $port, 'status' => $status, 'access' => 'green,red'});
+}
+
+sub delete_fw_record
+{
+    my $name = shift;
+    my $record = $cdb->get('openvpn@'.$name);
+    if (defined($record)) {
+        $record->delete();
+    }
+}
+
+sub gen_config
+{
+    my $name = shift;
+    my $server = $vdb->get($name) || die("Can't find '$name' inside vpn db");
+    my $port = $server->prop('Port') || die("Can't find port for '$name'");
+    my $protocol = $server->prop('Protocol') || 'udp';
+    my $status = $server->prop('status') || 'disabled';
+
+    update_fw_record($name, $port, $protocol, $status); 
+    esmith::templates::processTemplate({
+            TEMPLATE_PATH => "openvpn-tunnel-server",
+            OUTPUT_FILENAME => "/etc/openvpn/$name.conf",
+            "MORE_DATA" => { 'server' => $server, 'name' => $name }
+    });
+    toggle($name, $status);
+}
+
+
+# On tunnel delete
+#     - delete firewall records
+#     - delete tunnel configuration file
+#     - disable systemd unit
+# On tunnel create/modify
+#     - generate tunnel configuration
+#     - enable and start/stop systemd unit
+if ($event eq 'openvpn-tunnel-delete') {
+    # Delete existing tunnel
+    unlink("/etc/openvpn/$name.conf");
+    delete_fw_record($name);
+    disable($name);
+} elsif ($event eq 'openvpn-tunnel-create' || $event eq 'openvpn-tunnel-modify') {
+    gen_config($name);
+}
