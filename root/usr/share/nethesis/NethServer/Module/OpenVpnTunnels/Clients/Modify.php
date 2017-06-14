@@ -1,5 +1,5 @@
 <?php
-namespace NethServer\Module\VPN\Clients;
+namespace NethServer\Module\OpenVpnTunnels\Clients;
 
 /*
  * Copyright (C) 2012 Nethesis S.r.l.
@@ -37,11 +37,14 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('name', Validate::USERNAME, \Nethgui\Controller\Table\Modify::KEY),
             array('Mode', $this->createValidator()->memberOf(array('routed','bridged')), \Nethgui\Controller\Table\Modify::FIELD),
             array('Password', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
-            array('RemoteHost', Validate::HOSTADDRESS, \Nethgui\Controller\Table\Modify::FIELD),
+            array('RemoteHost', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
             array('RemotePort', Validate::PORTNUMBER, \Nethgui\Controller\Table\Modify::FIELD),
             array('User', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
             array('Compression', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
-            array('AuthMode', $this->createValidator()->memberOf(array('certificate','psk','password-certificate')), \Nethgui\Controller\Table\Modify::FIELD)
+            array('status', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
+            array('AuthMode', $this->createValidator()->memberOf(array('certificate','psk','password-certificate')), \Nethgui\Controller\Table\Modify::FIELD),
+            array('Protocol', $this->getPlatform()->createValidator()->memberOf(array('tcp-client','udp')), \Nethgui\Controller\Table\Modify::FIELD),
+            array('Cipher', $this->createValidator()->memberOf($this->getParent()->readCiphers()), \Nethgui\Controller\Table\Modify::FIELD)
         );
         
         $this->declareParameter('Crt', Validate::ANYTHING, $this->getPlatform()->getMapAdapter(
@@ -52,13 +55,29 @@ class Modify extends \Nethgui\Controller\Table\Modify
             ));
 
         $this->setSchema($parameterSchema);
+        $this->setDefaultValue('status', 'enabled');
+        $this->setDefaultValue('Protocol', 'udp');
         $this->setDefaultValue('Mode', 'routed');
         $this->setDefaultValue('AuthMode', 'certificate');
 
         parent::initialize();
     }
 
+    public function readRemoteHost($v)
+    {
+        return implode("\n", explode(",", $v));
+    }
+
+    public function writeRemoteHost($p)
+    {
+        return array(implode(',', array_filter(preg_split("/[,\s]+/", $p))));
+    }
+
     private function readFile($fileName) {
+        if (!file_exists($fileName)) {
+            return '';
+        }
+
         $value = $this->getPhpWrapper()->file_get_contents($fileName);
 
         if ($value === FALSE) {
@@ -109,13 +128,45 @@ class Modify extends \Nethgui\Controller\Table\Modify
         return $this->writeFile(self::CRT_PATH . $this->parameters['name'] . '.key', $value);
     }
 
+    private function keyExists($key)
+    {
+        return $this->getPlatform()->getDatabase('vpn')->getType($key);
+    }
+
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        if ( ! $this->getRequest()->isMutation()) {
+            return;
+        }
+        $hv = $this->createValidator(Validate::HOSTADDRESS);
+        $networks = array_filter(preg_split('/[,\s]+/', $this->parameters['RemoteHost']));
+        foreach ($networks as $net){
+            if( ! $hv->evaluate($net)) {
+                $report->addValidationError($this, 'RemoteHost', $hv);
+            }
+        }
+        if ($this->getIdentifier() === 'create') {
+            if ($this->keyExists($this->parameters['name'])) {
+                $report->addValidationErrorMessage($this, 'name', 'key_exists_message');
+            }
+        }
+
+        parent::validate($report);
+    }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        $view['CipherDatasource'] = array_map(function($fmt) use ($view) {
+            if ($fmt) {
+                return array($fmt, $fmt);
+            } else {
+                return array($fmt,$view->translate('Auto_label'));
+            }
+        }, $this->getParent()->readCiphers());
         $templates = array(
-            'create' => 'NethServer\Template\VPN\Clients\Modify',
-            'update' => 'NethServer\Template\VPN\Clients\Modify',
+            'create' => 'NethServer\Template\OpenVpnTunnels\Clients\Modify',
+            'update' => 'NethServer\Template\OpenVpnTunnels\Clients\Modify',
             'delete' => 'Nethgui\Template\Table\Delete',
         );
         $view->setTemplate($templates[$this->getIdentifier()]);
@@ -133,7 +184,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         if ($event == "update") {
             $event = "modify";
         }
-        $this->getPlatform()->signalEvent(sprintf('nethserver-vpn-%s &', $event), array($this->parameters['name']));
+        $this->getPlatform()->signalEvent(sprintf('openvpn-tunnel-%s &', $event), array($this->parameters['name']));
     }
 
 }

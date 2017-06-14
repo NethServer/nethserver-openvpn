@@ -29,40 +29,25 @@ use JSON;
 use File::Basename;
 use esmith::ConfigDB;
 
-sub parse_config
-{
-    my $filename = shift;
-    my $ret = shift;
-    open(my $fh, '<:encoding(UTF-8)', $filename) || die("Could not open file '$filename' $!");
-    while (my $row = <$fh>) {
-      chomp $row;
-      if ($row =~ /^(lport|rport)\s+(\d+)/) {
-          $ret->{$1} = $2;
-      }
-      if ($row =~ /^route\s+(\d+.\d+.\d+.\d+)\s+(\d+.\d+.\d+.\d+)/) {
-          $ret->{'network'} = "$1/$2";
-      }
-    }
-    close($fh);
-
-    return $ret;
-}
-
 sub list_vpns
 {
     my %vpns;
     my $db = esmith::ConfigDB->open_ro('vpn');
-    foreach ($db->get_all_by_prop('type' => 'openvpn-tunnel-server')) {
+    foreach ($db->get_all()) {
+        my $type = $_->prop('type');
+        if ($type ne 'openvpn-tunnel-server' && $type ne 'tunnel') {
+             next;
+        }
         my $name = $_->key;
-        my $file = "/etc/openvpn/tunnel-server-$name.conf";
+        my $file = "/etc/openvpn/$name.conf";
         if ( -f $file ) {
-            my $running = system("systemctl status openvpn\@$name >/dev/null");
-            $running = ($running > 0) ? 0 : 1;
-            my $status = $db->get_prop('openvpn@'.$name, 'status');
-            my %vpn = ( name => $name, file => $file, running => $running, status => $status );
+            my $running = system("systemctl status openvpn\@$name &>/dev/null");
+            $running = ($running == 0) ? 1 : 0;
+            my $status = $db->get_prop($name, 'status');
+            my $port = $db->get_prop($name, 'Port');
+            my $network = $db->get_prop($name, 'Network');
+            my %vpn = ( name => $name, file => $file, running => $running, status => $status, port => $port, network => $network );
             $vpns{$name} = \%vpn;
- 
-            parse_config($file, \%vpn);
        }
     }
 

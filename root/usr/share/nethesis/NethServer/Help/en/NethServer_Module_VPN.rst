@@ -1,20 +1,79 @@
-===
-VPN
-===
+===================
+OpenVPN roadwarrior
+===================
 
-VPN supported configurations:
+Allows users around the world to connect to the this server
+with a Virtual Private Network (VPN).
+Connected clients will be able to access local services and networks.
 
-1. Connecting a remote terminal to the internal network
-   (Roadwarrior), based on L2TP/IPsec or OpenVPN.
+Server
+======
 
-2. Connecting two remote networks (net2net), based on OpenVPN or IPsec.
+Configure the OpenVPN server for roadwarrior clients and net2net tunnels.
+
+When creating a net2net tunnel, you should choose one of the server as master.
+The master must have the roadwarrior server enabled.
+The slave must be configured using the :guilabel:`Client` tab.
+
+Enable roadwarrior server
+    Enable roadwarrior OpenVPN server listening on default UDP port 1194.
+    The server will handle multiple client connections.
+
+Authentication mode
+    Select the desired authentication method.
+    Three methods are available:
+
+    * Username and password: choose it when you want to use a system user
+    * Certificate: choose when creating a net2net configuration
+    * User, password and certificate: this is the most secure combination.
+      The user must be a system user.
+
+Routed mode
+    (Preferred mode). Must be used if the VPN must carry only IP traffic.
+    VPN clients will have a different IP address then LAN clients.
+
+    The OpenVPN server will reply to remote DHCP requests using the configured network:
+
+    * Network: VPN reserved network. Eg: 10.1.1.0
+    * Netmask: VPN network mask. Eg: 255.255.255.0
+
+Bridged mode
+    Must be used if the VPN must carry IP and non-IP (eg. NetBios) traffic.
+    When this mode is selected, VPN clients will have an IP from the LAN network segment.
+
+    The OpenVPN server will reply to remote DHCP.
+    If a DHCP server is already present inside the LAN, make sure to
+    choose a free range which will not collide with current DHCP server configuration.
+
+    * Bridge: associated bridge interface
+    * IP range start: first IP address of the range
+    * IP range stop: last IP address of the range
+
+Route all client traffic through VPN
+    All VPN clients will use this server as default gateway.
+    Available only in routed mode.
+
+Allow client-to-client network traffic
+    All VPN clients will be able to exchange network traffic between themselves.
+    Available only in routed mode.
+
+Enable LZO compression
+    Enable LZO compression. This options must be enabled both on client and server.
+
+Contact this server on public IP / host
+    Specify a comma separated list of IP and host names that the OpenVPN
+    clients will attempt to contact this server.  If this value is
+    changed the client configuration must be downloaded again.
+
+UDP port
+    Change server UDP port. Default is 1194.
 
 
-Account
-=======
+Roadwarrior accounts
+====================
 
 The account tab allows to manage users used for
-VPN connections to the local server. Users can be normal
+OpenVPN connections to the local roadwarrior server. Users can be normal
 system users or dedicated exclusively to the VPN service (without standard services like email).
 
 Create new
@@ -30,6 +89,10 @@ VPN only
     "Jsmith" and "liu-jo" is a valid user name, while "4Friends"
     "Franco Blacks" and "aldo / mistake" are not.
 
+Reserved IP
+    The roadwarrior server act as a DHCP server for the VPN.
+    Choose a static IP to assign to this account.
+
 System User
     Enable VPN access for a user already existing in the system.
     The user can be selected from the drop-down list.
@@ -42,43 +105,4 @@ Remote network
     * Network Address: the network address of the remote network. Eg: 10.0.0.0 
     * Netmask: Netmask of the remote network. Eg: 255.255.255.0
 
-
-Client
-======
-
-The VPN client allows you to connect the server to another OpenVPN server
-in order to create a net2net VPN.  
-Only OpenVPN net2net are supported, if you wish to use IPsec see :guilabel:`IPsec tunnels`.
-
-Name
-    Unique name to identify the VPN.
-
-Remote host
-     Host name or IP address of OpenVPN remote server.
-
-Remote port
-     UDP port of remote server. Usually the port is 1194.
-
-Enable LZO compression
-    LZO compression must be the same in both client and server.
-
-Mode
-    Choose the same mode configured in the server.
-
-    * Routed: VPN hosts will be in a separated network
-    * Bridged: VPN host will be in the same LAN of the remote server
-
-Authentication
-    Choose the authentication configured in the server.
-
-    * Certificate: paste the content of the certificate inside the text area.
-      The text must contain both client and CA (Certification Authority) certificates.
-    * User, password and certificate: insert user name password and
-      past the content of  both client and CA (Certification Authority) certificates
-    * Pre-shared key: encryption key shared between client and server (unsafe)
-
-
-.. raw:: html
-
-   {{{INCLUDE NethServer_Module_VPN_*.html}}}
 

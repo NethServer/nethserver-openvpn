@@ -20,6 +20,11 @@
 # along with NethServer.  If not, see COPYING.
 #
 
+#
+# Genereate configuration and manage systemd units
+# for OpenVpn tunnell clients and servers.
+#
+
 use esmith::templates;
 use esmith::ConfigDB;
 use File::Glob ':glob';
@@ -44,6 +49,7 @@ sub disable
 {
     my $name = shift;
     my $instance = 'openvpn@'.$name;
+    system("/usr/bin/systemctl stop $instance");
     system("/usr/bin/systemctl disable $instance");
     unlink('/etc/systemd/system/openvpn@.service.d/'.$name.'.conf');
     system("/usr/bin/systemctl daemon-reload");
@@ -85,33 +91,46 @@ sub delete_fw_record
 sub gen_config
 {
     my $name = shift;
-    my $server = $vdb->get($name) || die("Can't find '$name' inside vpn db");
-    my $port = $server->prop('Port') || die("Can't find port for '$name'");
-    my $protocol = $server->prop('Protocol') || 'udp';
-    my $status = $server->prop('status') || 'disabled';
+    my $vpn = $vdb->get($name) || die("Can't find '$name' inside vpn db");
+    my $type = $vpn->prop('type');
+    my $status;
 
-    update_fw_record($name, $port, $protocol, $status); 
-    esmith::templates::processTemplate({
+    if ($type eq 'openvpn-tunnel-server') {
+        my $port = $vpn->prop('Port') || die("Can't find port for '$name'");
+        my $protocol = $vpn->prop('Protocol') || 'udp';
+        $status = $vpn->prop('status') || 'disabled';
+        update_fw_record($name, $port, $protocol, $status); 
+        esmith::templates::processTemplate({
             TEMPLATE_PATH => "openvpn-tunnel-server",
             OUTPUT_FILENAME => "/etc/openvpn/$name.conf",
-            "MORE_DATA" => { 'server' => $server, 'name' => $name }
-    });
+            "MORE_DATA" => { 'server' => $vpn, 'name' => $name }
+        });
+    } elsif ($type eq 'tunnel') { # client
+        my $authFile = "/etc/openvpn/$name.auth";
+        my $mode = $vpn->prop('AuthMode') || 'certificate';
+        $status = $vpn->prop('status') || 'enabled';
+        if ($mode eq 'password-certificate') {
+            open (FILE, ">$authFile");
+            print FILE $vpn->prop('User')."\n";
+            print FILE $vpn->prop('Password')."\n";
+            close FILE;
+            chmod 0640, $authFile;
+        }
+        esmith::templates::processTemplate({
+            TEMPLATE_PATH => "openvpn-tunnel-client",
+            OUTPUT_FILENAME => "/etc/openvpn/$name.conf",
+            "MORE_DATA" => { 'client' => $vpn, 'name' => $name }
+        });
+    }
     toggle($name, $status);
 }
 
 
-# On tunnel delete
-#     - delete firewall records
-#     - delete tunnel configuration file
-#     - disable systemd unit
-# On tunnel create/modify
-#     - generate tunnel configuration
-#     - enable and start/stop systemd unit
 if ($event eq 'openvpn-tunnel-delete') {
     # Delete existing tunnel
     unlink("/etc/openvpn/$name.conf");
     delete_fw_record($name);
     disable($name);
 } elsif ($event eq 'openvpn-tunnel-create' || $event eq 'openvpn-tunnel-modify') {
-    gen_config($name);
+    gen_config($name, $type);
 }

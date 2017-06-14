@@ -3,7 +3,7 @@
 $L['ServerStatus_label'] = 'Enable roadwarrior server';
 $L['OpenVPN_Description'] = 'OpenVPN configuration';
 $L['OpenVPN_Tags'] = 'vpn virtual private network openvpn roadwarrior';
-$L['OpenVPN_Title'] = 'OpenVPN';
+$L['OpenVPN_Title'] = 'Server';
 $L['AuthMode_label'] = 'Authentication mode';
 $L['password_mode_label'] = 'Username and password';
 $L['certificate_mode_label'] = 'Certificate';

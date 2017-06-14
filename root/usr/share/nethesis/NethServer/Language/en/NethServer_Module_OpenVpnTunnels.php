@@ -1,0 +1,37 @@
+<?php
+
+$L['OpenVpnTunnels_Title'] = 'OpenVPN tunnels';
+$L['OpenVpnTunnels_Description'] = 'Server and client tunnels for OpenVPN';
+$L['OpenVpnTunnels_Tags'] = 'openvpn OpenVPN openVPN tunnel tunnels';
+$L['name_label'] = 'Tunnel name';
+$L['status_label'] = 'Enable tunnel';
+$L['Port_label'] = 'Port';
+$L['Network_label'] = 'VPN network';
+$L['Routes_label'] = 'Routes';
+$L['LocalNetworks_label'] = 'Local networks';
+$L['RemoteNetworks_label'] = 'Remote networks';
+$L['Authentication_label'] = 'Authentication';
+$L['Psk_label'] = 'Pre-shared key';
+$L['Advanced_label'] = 'Advanced';
+$L['Protocol_label'] = 'Protocol';
+$L['Compression_label'] = 'Enable LZO compression';
+$L['Cipher_label'] = 'Cipher';
+$L['DownloadClient_label'] = 'Download client configuration';
+$L['Key_label'] = 'Tunnel';
+$L['Servers_Title'] = 'Tunnel servers';
+$L['State_label'] = 'State';
+$L['restart_label'] = 'Restart';
+$L['stop_label'] = 'Stop';
+$L['start_label'] = 'Start';
+$L['Auto_label'] = 'Auto';
+$L['enable_label'] = 'Enable';
+$L['disable_label'] = 'Disable';
+$L['Download_label'] = 'Download client configuration';
+$L['OpenVpnTunnels_enable_title'] = 'Enable tunnel';
+$L['OpenVpnTunnels_disable_title'] = 'Disable tunnel';
+$L['confirm_enable_label'] = 'Enable tunnel now?';
+$L['confirm_disable_label'] = 'Disable tunnel now?';
+$L['Confirm_label'] = 'Confirm';
+$L['key_exists_message'] = 'A tunnel with the same name already exists';
+$L['network_in_use'] = 'Network already in use';
+$L['PublicAddresses_label'] = "Public IPs and/or public FQDN";
