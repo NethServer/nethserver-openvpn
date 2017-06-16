@@ -1,0 +1,31 @@
+#
+# 20remote
+#
+{
+    use esmith::NetworksDB;
+    my $ndb = esmith::NetworksDB->open_ro();
+    my $wans = $client->prop('WanPriorities') || '';
+
+    if ($wans) {
+        foreach my $remote (split(',',$client->prop('RemoteHost'))) {
+            $OUT .= "<connection>\n";
+            $OUT .= "remote $remote\n";
+            foreach my $wan (split(',',$wans)) {
+                $interface = $ndb->get($wan) || next;
+                $ipaddr = $interface->prop('ipaddr') || next;
+                $OUT .= "local $ipaddr\n";
+            }
+            $OUT .= "</connection>\n";
+        }
+    } else {
+         # "nobind" option make sense only without "local"
+         $OUT .= "nobind\n";
+    } 
+
+
+    # Fallback with remote hosts if bind 
+    # to local addresses doesn't work
+    foreach (split(',',$client->prop('RemoteHost'))) {
+        $OUT .= "remote $_\n";
+    }
+}

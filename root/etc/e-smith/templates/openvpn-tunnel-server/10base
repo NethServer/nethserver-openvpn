@@ -1,3 +1,6 @@
+#
+# 10base
+#
 dev tun{{$name}}
 dev-type tun
 persist-tun
@@ -12,3 +15,4 @@ float
 multihome
 daemon
 topology subnet
+

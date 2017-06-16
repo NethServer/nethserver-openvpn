@@ -1,0 +1,21 @@
+#
+# 10base
+#
+{
+    my $mode = $client->prop('Mode') || 'routed';
+    my $protocol = $client->prop('Protocol') || 'udp';
+    if ($mode eq 'routed') {
+        $OUT.="dev tun$name\n";
+    } elsif ($mode eq 'bridged') {
+        $OUT.="dev tap\n";
+    }
+
+    $OUT .= "proto $protocol\n";
+    if ($protocol eq 'udp') {
+        $OUT .= "explicit-exit-notify 1\n";
+    }
+
+}
+rport {{$client->prop('RemotePort')}}
+float
+

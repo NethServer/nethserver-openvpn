@@ -2,8 +2,8 @@
 # 60options
 #
 {
-    my $cipher = $server->prop('Cipher') || '';
-    my $compression = $server->prop('Compression') || 'disabled';
+    my $cipher = $client->prop('Cipher') || '';
+    my $compression = $client->prop('Compression') || 'disabled';
     if ($cipher ne '') {
         $OUT .= "cipher $cipher\n";
     }
@@ -11,8 +11,4 @@
         $OUT .= "comp-lzo\n";
     }
 }
-keepalive 10 60
-ping-timer-rem
-persist-key
 verb 3
-

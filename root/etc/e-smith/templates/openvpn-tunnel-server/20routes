@@ -1,3 +1,6 @@
+#
+# 20routes
+#
 push "topology subnet"
 {
     use NetAddr::IP;
@@ -11,3 +14,4 @@ push "topology subnet"
         $OUT .= sprintf("route %s %s\n",$net->addr(),$net->mask());
     }
 }
+

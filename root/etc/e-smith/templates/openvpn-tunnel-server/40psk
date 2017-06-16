@@ -1,3 +1,6 @@
+#
+# 40psk
+#
 <secret>
 {
     my $key = "/var/lib/nethserver/openvpn-tunnels/$name.key";
@@ -9,3 +12,4 @@
 
     close $fh;
 }</secret>
+
