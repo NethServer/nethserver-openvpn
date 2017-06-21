@@ -7,63 +7,19 @@ Supported VPN are:
 * Client to server (roadwarrior)
 * Network to network (net2net)
 
-Certificates
-============
-
-All certificates are signed using NethServer default RSA key (``/etc/pki/tls/private/NSRV.key``).
-
-CA environment
---------------
-
-CA configuration is stored inside ``/var/lib/nethserver/`` directory, all certificates are stored inside ``/var/lib/nethserver/certs``. The ``nethserver-openvpn-conf`` action creates:
-
-* ``serial``, ``certindex.attr`` and ``/certindex``: database of valid and revocated certificates
-* ``crlnumber`` and ``/etc/openvpn/certs/crl.pem``: certificate revocation list
-* ``dh1024.pem``: key for TLS negotation
-
-
-Certificate creation
---------------------
-
-Certificates in PEM format can be created using the command: ::
-
-  /usr/libexec/nethserver/pki-vpn-gencert <commonName>
-
-The ``commonName`` parameter is an unique name stored inside the certificate. 
-The command will generate ``key``, ``crt`` and ``csr`` file.
-Each generated certificate is referred with a numeric id and saved inside ``certindex`` database. OpenSSL will also create a certificated called as with the generated id (eg. ``02.pem``). 
-
-Certificate revocation
-----------------------
-
-Certificate revocation is done via the command: ::
-
-    /usr/libexec/nethserver/pki-vpn-revoke [-d] <commonName>
-
-The ``commonName`` parameter is an unique name stored inside the certificate. 
-If '-d' option is enabled, also delete ``crt``, ``csr``, ``pem`` and key files
-
-Certificate renewal
--------------------
-
-All certificates will expire after ``X`` days, where ``X`` is the value of ``CertificateDuration`` property inside ``pki`` key.
-Renew is done via the command: ::
-
-  /usr/libexec/nethserver/pki-vpn-renew <commonName>
-
-The ``commonName`` parameter is an unique name stored inside the certificate. 
 
 Events
 ======
 
-* ``nethserver-vpn-create``: fired when a new account is created, takes the account name as argument
-* ``nethserver-vpn-delete``: fired when a new account is deleted, takes the account name as argument
-* ``nethserver-vpn-modify``: fired when a new account is modified, takes the account name as argument
-* ``nethserver-vpn-save``: fired when a +client+ is created, modified or deleted
+* ``openvpn-tunnel-create``: fired when a new tunnel is created, takes the tunnel name as argument
+* ``openvpn-tunnel-delete``: fired when a new tunnel is deleted, takes the tunnel name as argument
+* ``openvpn-tunnel-modify``: fired when a new tunnel is modified, takes the tunnel name as argument
+* ``nethserver-vpn-save``: fired when roadwarrior account or server is changed
+* ``openvpn-tunnel-upload``: used to transform a given file to a read-to-use tunnel client
 
 
-Accounts
-========
+Roadwarrior accounts
+====================
 
 Accounts are used to identify clients connecting to the server itself. There are two types of account:
 
@@ -93,58 +49,56 @@ Database: ``vpn``
     VPNRemoteNetmask=
     OpenVpnIp=
 
- <name>=vpn-user
-    ...
-    VPNRemoteNetwork=
-    VPNRemoteNetmask=
-    OpenVpnIp=
-
-Clients
-=======
-
-OpenVPN clients are used to connect the server with other network, typically to create a net2net tunnel. 
-
-Common properties:
-
-* ``AuthMode``: default value is ``certificate``. Possible values:
-
-  * ``certificate``: use x509 certificate. Certificates, including CA and private key, are saved in ``/var/lib/nethserver/certs/clients`` directory in a PEM file named ``key``.pem
-  * ``password``: use username and password
-  * ``password-certificate``: use username, password and a valid x509 certificate
-  * ``psk``: use a pre-shared key
-* ``User``: username used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
-* ``Password``: password used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
-* ``Psk``: pre-shared key user for authentication, if ``AuthMode`` is ``psk``. Pre-shared key is saved ``/var/lib/nethserver/certs/clients/<name>.key`` 
-* ``RemoteHost``: remote server hostname or ip address
-* ``RemotePort``: remote host port
-* ``VPNRemoteNetwork``: remote network (behind remote firewall), used for a net to net tunnel
-* ``VPNRemoteNetmask``: remote netmask, used for a net to net tunnel
-* ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
-
-
-Database reference
-------------------
-
-Database: ``vpn``
-
-::
-
- t1=tunnel
-    Mode=routed
-    AuthMode=certificate
-    Crt=
-    Psk=
-    Password=
-    RemoteHost=1.2.3.4
-    RemotePort=1234
-    User=
-    VPNRemoteNetmask=255.255.255.0
-    VPNRemoteNetwork=192.168.4.0
-    Compression=enabled
-
 
 Roadwarrior server
 ==================
+
+Certificates
+------------
+
+All certificates are signed using NethServer default RSA key (``/etc/pki/tls/private/NSRV.key``).
+
+CA environment
+^^^^^^^^^^^^^^
+
+CA configuration is stored inside ``/var/lib/nethserver/`` directory, all certificates are stored inside ``/var/lib/nethserver/certs``. The ``nethserver-openvpn-conf`` action creates:
+
+* ``serial``, ``certindex.attr`` and ``/certindex``: database of valid and revocated certificates
+* ``crlnumber`` and ``/etc/openvpn/certs/crl.pem``: certificate revocation list
+* ``dh1024.pem``: key for TLS negotation
+
+
+Certificate creation
+^^^^^^^^^^^^^^^^^^^^
+
+Certificates in PEM format can be created using the command: ::
+
+  /usr/libexec/nethserver/pki-vpn-gencert <commonName>
+
+The ``commonName`` parameter is an unique name stored inside the certificate. 
+The command will generate ``key``, ``crt`` and ``csr`` file.
+Each generated certificate is referred with a numeric id and saved inside ``certindex`` database. OpenSSL will also create a certificated called as with the generated id (eg. ``02.pem``). 
+
+Certificate revocation
+^^^^^^^^^^^^^^^^^^^^^^
+
+Certificate revocation is done via the command: ::
+
+    /usr/libexec/nethserver/pki-vpn-revoke [-d] <commonName>
+
+The ``commonName`` parameter is an unique name stored inside the certificate. 
+If '-d' option is enabled, also delete ``crt``, ``csr``, ``pem`` and key files
+
+Certificate renewal
+^^^^^^^^^^^^^^^^^^^
+
+All certificates will expire after ``X`` days, where ``X`` is the value of ``CertificateDuration`` property inside ``pki`` key.
+Renew is done via the command: ::
+
+  /usr/libexec/nethserver/pki-vpn-renew <commonName>
+
+The ``commonName`` parameter is an unique name stored inside the certificate. 
+
 
 Client configuration is generated using ``/usr/libexec/nethserver/openvpn-local-client`` command. 
 The file will contain the CA certificate inside the <ca>.
@@ -177,18 +131,22 @@ Example with netcat: ::
 See more on management option: http://openvpn.net/index.php/open-source/documentation/miscellaneous/79-management-interface.html
 
 Log files
----------
+^^^^^^^^^
 
 Host to net status: ``/var/log/openvpn/host-to-net-status.log``.
-Server and client output: ``/var/log/messages``.
+Each openvpn instance can be inspected using journalctl command.
+Example: ::
+
+  journalctl -u openvpn@client1
+  journalctl -u openvpn@host-to.net
+
 
 Configuration database
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 Properties:
 
-* ``status``: enable or disabled OpenVPN server _and_ cleints,  can be ``enabled`` or ``disabled``, default is ``enabled``
-* ``ServerStatus``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
+* ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
 * ``AuthMode``: authentication mode, can be ``password``, ``certificate`` or ``password-certificate``. Default is ``password``
 * ``UDPPort``: server listen port, default is ``1194``
 * ``Mode``: network mode, can be ``routed`` or ``bridged``. Default is ``routed``.
@@ -215,8 +173,7 @@ Reference
 
 Example: ::
 
- openvpn=service
-    ServerStatus=enabled
+ openvpn@host-to-net=service
     AuthMode=password
     BridgeEndIP=192.168.1.122
     BridgeName=br0
@@ -229,5 +186,86 @@ Example: ::
     TapInterfaces=tap0
     UDPPort=1194
     access=green,red
+    status=enabled
+
+Tunnel clients
+==============
+
+OpenVPN clients are used to connect to a tunnel server obtaining a net2net VPN.
+
+Common properties:
+
+* ``AuthMode``: default value is ``certificate``. Possible values:
+
+  * ``certificate``: use x509 certificate. Certificates, including CA and private key, are saved in ``/var/lib/nethserver/certs/clients`` directory in a PEM file named ``key``.pem
+  * ``password``: use username and password
+  * ``password-certificate``: use username, password and a valid x509 certificate
+  * ``psk``: use a pre-shared key
+* ``User``: username used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
+* ``Password``: password used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
+* ``Psk``: pre-shared key user for authentication, if ``AuthMode`` is ``psk``. Pre-shared key is saved ``/var/lib/nethserver/certs/clients/<name>.key``
+* ``RemoteHost``: a list of remote server hostnames or ip addresses
+* ``RemotePort``: remote host port
+* ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
+* ``Protocol``: can be ``udp`` or ``tcp``, default is ``udp``
+* ``Cipher``: a valid OpenVPN cipher among ``openvpn --show-ciphers``
+* ``WanPriorities``: an ordered list of red interfaces which will be used to connect to the server, can be
+  used to prefer a faster WAN other than a slower one
+* ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``enabled``
+
+
+Database reference
+------------------
+
+Database: ``vpn``
+
+::
+
+ c1=tunnel
+    AuthMode=psk
+    Cipher=
+    Compression=disabled
+    Crt=
+    Mode=routed
+    Protocol=udp
+    Psk=
+    RemoteHost=1.2.3.4,8.8.6.7
+    RemotePort=1122
+    WanPriorities=eth2,eth1
+    status=enabled
+
+
+Tunnel servers
+==============
+
+Servers are instance of OpenVPN listening for incoming connections.
+Each server runs on its own port can handle many client.
+
+Properties:
+* ``Cipher``: a valid OpenVPN cipher among ``openvpn --show-ciphers``
+* ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
+* ``LocalNetworks``: list of networks in CIDR fromat, each network will be pushed as route to the client
+* ``Network``: network address of the VPN tunnel
+* ``Port``: listen port
+* ``Protocol``: can be ``udp`` or ``tcp``, default is ``udp``
+* ``PublicAddresses``: list of public IPs or host names used by clients to connect to the server
+* ``RemoteNetworks``: list of networks in CIDR fromat, for each network will be created a local route
+* ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
+
+
+Database reference
+------------------
+
+Database: ``vpn``
+
+server1=openvpn-tunnel-server
+    Cipher=
+    Compression=enabled
+    LocalNetworks=192.168.1.0/24
+    RemotelNetworks=192.168.6.0/24
+    Network=10.10.11.0/24
+    Port=1282
+    Protocol=udp
+    PublicAddresses=1.2.3.4,test.local.neth.eu
     status=enabled
 
