@@ -40,15 +40,18 @@
     }
     $OUT .= "push \"dhcp-option NBT 2\"\n";
 
-    my @routes = $rdb->get_all_by_prop( type => 'static');
-    foreach my $network_entry (@routes)
-    {
-        my $network = $network_entry->key();
-        my $block = NetAddr::IP->new( $network ) || "";
-
-        if(not $network eq $openvpn{Network})
+    my $extra_routes = $openvpn{'PushExtraRoutes'} || 'enabled';
+    if ($extra_routes eq 'enabled') {
+        my @routes = $rdb->get_all_by_prop( type => 'static');
+        foreach my $network_entry (@routes)
         {
-            $OUT .= "push \"route ".$block->addr()." ".$block->mask()."\"\n";
+            my $network = $network_entry->key();
+            my $block = NetAddr::IP->new( $network ) || "";
+
+            if(not $network eq $openvpn{Network})
+            {
+                $OUT .= "push \"route ".$block->addr()." ".$block->mask()."\"\n";
+            }
         }
     }
     

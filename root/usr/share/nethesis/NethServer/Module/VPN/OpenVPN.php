@@ -69,6 +69,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $this->declareParameter('Bridge', $bridges, array('configuration', 'openvpn@host-to-net', 'BridgeName'));
         $this->declareParameter('ClientToClient', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'ClientToClient'));
         $this->declareParameter('RouteToVPN', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'RouteToVPN'));
+        $this->declareParameter('PushExtraRoutes', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'PushExtraRoutes'));
         $this->declareParameter('BridgeStartIP', Validate::IPv4, array('configuration', 'openvpn@host-to-net', 'BridgeStartIP'));
         $this->declareParameter('BridgeEndIP', Validate::IPv4, array('configuration', 'openvpn@host-to-net', 'BridgeEndIP'));
         $this->declareParameter('Netmask', Validate::NETMASK, array('configuration', 'openvpn@host-to-net', 'Netmask'));

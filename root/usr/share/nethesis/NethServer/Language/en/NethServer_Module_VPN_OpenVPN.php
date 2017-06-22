@@ -27,4 +27,5 @@ $L['AdvancedConfiguration_label'] = 'Advanced configuration';
 $L['used_network'] = 'Network already in use';
 $L['Connection_label'] = 'Connection parameters';
 $L['Remote_label'] = 'Contact this server on public IP / host';
-
+$L['Advanced_label'] = 'Advanced';
+$L['PushExtraRoutes_label'] = 'Push all static routes';
