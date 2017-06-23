@@ -17,11 +17,29 @@ if ($view->getModule()->getIdentifier() == 'update') {
     $name = $view->textInput('name');
 }
 
+$interfaceChoices = \Nethgui\Widget\XhtmlWidget::hashToDatasource($view['WanInterfaces']);
+$wanPriorityPanel = $view->objectsCollection('WanPriority')
+    ->setAttribute('key', 'id')
+    ->setAttribute('ifEmpty', function ($view) use ($T) {
+        return $T('NoWansDefined_label');
+    })
+    ->setAttribute('template', function ($view) use ($T, $interfaceChoices) {
+        return $view->panel()->setAttribute('class', 'wanprio')
+            ->insert($view->selector("Interface", $view::SELECTOR_DROPDOWN | $view::LABEL_NONE)
+                ->setAttribute('choices', $interfaceChoices)
+            );
+    })
+;
+
 echo $view->panel()->insert($name);
 
 $remote = $view->fieldset()->setAttribute('template', $T('Remote_label'))
      ->insert($view->textArea('RemoteHost', $view::LABEL_ABOVE)->setAttribute('dimensions', '5x30'))
-     ->insert($view->textInput('RemotePort'));
+     ->insert($view->textInput('RemotePort'))
+     ->insert($view->fieldsetSwitch('WanPriorityStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)->setAttribute('uncheckedValue', 'disabled')
+        ->insert($wanPriorityPanel)
+     )
+;
 
 
 $auth = $view->fieldset()->setAttribute('template', $T('AuthMode_label'))
@@ -54,3 +72,9 @@ echo $view->fieldsetSwitch('status', 'enabled',  $view::FIELDSETSWITCH_CHECKBOX)
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 
+$view->includeCss('
+.wanprio select {
+    display: block;
+    margin-bottom: 4px;
+}
+');

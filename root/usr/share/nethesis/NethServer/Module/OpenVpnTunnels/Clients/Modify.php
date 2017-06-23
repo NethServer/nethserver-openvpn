@@ -44,9 +44,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('status', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
             array('AuthMode', $this->createValidator()->memberOf(array('certificate','psk','password-certificate')), \Nethgui\Controller\Table\Modify::FIELD),
             array('Protocol', $this->getPlatform()->createValidator()->memberOf(array('tcp-client','udp')), \Nethgui\Controller\Table\Modify::FIELD),
-            array('Cipher', $this->createValidator()->memberOf($this->getParent()->readCiphers()), \Nethgui\Controller\Table\Modify::FIELD)
+            array('Cipher', $this->createValidator()->memberOf($this->getParent()->readCiphers()), \Nethgui\Controller\Table\Modify::FIELD),
+            array('WanPriorities', FALSE, \Nethgui\Controller\Table\Modify::FIELD),
         );
-        
+
         $this->declareParameter('Crt', Validate::ANYTHING, $this->getPlatform()->getMapAdapter(
                 array($this, 'readCrtFile'), array($this, 'writeCrtFile'), array()
             ));
@@ -151,12 +152,88 @@ class Modify extends \Nethgui\Controller\Table\Modify
             }
         }
 
+        if($this->getRequest()->getParameter('WanPriorityStatus') === 'enabled') {
+            $wanInterfaces = array_keys($this->getWanInterfaces());
+            $wanPriorities = $this->parseWanPrioritiesFromRequest();
+            $adiff = array_merge(array_diff($wanInterfaces, $wanPriorities), array_diff($wanPriorities, $wanInterfaces));
+            if($adiff !== array()) {
+                $report->addValidationErrorMessage($this, 'WanPriorityStatus', 'missing_wanpriority_rules', array(implode(', ', $adiff)));
+            }
+        }
+
         parent::validate($report);
+    }
+
+    public function process()
+    {
+        if($this->getRequest()->isMutation()) {
+            $this->parameters['WanPriorities'] = implode(',', $this->parseWanPrioritiesFromRequest());
+        }
+        parent::process();
+    }
+
+    public function parseWanPrioritiesFromRequest()
+    {
+        if( ! $this->getRequest()->hasParameter('WanPriority')) {
+            return array();
+        }
+        $wanPriority = $this->getRequest()->getParameter('WanPriority');
+        $value = array();
+        foreach($wanPriority as $item) {
+            $value[] = $item['Interface'];
+        }
+        return $value;
+    }
+
+    public function getWanInterfaces()
+    {
+         static $ret;
+         if(is_array($ret)) {
+             return $ret;
+         }
+         $ret = array();
+         $providers = $this->getPlatform()->getDatabase('networks')->getAll('provider');
+         // sort providers by weight:
+         uasort($providers, function($r1, $r2) {
+             $a = intval($r1['weight']);
+             $b = intval($r2['weight']);
+             if($a === $b) {
+                 return 0;
+             }
+             return $a < $b ? -1 : 1;
+         });
+         foreach ($providers as $name => $provider) {
+             $ret[$provider['interface']] = sprintf('%s (%s)', $name, $provider['interface']);
+         }
+         return $ret;
+    }
+
+    public function getWanPriorityTable()
+    {
+        $id = 0;
+        $table = array();
+        $interfaces = $this->getWanInterfaces();
+        
+        // concatenate the keys from WanPriorities prop and providers default sort order from NetworksDB,
+        // then remove duplicates:
+        $keyList = array_unique(array_filter(array_merge(explode(',', $this->parameters['WanPriorities']), array_keys($interfaces))));
+        foreach($keyList as $key) {
+            if( ! isset($interfaces[$key])) {
+                continue;
+            }
+            $table[] = array('id' => $id++, 'Interface' => $key);
+        }
+        return $table;
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        $view['WanInterfaces'] = $this->getWanInterfaces();
+        if($this->getRequest()->isValidated()) {
+            $view['WanPriority'] = $this->getWanPriorityTable();
+            $view['WanPriorityStatus'] = $this->parameters['WanPriorities'] ? 'enabled' : 'disabled';
+        }
         $view['CipherDatasource'] = array_map(function($fmt) use ($view) {
             if ($fmt) {
                 return array($fmt, $fmt);
@@ -174,7 +251,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
         $view['ModeDatasource'] =  array_map(function($fmt) use ($view) {
             return array($fmt, $view->translate($fmt . '_label'));
         }, array('routed', 'bridged'));
-
 
     }
 

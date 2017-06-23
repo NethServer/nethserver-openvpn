@@ -35,3 +35,5 @@ $L['Confirm_label'] = 'Confirm';
 $L['key_exists_message'] = 'A tunnel with the same name already exists';
 $L['network_in_use'] = 'Network already in use';
 $L['PublicAddresses_label'] = "Public IPs and/or public FQDN";
+$L['WanPriorityStatus_label'] = 'Special WAN providers priority order';
+$L['missing_wanpriority_rules'] = 'The following providers are not selected: ${0}';
