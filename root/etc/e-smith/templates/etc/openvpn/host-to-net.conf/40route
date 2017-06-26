@@ -32,23 +32,38 @@
         $OUT .= "client-to-client\n";
     }
 
-    $OUT .= "push \"dhcp-option DOMAIN $DomainName\"\n";
-    foreach my $dns (@dns) {
-        $OUT .= "push \"dhcp-option DNS $dns\"\n";
-        $OUT .= "push \"dhcp-option WINS $dns\"\n";
-        $OUT .= "push \"dhcp-option NBDD $dns\"\n";
+    my $pushDomain = $openvpn{'PushDomain'} || $DomainName;
+    $OUT .= "push \"dhcp-option DOMAIN $pushDomain\"\n";
+
+    my @pushDns = split(',',$openvpn{'PushDns'} || '') || @dns;
+    foreach my $host (@pushDns) {
+        $OUT .= "push \"dhcp-option DNS $host\"\n";
     }
+
+    my @pushWins = split(',',$openvpn{'PushWins'} || '') || @dns;
+    foreach my $host (@pushWins) {
+        $OUT .= "push \"dhcp-option WINS $host\"\n";
+    }
+
+    my @pushNbdd = split(',',$openvpn{'PushNbdd'} || '') || @dns;
+    foreach my $host (@pushNbdd) {
+        $OUT .= "push \"dhcp-option NBDD $host\"\n";
+    }
+
     $OUT .= "push \"dhcp-option NBT 2\"\n";
 
-    my @routes = $rdb->get_all_by_prop( type => 'static');
-    foreach my $network_entry (@routes)
-    {
-        my $network = $network_entry->key();
-        my $block = NetAddr::IP->new( $network ) || "";
-
-        if(not $network eq $openvpn{Network})
+    my $extra_routes = $openvpn{'PushExtraRoutes'} || 'enabled';
+    if ($extra_routes eq 'enabled') {
+        my @routes = $rdb->get_all_by_prop( type => 'static');
+        foreach my $network_entry (@routes)
         {
-            $OUT .= "push \"route ".$block->addr()." ".$block->mask()."\"\n";
+            my $network = $network_entry->key();
+            my $block = NetAddr::IP->new( $network ) || "";
+
+            if(not $network eq $openvpn{Network})
+            {
+                $OUT .= "push \"route ".$block->addr()." ".$block->mask()."\"\n";
+            }
         }
     }
     

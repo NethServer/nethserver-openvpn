@@ -54,6 +54,14 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         return $ret;
     }
 
+    private function orEmptyValidator($v)
+    {
+        if ($v instanceof \Nethgui\System\ValidatorInterface) {
+            return $this->createValidator()->orValidator($v, $this->createValidator(\Nethgui\System\PlatformInterface::EMPTYSTRING));
+        }
+        return $this->createValidator()->orValidator($this->createValidator($v), $this->createValidator(\Nethgui\System\PlatformInterface::EMPTYSTRING));
+    }
+
     public function initialize()
     {
         parent::initialize();
@@ -69,8 +77,13 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $this->declareParameter('Bridge', $bridges, array('configuration', 'openvpn@host-to-net', 'BridgeName'));
         $this->declareParameter('ClientToClient', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'ClientToClient'));
         $this->declareParameter('RouteToVPN', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'RouteToVPN'));
+        $this->declareParameter('PushExtraRoutes', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'PushExtraRoutes'));
         $this->declareParameter('BridgeStartIP', Validate::IPv4, array('configuration', 'openvpn@host-to-net', 'BridgeStartIP'));
         $this->declareParameter('BridgeEndIP', Validate::IPv4, array('configuration', 'openvpn@host-to-net', 'BridgeEndIP'));
+        $this->declareParameter('PushDomain', $this->orEmptyValidator($this->createValidator()->hostname(1)), array('configuration', 'openvpn@host-to-net', 'PushDomain'));
+        $this->declareParameter('PushDns', Validate::IPv4_OR_EMPTY, array('configuration', 'openvpn@host-to-net', 'PushDns'));
+        $this->declareParameter('PushWins', Validate::IPv4_OR_EMPTY, array('configuration', 'openvpn@host-to-net', 'PushWins'));
+        $this->declareParameter('PushNbdd', Validate::IPv4_OR_EMPTY, array('configuration', 'openvpn@host-to-net', 'PushNbdd'));
         $this->declareParameter('Netmask', Validate::NETMASK, array('configuration', 'openvpn@host-to-net', 'Netmask'));
         $this->declareParameter('Network', "/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0)$/", array('configuration', 'openvpn@host-to-net', 'Network'));
         $this->declareParameter('Compression', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'Compression'));
@@ -111,7 +124,8 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
  
         $s = $this->getPlatform()->getDatabase('configuration')->getType('SystemName');
         $d = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
-        $view['RemoteDefault'] = "$s.$d"; 
+        $view['RemoteDefault'] = "$s.$d";
+        $view['DomainPlaceholder'] = $d;
     }
 
     private function maskToCidr($mask){

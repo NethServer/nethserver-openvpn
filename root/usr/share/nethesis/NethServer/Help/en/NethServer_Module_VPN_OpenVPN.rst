@@ -54,6 +54,9 @@ Allow client-to-client network traffic
 Enable LZO compression
     Enable LZO compression. This options must be enabled both on client and server.
 
+Push all static routes
+    If enabled, push to client all static routes configured for the server.
+
 Contact this server on public IP / host 
     Specify a comma separated list of IP and host names that the OpenVPN
     clients will attempt to contact this server.  If this value is
