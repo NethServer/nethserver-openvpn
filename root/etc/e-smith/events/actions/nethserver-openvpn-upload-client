@@ -44,8 +44,11 @@ my $name = $client->{'name'};
 my $record = $db->get($name);
 if (defined($record)) {
     $record->delete();
+    system("/sbin/e-smith/signal-event openvpn-tunnel-delete $name");
 }
 
 delete($client->{'name'});
 delete($client->{'Psk'});
 $db->new_record($name, $client);
+
+system("/sbin/e-smith/signal-event openvpn-tunnel-create $name");
