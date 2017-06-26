@@ -37,3 +37,4 @@ $L['network_in_use'] = 'Network already in use';
 $L['PublicAddresses_label'] = "Public IPs and/or public FQDN";
 $L['WanPriorityStatus_label'] = 'Special WAN providers priority order';
 $L['missing_wanpriority_rules'] = 'The following providers are not selected: ${0}';
+$L['NoWansDefined_label'] = 'No configured red interfaces';

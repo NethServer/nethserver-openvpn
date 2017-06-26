@@ -87,6 +87,13 @@ class Servers extends \Nethgui\Controller\TableController
         return $status;
     }
 
+    public function prepareViewForColumnPort(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        # valid protocl values are udp, tcp-server
+        return $values['Port'] . " (" . strtoupper(substr($values['Protocol'],0,3)) . ")";
+    }
+
+
     public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $cellView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);

@@ -9,7 +9,7 @@ echo $view->fieldsetSwitch('status', 'enabled',  $view::FIELDSETSWITCH_CHECKBOX)
         ->setAttribute('uncheckedValue', 'disabled')
 
 
-     ->insert($view->textInput('PublicAddresses'))
+     ->insert($view->textArea('PublicAddresses', $view::LABEL_ABOVE)->setAttribute('dimensions', '5x30'))
      ->insert($view->fieldset() ->setAttribute('template', $T('Network'))
          ->insert($view->textInput('Port'))
          ->insert($view->textInput('Network'))

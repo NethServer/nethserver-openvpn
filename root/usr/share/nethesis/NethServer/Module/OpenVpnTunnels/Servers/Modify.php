@@ -53,7 +53,8 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('status', 'enabled');
-        $this->setDefaultValue('Port', rand(1200, 1300));
+        $this->setDefaultValue('Port', $this->getFreePort());
+        $this->setDefaultValue('Network', $this->getFreeNetwork());
         $this->setDefaultValue('Compression', 'enabled');
         $this->setDefaultValue('LocalNetworks', $this->readNetworks());
         $this->setDefaultValue('PublicAddresses', '');
@@ -61,6 +62,34 @@ class Modify extends \Nethgui\Controller\Table\Modify
         $this->setDefaultValue('Cipher', '');
 
         parent::initialize();
+    }
+
+    private function getFreePort()
+    {
+        $port = rand(1200, 1300);
+        while ($this->isUsedPort($port)) {
+            $port = rand(1200, 1300);
+        }
+        return $port;
+    }
+
+    private function getFreeNetwork()
+    {
+        $net = "10.".rand(0,254).".".rand(0,254).".0/24";
+        while ($this->isUsedNetwork($net)) {
+            $net = "10.".rand(0,254).".".rand(0,254).".0/24";
+        }
+        return $net;
+    }
+
+    public function readPublicAddresses($v)
+    {
+        return implode("\n", explode(",", $v));
+    }
+
+    public function writePublicAddresses($p)
+    {
+        return array(implode(',', array_filter(preg_split("/[,\s]+/", $p))));
     }
 
     public function readLocalNetworks($v)
@@ -89,7 +118,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         return 32-log(($long ^ $base)+1,2);
     }
 
-    private function readPublicAddresses()
+    private function getPublicAddresses()
     {
         static $ips;
 
@@ -103,11 +132,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
                 }
             }
             $ips = array_keys($ips);
-
-            # add FQDN as fallback
-            $s = $this->getPlatform()->getDatabase('configuration')->getType('SystemName');
-            $d = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
-            $ips[] = "$s.$d";
         }
 
         return $ips;
@@ -181,7 +205,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         return $this->writeFile(self::TUNNEL_PATH . $this->parameters['name'] . '.key', $value);
     }
 
-    private function isUsedPort($port, $exclude)
+    private function isUsedPort($port, $exclude = '')
     {
         $port = trim($port);
         # check between other tunnels
@@ -203,7 +227,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         return false;
     }
 
-    private function isUsedNetwork($network, $exclude)
+    private function isUsedNetwork($network, $exclude = '')
     {
         $network = trim($network);
         # check between other tunnels
@@ -253,7 +277,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         }
 
         $v_host = $this->getPlatform()->createValidator(Validate::HOSTADDRESS);
-        foreach (explode(",",$this->parameters["PublicAddresses"]) as $host) {
+        foreach (array_filter(preg_split('/[,\s]+/', $this->parameters['PublicAddresses'])) as $host) {
             if ( ! $v_host->evaluate($host) ) {
                     $report->addValidationError($this, "PublicAddresses", $v_host); 
             }
@@ -285,7 +309,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
         $view->setTemplate($templates[$this->getIdentifier()]);
         if($this->getIdentifier() === 'create' && $this->getRequest()->isValidated() && ! $this->getRequest()->isMutation()) {
-           $view['PublicAddresses'] = $this->readPublicAddresses();
+           $view['PublicAddresses'] = implode("\n",$this->getPublicAddresses());
         }
     }
 
