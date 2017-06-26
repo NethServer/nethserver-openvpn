@@ -60,6 +60,15 @@ Allow client-to-client network traffic
 Enable LZO compression
     Enable LZO compression. This options must be enabled both on client and server.
 
+Push all static routes
+    If enabled, push to client all static routes configured for the server.
+
+DHCP options
+    Extra options for OpenVPN DHCP server.
+   
+    * Domain: if left blank, the Domain of the server will be used
+    * DNS, WINS, NBDD: if left blank, the server configured DNS will be used
+
 Contact this server on public IP / host
     Specify a comma separated list of IP and host names that the OpenVPN
     clients will attempt to contact this server.  If this value is
