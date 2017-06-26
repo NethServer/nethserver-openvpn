@@ -1,0 +1,18 @@
+#
+# 10base
+#
+dev tun{{$name}}
+dev-type tun
+persist-tun
+lport {{$server->prop('Port')}}
+proto {{$server->prop('Protocol')}}
+{
+    use NetAddr::IP;
+    my $net = NetAddr::IP->new($server->prop('Network'));
+    $OUT .= "ifconfig ".$net->first->addr()." ".$net->mask()."\n";
+}
+float
+multihome
+daemon
+topology subnet
+

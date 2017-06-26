@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use JSON;
+use esmith::ConfigDB;
+
+my $event = shift;
+my $filename = shift;
+my $db = esmith::ConfigDB->open('vpn');
+
+my $json_text = do {
+   open(my $json_fh, "<:encoding(UTF-8)", $filename)
+      or die("Can't open \$filename\": $!\n");
+   local $/;
+   <$json_fh>
+};
+
+my $client = JSON::decode_json($json_text);
+
+open(my $key, ">", "/var/lib/nethserver/certs/clients/".$client->{'name'}.".key");
+print $key $client->{'Psk'};
+close($key);
+
+my $name = $client->{'name'};
+my $record = $db->get($name);
+if (defined($record)) {
+    $record->delete();
+}
+
+delete($client->{'name'});
+delete($client->{'Psk'});
+$db->new_record($name, $client);

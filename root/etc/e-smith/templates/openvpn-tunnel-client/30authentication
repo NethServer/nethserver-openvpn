@@ -1,0 +1,26 @@
+#
+# 30authentication
+#
+{
+    my $mode = $client->prop('AuthMode') || 'certificate';
+    my $authFile = "/etc/openvpn/$name.auth";
+    my $cert = "/var/lib/nethserver/certs/clients/$name.pem";
+    my $psk = "/var/lib/nethserver/certs/clients/$name.key";
+    if ($mode eq 'password-certificate') {
+        $OUT .= "client\n";
+        $OUT.="auth-user-pass $authFile\n";
+        $OUT .= "ca $cert\n";
+    }
+    if ($mode eq 'certificate' or $mode eq 'password-certificate') {
+        $OUT .= "client\n";
+        $OUT.= "# Authentication: certificate\n";
+        $OUT .= "cert $cert\n";
+        $OUT .= "key $cert\n";
+        $OUT .= "ca $cert\n";
+    }
+    if ($mode eq 'psk') {
+        $OUT.= "# Authentication: PSK\n";
+        $OUT .= "secret $psk\n";
+    }
+}
+

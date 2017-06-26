@@ -1,0 +1,9 @@
+{
+    #
+    # 00template_vars
+    #
+
+    our $server = bless \%server, 'esmith::DB::db::Record';
+
+    '';
+}

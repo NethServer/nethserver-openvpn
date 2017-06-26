@@ -104,33 +104,11 @@ event_services($event, 'openvpn@host-to-net' => 'restart');
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
 
-#--------------------------------------------------
-# actions for nethserver-vpn-create event
-#--------------------------------------------------
-
-$event = "nethserver-vpn-create";
-
-event_actions($event,
-    'nethserver-openvpn-genclient' => '30',
-    'firewall-adjust' => '80',
-);
-
-templates2events("/etc/openvpn/host-to-net.pool",  $event);
-
 
 #--------------------------------------------------
-# actions for nethserver-vpn-modify event
+# actions for validator vpn-create
 #--------------------------------------------------
 
-$event = "nethserver-vpn-modify";
-
-event_actions($event,
-    'nethserver-openvpn-genclient' => '30',
-    'firewall-adjust' => '80',
-);
-templates2events("/etc/openvpn/host-to-net.pool",  $event);
-
-# actions for user-create validator
 validator_actions('vpn-create', qw(
                   uniq-account 20
 ));
@@ -156,4 +134,36 @@ $event = "post-restore-config";
 
 event_actions($event,
     'nethserver-openvpn-ns6upgrade' => '60',
+);
+
+
+#---------------------------------------------------------
+# actions for openvpn-tunnel-{create,modify,delete} events
+#---------------------------------------------------------
+
+event_actions('openvpn-tunnel-create',
+    'nethserver-openvpn-tunnels' => '30',
+    'firewall-adjust' => '80',
+);
+templates2events("/etc/openvpn/host-to-net.pool",  'openvpn-tunnel-create');
+
+event_actions('openvpn-tunnel-modify',
+    'nethserver-openvpn-tunnels' => '30',
+    'firewall-adjust' => '80',
+);
+templates2events("/etc/openvpn/host-to-net.pool",  'openvpn-tunnel-modify');
+
+event_actions('openvpn-tunnel-delete',
+    'nethserver-openvpn-tunnels' => '30',
+    'firewall-adjust' => '80',
+);
+templates2events("/etc/openvpn/host-to-net.pool",  'openvpn-tunnel-delete');
+
+#--------------------------------------------------
+# actions for openvpn-tunnel-upload event
+#--------------------------------------------------
+
+event_actions('openvpn-tunnel-upload',
+    'nethserver-openvpn-upload-client' => '30',
+    'firewall-adjust' => '80',
 );

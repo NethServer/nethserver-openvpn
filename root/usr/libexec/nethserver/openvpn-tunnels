@@ -1,0 +1,107 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+#
+# This script prints a list of legacy VPN created
+# by migrate-nethsecurity event
+#
+
+use JSON;
+use File::Basename;
+use esmith::ConfigDB;
+
+sub list_vpns
+{
+    my %vpns;
+    my $db = esmith::ConfigDB->open_ro('vpn');
+    foreach ($db->get_all()) {
+        my $type = $_->prop('type');
+        if ($type ne 'openvpn-tunnel-server' && $type ne 'tunnel') {
+             next;
+        }
+        my $name = $_->key;
+        my $file = "/etc/openvpn/$name.conf";
+        if ( -f $file ) {
+            my $running = system("systemctl status openvpn\@$name &>/dev/null");
+            $running = ($running == 0) ? 1 : 0;
+            my $status = $db->get_prop($name, 'status');
+            my $port = $db->get_prop($name, 'Port');
+            my $network = $db->get_prop($name, 'Network');
+            my %vpn = ( name => $name, file => $file, running => $running, status => $status, port => $port, network => $network );
+            $vpns{$name} = \%vpn;
+       }
+    }
+
+    print encode_json(\%vpns);
+}
+
+sub start_vpn
+{
+    my $vpn = shift;
+    system("systemctl start $vpn &>/dev/null");
+    exit ($? >> 8);
+}
+
+sub stop_vpn
+{
+    my $vpn = shift;
+    system("systemctl stop $vpn &>/dev/null");
+    exit ($? >> 8);
+}
+
+
+sub restart_vpn
+{
+    my $vpn = shift;
+    system("systemctl restart $vpn &>/dev/null");
+    exit ($? >> 8);
+}
+
+my @commans = ('list','stop','start','restart');
+my $command = shift || help();
+
+sub help
+{
+    print "$0 <list|start|stop|restart> [vpn]\n\n";
+    print "   Availalble commands:\n";
+    print "       list\t\tList all VPNs\n";
+    print "       start <vpn>\tStart the given VPN\n";
+    print "       stop <vpn>\tStop the given VPN\n";
+    print "       restart <vpn>\tStop the given VPN\n";
+    exit 0;
+}
+
+if ($command eq 'list') {
+    list_vpns();
+} else {
+    my $vpn = shift || die("Missing vpn name parameter");
+
+    if ($command eq 'start') {
+        start_vpn($vpn);
+    } elsif ($command eq 'stop') {
+        stop_vpn($vpn);
+    } elsif ($command eq 'restart') {
+        restart_vpn($vpn);
+    }
+}
+
+exit 0;

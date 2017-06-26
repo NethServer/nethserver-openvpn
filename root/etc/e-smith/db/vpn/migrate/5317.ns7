@@ -1,0 +1,17 @@
+{
+    #
+    # Add status and Protocol props to OpenVpn client tunnels
+    #
+
+    $cdb = esmith::ConfigDB->open('vpn');
+    foreach my $vpn ($cdb->get_all(type => 'tunnel')) {
+        my $status = $vpn->prop('status');
+        if (!defined($status)) {
+            $vpn->set_prop('status','enabled');
+        }
+        my $protocol = $vpn->prop('Protocol');
+        if (!defined($protcol)) {
+            $vpn->set_prop('Protocol','udp');
+        }
+    }
+}

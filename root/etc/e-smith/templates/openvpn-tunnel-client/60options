@@ -1,0 +1,14 @@
+#
+# 60options
+#
+{
+    my $cipher = $client->prop('Cipher') || '';
+    my $compression = $client->prop('Compression') || 'disabled';
+    if ($cipher ne '') {
+        $OUT .= "cipher $cipher\n";
+    }
+    if ($compression ne 'disabled') {
+        $OUT .= "comp-lzo\n";
+    }
+}
+verb 3

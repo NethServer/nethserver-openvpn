@@ -21,9 +21,9 @@ namespace NethServer\Module;
  */
 
 /**
- * Manage and configure VPN
+ * Manage and configure OpenVPN tunnels
  */
-class VPN extends \Nethgui\Controller\TabsController
+class OpenVpnTunnels extends \Nethgui\Controller\TabsController
 {
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
@@ -34,8 +34,7 @@ class VPN extends \Nethgui\Controller\TabsController
     public function initialize()
     {
         parent::initialize();
-        $this->addChild(new VPN\OpenVPN());
-        $this->addChild(new VPN\Accounts());
+        $this->addChild(new OpenVpnTunnels\Servers());
+        $this->addChild(new OpenVpnTunnels\Clients());
     }
-
 }
