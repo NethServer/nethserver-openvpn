@@ -99,6 +99,13 @@ sub gen_config
         my $port = $vpn->prop('Port') || die("Can't find port for '$name'");
         my $protocol = $vpn->prop('Protocol') || 'udp';
         $status = $vpn->prop('status') || 'disabled';
+
+        # Generate certficate if not exists
+        if ( ! -f "/var/lib/nethserver/openvpn-tunnels/keys/$name.crt") {
+            system("/usr/share/nethserver-openvpn/pkitool $name");
+        }
+
+        # Update firewall configuration
         update_fw_record($name, $port, $protocol, $status); 
         esmith::templates::processTemplate({
             TEMPLATE_PATH => "openvpn-tunnel-server",
@@ -122,6 +129,8 @@ sub gen_config
             "MORE_DATA" => { 'client' => $vpn, 'name' => $name }
         });
     }
+
+    # Adjust systemd configuration
     toggle($name, $status);
 }
 
@@ -129,6 +138,7 @@ sub gen_config
 if ($event eq 'openvpn-tunnel-delete') {
     # Delete existing tunnel
     unlink("/etc/openvpn/$name.conf");
+    system("/usr/share/nethserver-openvpn/revoke-full $name");
     delete_fw_record($name);
     disable($name);
 } elsif ($event eq 'openvpn-tunnel-create' || $event eq 'openvpn-tunnel-modify') {

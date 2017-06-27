@@ -45,14 +45,18 @@ fi
 
 chmod o+r ${cdir}/{serial,crlnumber,certindex.attr,certindex,dh1024.pem,crl.pem}
 
+# Initialize easy-rsa for tunnels
 
-# Initialize openvpn-tunnels certs
-# Copy certificate to avoid problems on regeneration
+tdir=/var/lib/nethserver/openvpn-tunnels/keys
+edir=/usr/share/nethserver-openvpn
 
-tdir=/var/lib/nethserver/openvpn-tunnels
+mkdir -p ${tdir}
 
-if [ ! -f ${tdir}/dh1024.pem ]; then
-    /bin/cp -p ${cdir}/dh1024.pem ${tdir}
-    /bin/cp -p /etc/pki/tls/certs/NSRV.crt ${tdir}
-    /bin/cp -p /etc/pki/tls/certs/NSRV.key ${tdir}
+if [ ! -f ${tdir}/dh2048.pem ]; then
+  echo 01 > ${tdir}/serial
+  touch ${tdir}/index.txt 
+  source ${edir}/vars
+  ${edir}/build-dh 2> /dev/null
+  ${edir}/pkitool --initca
 fi
+
