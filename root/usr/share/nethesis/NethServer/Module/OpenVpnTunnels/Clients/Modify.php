@@ -31,6 +31,8 @@ class Modify extends \Nethgui\Controller\Table\Modify
 {
     const CRT_PATH = "/var/lib/nethserver/certs/clients/";
 
+    private $topologies = array('subnet','p2p');
+
     public function initialize()
     {
         $parameterSchema = array(
@@ -46,6 +48,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('Protocol', $this->getPlatform()->createValidator()->memberOf(array('tcp-client','udp')), \Nethgui\Controller\Table\Modify::FIELD),
             array('Cipher', $this->createValidator()->memberOf($this->getParent()->readCiphers()), \Nethgui\Controller\Table\Modify::FIELD),
             array('WanPriorities', FALSE, \Nethgui\Controller\Table\Modify::FIELD),
+            array('Topology', $this->getPlatform()->createValidator()->memberOf($this->topologies), \Nethgui\Controller\Table\Modify::FIELD),
+            array('LocalPeer', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
+            array('RemotePeer', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
+            array('RemoteNetworks', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
         );
 
         $this->declareParameter('Crt', Validate::ANYTHING, $this->getPlatform()->getMapAdapter(
@@ -60,8 +66,31 @@ class Modify extends \Nethgui\Controller\Table\Modify
         $this->setDefaultValue('Protocol', 'udp');
         $this->setDefaultValue('Mode', 'routed');
         $this->setDefaultValue('AuthMode', 'certificate');
+        $this->setDefaultValue('Topology', 'subnet');
 
         parent::initialize();
+    }
+ 
+    public function bind(\Nethgui\Controller\RequestInterface $request)
+    {
+        parent::bind($request);
+
+        # Force PSK authentication for topology p2p
+        if($this->getRequest()->isMutation()) {
+            if ($this->parameters['Topology'] == 'p2p') {
+                 $this->parameters['AuthMode'] = "psk";
+            }
+        }
+    }
+
+    public function readRemoteNetworks($v)
+    {
+        return implode("\n", explode(",", $v));
+    }
+
+    public function writeRemoteNetworks($p)
+    {
+        return array(implode(',', array_filter(preg_split("/[,\s]+/", $p))));
     }
 
     public function readRemoteHost($v)
