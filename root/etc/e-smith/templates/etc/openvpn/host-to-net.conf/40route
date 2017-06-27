@@ -35,17 +35,17 @@
     my $pushDomain = $openvpn{'PushDomain'} || $DomainName;
     $OUT .= "push \"dhcp-option DOMAIN $pushDomain\"\n";
 
-    my @pushDns = split(',',$openvpn{'PushDns'} || '') || @dns;
+    my @pushDns = $openvpn{'PushDns'} ? split(',', $openvpn{'PushDns'}) : @dns;
     foreach my $host (@pushDns) {
         $OUT .= "push \"dhcp-option DNS $host\"\n";
     }
 
-    my @pushWins = split(',',$openvpn{'PushWins'} || '') || @dns;
+    my @pushWins = $openvpn{'PushWins'} ? split(',', $openvpn{'PushWins'}) : @dns;
     foreach my $host (@pushWins) {
         $OUT .= "push \"dhcp-option WINS $host\"\n";
     }
 
-    my @pushNbdd = split(',',$openvpn{'PushNbdd'} || '') || @dns;
+    my @pushNbdd = $openvpn{'PushNbdd'} ? split(',', $openvpn{'PushNbdd'}) : @dns;
     foreach my $host (@pushNbdd) {
         $OUT .= "push \"dhcp-option NBDD $host\"\n";
     }
