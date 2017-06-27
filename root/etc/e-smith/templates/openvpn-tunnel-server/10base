@@ -8,11 +8,17 @@ lport {{$server->prop('Port')}}
 proto {{$server->prop('Protocol')}}
 {
     use NetAddr::IP;
-    my $net = NetAddr::IP->new($server->prop('Network'));
-    $OUT .= "ifconfig ".$net->first->addr()." ".$net->mask()."\n";
+    my $topology = $server->prop('Topology') || 'subnet';
+    $OUT .= "topology $topology\n";
+    if ($topology eq 'subnet') {
+        my $net = NetAddr::IP->new($server->prop('Network'));
+        $OUT .= "server ".$net->addr()." ".$net->mask()."\n";
+        $OUT .= "push \"topology subnet\"\n";
+    } else {
+        $OUT .= "ifconfig ".$server->prop('LocalPeer')." ".$server->prop('RemotePeer')."\n";
+    }
 }
 float
 multihome
 daemon
-topology subnet
 

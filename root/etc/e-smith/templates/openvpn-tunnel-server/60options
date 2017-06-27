@@ -4,12 +4,21 @@
 {
     my $cipher = $server->prop('Cipher') || '';
     my $compression = $server->prop('Compression') || 'disabled';
+    my $protocol = $server->prop('Protocol') || 'udp';
+    my $topology = $server->prop('Topology') || 'subnet';
     if ($cipher ne '') {
         $OUT .= "cipher $cipher\n";
     }
     if ($compression ne 'disabled') {
         $OUT .= "comp-lzo\n";
     }
+    if ($protocol eq 'udp') {
+        $OUT .= "explicit-exit-notify 1\n";
+    }
+    if ($topology eq 'subnet') {
+        $OUT .= "client-config-dir ccd\n";
+    }
+
 }
 keepalive 10 60
 ping-timer-rem

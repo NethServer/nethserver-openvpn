@@ -44,3 +44,15 @@ if [ ! -f ${cdir}/crl.pem ]; then
 fi
 
 chmod o+r ${cdir}/{serial,crlnumber,certindex.attr,certindex,dh1024.pem,crl.pem}
+
+
+# Initialize openvpn-tunnels certs
+# Copy certificate to avoid problems on regeneration
+
+tdir=/var/lib/nethserver/openvpn-tunnels
+
+if [ ! -f ${tdir}/dh1024.pem ]; then
+    /bin/cp -p ${cdir}/dh1024.pem ${tdir}
+    /bin/cp -p /etc/pki/tls/certs/NSRV.crt ${tdir}
+    /bin/cp -p /etc/pki/tls/certs/NSRV.key ${tdir}
+fi

@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use esmith::ConfigDB;
+use NetAddr::IP;
 my $path = "/etc/openvpn/ccd";
 
 sub write_route($) {
@@ -8,13 +9,23 @@ sub write_route($) {
     my $OUT = '';
     my $outFile = $path . "/" . $acc->key;
     my %props = $acc->props;
-    $props{VPNRemoteNetwork} ||= '';
-    $props{VPNRemoteNetmask} ||= '';
 
-    next unless ($props{VPNRemoteNetwork} ne '');
+    if ($props{'type'} eq 'vpn') {
+         if (!defined($props{VPNRemoteNetwork}) || $props{VPNRemoteNetwork} eq '') {
+             return;
+         }
 
-    $OUT .= "iroute " . $props{VPNRemoteNetwork} . " " . $props{VPNRemoteNetmask} . "\n";
-
+         $OUT .= "iroute " . $props{VPNRemoteNetwork} . " " . $props{VPNRemoteNetmask} . "\n";
+    } elsif ($props{'type'} eq 'openvpn-tunnel-server') {
+         if (!defined($props{RemoteNetworks}) || $props{RemoteNetworks} eq '') {
+             return;
+         }
+        
+        foreach (split(',',$props{'RemoteNetworks'})) {
+            my $net = NetAddr::IP->new($_);
+            $OUT .= sprintf("iroute %s %s\n",$net->addr(),$net->mask());
+        }
+    }
 
     open (FILE, ">$outFile");
     print FILE $OUT;
@@ -27,12 +38,10 @@ my $adb = esmith::ConfigDB->open_ro('vpn') or die "Couldn't open VPN DB\n";
 unlink (glob("$path/*")); 
 
 # create ccd config files for vpn accounts
-for my $acc ( $adb->get_all_by_prop('type' => 'vpn') )
+for my $acc ( $adb->get_all() )
 {
-    write_route($acc);
-}
-# create ccd config files for user accounts
-for my $user ( $adb->get_all_by_prop('type' => 'vpn-user') )
-{
-    write_route($user);
+    my $type = $acc->prop('type');
+    if ($type eq 'vpn' || $type eq 'openvpn-tunnel-server') {
+        write_route($acc);
+    }
 }

@@ -1,15 +1,20 @@
 #
 # 40psk
 #
-<secret>
 {
     my $key = "/var/lib/nethserver/openvpn-tunnels/$name.key";
-    open(my $fh, '<:encoding(UTF-8)', $key);
+    my $topology = $server->prop('Topology') || 'subnet';
 
-    while( my $line = <$fh>)  {   
-        $OUT .= "$line";
-    }
+    if ($topology eq 'p2p' && -f $key) {
+        $OUT .="<secret>\n";
+        open(my $fh, '<:encoding(UTF-8)', $key);
 
-    close $fh;
-}</secret>
+        while( my $line = <$fh>)  {   
+            $OUT .= "$line";
+        }
+
+        close $fh;
+        $OUT .= "</secret>\n";
+   }
+}
 

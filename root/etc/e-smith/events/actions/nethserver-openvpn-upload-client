@@ -36,9 +36,16 @@ my $json_text = do {
 
 my $client = JSON::decode_json($json_text);
 
-open(my $key, ">", "/var/lib/nethserver/certs/clients/".$client->{'name'}.".key");
-print $key $client->{'Psk'};
-close($key);
+if ($client->{'Psk'}) {
+    open(my $key, ">", "/var/lib/nethserver/certs/clients/".$client->{'name'}.".key");
+    print $key $client->{'Psk'};
+    close($key);
+}
+if ($client->{'Crt'}) {
+    open(my $crt, ">", "/var/lib/nethserver/certs/clients/".$client->{'name'}.".pem");
+    print $crt $client->{'Crt'};
+    close($crt);
+}
 
 my $name = $client->{'name'};
 my $record = $db->get($name);
@@ -49,6 +56,7 @@ if (defined($record)) {
 
 delete($client->{'name'});
 delete($client->{'Psk'});
+delete($client->{'Crt'});
 $db->new_record($name, $client);
 
 system("/sbin/e-smith/signal-event openvpn-tunnel-create $name");
