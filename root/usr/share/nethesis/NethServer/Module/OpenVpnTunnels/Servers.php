@@ -49,11 +49,11 @@ class Servers extends \Nethgui\Controller\TableController
             ->setColumns($columns)
             ->addTableAction(new \NethServer\Module\OpenVpnTunnels\Servers\Modify('create'))
             ->addTableAction(new \Nethgui\Controller\Table\Help('Help'))
+            ->addRowAction(new \NethServer\Module\OpenVpnTunnels\Servers\Download('download'))
             ->addRowAction(new \NethServer\Module\OpenVpnTunnels\Servers\Modify('update'))
             ->addRowAction(new \NethServer\Module\OpenVpnTunnels\Servers\Modify('delete'))
             ->addRowAction(new \NethServer\Module\OpenVpnTunnels\TunnelCtl('enable'))
             ->addRowAction(new \NethServer\Module\OpenVpnTunnels\TunnelCtl('disable'))
-            ->addRowAction(new \NethServer\Module\OpenVpnTunnels\Servers\Download('download'))
         ;
 
         parent::initialize();
