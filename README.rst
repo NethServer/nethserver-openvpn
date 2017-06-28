@@ -23,7 +23,7 @@ Roadwarrior accounts
 
 Accounts are used to identify clients connecting to the server itself. There are two types of account:
 
-* user account: system user with VPN access using username and password
+* user account: system user with VPN access using user name and password
 * vpn-only account: simple account with only VPN access
 
 Each account can be used in a roadwarrior connection (host to net). 
@@ -63,7 +63,7 @@ CA environment
 
 CA configuration is stored inside ``/var/lib/nethserver/`` directory, all certificates are stored inside ``/var/lib/nethserver/certs``. The ``nethserver-openvpn-conf`` action creates:
 
-* ``serial``, ``certindex.attr`` and ``/certindex``: database of valid and revocated certificates
+* ``serial``, ``certindex.attr`` and ``/certindex``: database of valid and revoked certificates
 * ``crlnumber`` and ``/etc/openvpn/certs/crl.pem``: certificate revocation list
 * ``dh1024.pem``: key for TLS negotation
 
@@ -130,29 +130,24 @@ Example with netcat: ::
 
 See more on management option: http://openvpn.net/index.php/open-source/documentation/miscellaneous/79-management-interface.html
 
-Log files
-^^^^^^^^^
-
-Host to net status: ``/var/log/openvpn/host-to-net-status.log``.
-Each openvpn instance can be inspected using journalctl command.
-Example: ::
-
-  journalctl -u openvpn@client1
-  journalctl -u openvpn@host-to.net
-
-
 Configuration database
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Properties:
 
 * ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
-* ``AuthMode``: authentication mode, can be ``password``, ``certificate`` or ``password-certificate``. Default is ``password``
+* ``AuthMode``: authentication mode, can be ``password``, ``certificate`` or ``password-certificate``
 * ``UDPPort``: server listen port, default is ``1194``
 * ``Mode``: network mode, can be ``routed`` or ``bridged``. Default is ``routed``.
 * ``ClientToClient``: can be ``enabled`` or ``disabled``, default is ``disabled``. When enabled, traffic between VPN clients is allowed
 * ``Compression``: can be ``enabled`` or ``disabled``, default is ``disabled``. When enabled, adaptive LZO compression is used
 * ``Remote``: comma-separated list of IPs or host names, it's used as multiple *remote* option inside client configuration generation script
+* ``PushDns``: if set, push the specified DNS as DHCP option
+* ``PushDomain``: if set, push the specified domain as DHCP option
+* ``PushExtraRoutes``: if ``disabled``, only routes for green interface are pushed, if enabled also all static routes will be pushed. Default is ``enabled``
+* ``PushNbdd``: if set, push the specified NBDD as DHCP option
+* ``PushWins``: if set, push the specified WINS as DHCP option
+
 
 If mode is ``bridged``:
 
@@ -182,11 +177,34 @@ Example: ::
     Mode=routed
     Netmask=255.255.255.0
     Network=192.168.6.0
+    PushDns=
+    PushDomain=
+    PushExtraRoutes=enabled
+    PushNbdd=
+    PushWins=
+    Remote=
     RouteToVPN=disabled
     TapInterfaces=tap0
     UDPPort=1194
     access=green,red
     status=enabled
+
+Tunnel topology
+===============
+
+Available topology are ``subnet`` and ``p2p``
+
+If topology is ``p2p``:
+
+- only ``psk`` authentication mode is available
+- options ``LocalPeerIP`` and ``RemotePeerIP`` must be set for both server and client
+- options ``RemoteNetworks`` must be set if the client should be able to reach
+  networks behind the tunnel server
+
+If topology is ``subnet``:
+
+- only ``password``, ``certificate`` or ``password-certificate`` authentication mode are available
+- options ``Network`` must be set for the server
 
 Tunnel clients
 ==============
@@ -198,21 +216,27 @@ Common properties:
 * ``AuthMode``: default value is ``certificate``. Possible values:
 
   * ``certificate``: use x509 certificate. Certificates, including CA and private key, are saved in ``/var/lib/nethserver/certs/clients`` directory in a PEM file named ``key``.pem
-  * ``password``: use username and password
-  * ``password-certificate``: use username, password and a valid x509 certificate
+  * ``password``: use user name and password
+  * ``password-certificate``: use user name, password and a valid x509 certificate
   * ``psk``: use a pre-shared key
-* ``User``: username used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
-* ``Password``: password used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
-* ``Psk``: pre-shared key user for authentication, if ``AuthMode`` is ``psk``. Pre-shared key is saved ``/var/lib/nethserver/certs/clients/<name>.key``
-* ``RemoteHost``: a list of remote server hostnames or ip addresses
-* ``RemotePort``: remote host port
-* ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
-* ``Protocol``: can be ``udp`` or ``tcp``, default is ``udp``
 * ``Cipher``: a valid OpenVPN cipher among ``openvpn --show-ciphers``
+* ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
+* ``LocalPeerIP`` and ``RemotePeerIP``: IP for the Point to Point hosts
+* ``Password``: password used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
+* ``Protocol``: can be ``udp`` or ``tcp``, default is ``udp``
+* ``RemoteHost``: a list of remote server hostnames or ip addresses
+* ``RemoteNetworks``: list of networks in CIDR format, for each network will be created a route
+* ``RemotePort``: remote host port
+* ``User``: username used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
 * ``WanPriorities``: an ordered list of red interfaces which will be used to connect to the server, can be
   used to prefer a faster WAN other than a slower one
+* ``Topology``: can be ``subnet`` (default) or ``p2p``
 * ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``enabled``
 
+Files:
+
+- pre-shared key: ``/var/lib/nethserver/certs/clients/<name>.key``
+- certificates: ``/var/lib/nethserver/certs/<name>.{pem,key}``
 
 Database reference
 ------------------
@@ -231,7 +255,19 @@ Database: ``vpn``
     Psk=
     RemoteHost=1.2.3.4,8.8.6.7
     RemotePort=1122
+    Topology=subnet
     WanPriorities=eth2,eth1
+    status=enabled
+
+ clntnh2d=tunnel
+    AuthMode=certificate
+    Cipher=
+    Compression=enabled
+    Mode=routed
+    Protocol=udp
+    RemoteHost=1.2.3.4,8.8.6.7
+    RemotePort=1244
+    Topology=subnet
     status=enabled
 
 
@@ -241,15 +277,24 @@ Tunnel servers
 Servers are instance of OpenVPN listening for incoming connections.
 Each server runs on its own port can handle many client.
 
+When a server is created the following files will be generated:
+
+- a certificate and a private key: ``/var/lib/nethserver/openvpn-tunnels/<name>.crt`` and ``/var/lib/nethserver/openvpn-tunnels/keys/<name>.key``
+- a pre-shared key ``/var/lib/nethserver/openvpn-tunnels/<name>.key``
+
+Certificate generation uses a custom version of easy-rsa, see ``/usr/share/nethserver-openvpn`` directory content.
+
 Properties:
 * ``Cipher``: a valid OpenVPN cipher among ``openvpn --show-ciphers``
 * ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
-* ``LocalNetworks``: list of networks in CIDR fromat, each network will be pushed as route to the client
+* ``LocalNetworks``: list of networks in CIDR format, each network will be pushed as route to the client
+* ``LocalPeerIP`` and ``RemotePeerIP``: IP for the Point to Point hosts
 * ``Network``: network address of the VPN tunnel
 * ``Port``: listen port
 * ``Protocol``: can be ``udp`` or ``tcp``, default is ``udp``
 * ``PublicAddresses``: list of public IPs or host names used by clients to connect to the server
-* ``RemoteNetworks``: list of networks in CIDR fromat, for each network will be created a local route
+* ``RemoteNetworks``: list of networks in CIDR format, for each network will be created a local route
+* ``Topology``: can be ``subnet`` (default) or ``p2p``
 * ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
 
 
@@ -258,7 +303,9 @@ Database reference
 
 Database: ``vpn``
 
-server1=openvpn-tunnel-server
+::
+
+ server1=openvpn-tunnel-server
     Cipher=
     Compression=enabled
     LocalNetworks=192.168.1.0/24
@@ -267,5 +314,47 @@ server1=openvpn-tunnel-server
     Port=1282
     Protocol=udp
     PublicAddresses=1.2.3.4,test.local.neth.eu
+    Topology=subnet
     status=enabled
+
+ psk1=openvpn-tunnel-server
+    Cipher=
+    Compression=enabled
+    LocalNetworks=10.132.0.0/16
+    LocalPeer=10.68.218.1
+    Port=1248
+    Protocol=udp
+    PublicAddresses=1.2.3.4,myfw.host.org
+    RemotePeer=10.68.218.2
+    Topology=p2p
+    status=disabled
+
+Log files and systemd instances
+===============================
+
+All OpenVPN services are handled using systemd instances of the ``openvpn`` service.
+
+Every instance has the following form: ``openvpn@<instance_name>`` where
+``instance_name`` is name of the key inside the ``vpn`` e-smith db.
+The roadwarrior server has a fixed name: ``host-to-net``.
+
+Instances can be inspected using ``systemctl`` command: ::
+
+   systemctl status openvpn@host-to-net
+   systemctl status openvpn@server1
+
+
+The roadwarrior can be found here:
+
+- ``/var/log/openvpn/host-to-net-status.log``
+- ``/var/log/openvpn/openvpn.log``
+
+
+The log if each OpenVPN instance can be seen using ``journalctl`` command.
+Example: ::
+
+  journalctl -u openvpn@client1
+  journalctl -u openvpn@host-to-net
+
+
 
