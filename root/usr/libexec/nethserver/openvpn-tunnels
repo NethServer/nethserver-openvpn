@@ -46,7 +46,11 @@ sub list_vpns
             my $status = $db->get_prop($name, 'status');
             my $port = $db->get_prop($name, 'Port');
             my $network = $db->get_prop($name, 'Network');
-            my %vpn = ( name => $name, file => $file, running => $running, status => $status, port => $port, network => $network );
+
+            # List remote routes
+            @remote = `/usr/sbin/ip route | grep tun$name  | grep -v "scope link" | awk '{print \$1}'`;
+            @remote = map { chomp $_; $_ } @remote; # remove new line char from each line
+            my %vpn = ( name => $name, file => $file, running => $running, status => $status, port => $port, network => $network, remote => join(',',@remote) );
             $vpns{$name} = \%vpn;
        }
     }

@@ -78,18 +78,6 @@ event_services($event, 'openvpn@host-to-net' => 'restart');
 
 
 #--------------------------------------------------
-# actions for nethserver-vpn-delete event
-#--------------------------------------------------
-
-$event = "nethserver-vpn-delete";
-
-event_actions($event,
-    'nethserver-openvpn-delclient' => '30',
-    'firewall-adjust' => '80',
-);
-templates2events("/etc/openvpn/host-to-net.pool",  $event);
-
-#--------------------------------------------------
 # actions for nethserver-vpn-save event
 #--------------------------------------------------
 
@@ -143,18 +131,21 @@ event_actions($event,
 
 event_actions('openvpn-tunnel-create',
     'nethserver-openvpn-tunnels' => '30',
+    'nethserver-openvpn-net2net' => '40',
     'firewall-adjust' => '80',
 );
 templates2events("/etc/openvpn/host-to-net.pool",  'openvpn-tunnel-create');
 
 event_actions('openvpn-tunnel-modify',
     'nethserver-openvpn-tunnels' => '30',
+    'nethserver-openvpn-net2net' => '40',
     'firewall-adjust' => '80',
 );
 templates2events("/etc/openvpn/host-to-net.pool",  'openvpn-tunnel-modify');
 
 event_actions('openvpn-tunnel-delete',
     'nethserver-openvpn-tunnels' => '30',
+    'nethserver-openvpn-net2net' => '40',
     'firewall-adjust' => '80',
 );
 templates2events("/etc/openvpn/host-to-net.pool",  'openvpn-tunnel-delete');

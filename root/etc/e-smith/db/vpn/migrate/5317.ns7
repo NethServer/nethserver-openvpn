@@ -1,6 +1,6 @@
 {
     #
-    # Add status and Protocol props to OpenVpn client tunnels
+    # Add status, Protocol and Topology props to OpenVpn client tunnels
     #
 
     $cdb = esmith::ConfigDB->open('vpn');
@@ -12,6 +12,10 @@
         my $protocol = $vpn->prop('Protocol');
         if (!defined($protcol)) {
             $vpn->set_prop('Protocol','udp');
+        }
+        my $topology = $vpn->prop('Topology');
+        if (!defined($topology)) {
+            $vpn->set_prop('Topology','subnet');
         }
     }
 }

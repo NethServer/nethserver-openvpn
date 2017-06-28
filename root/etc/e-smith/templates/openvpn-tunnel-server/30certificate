@@ -1,0 +1,15 @@
+#
+# 30certificate
+#
+{
+    my $topology = $server->prop('Topology') || 'subnet';
+
+    if ($topology eq 'subnet') {
+        $OUT .= "dh /var/lib/nethserver/openvpn-tunnels/keys/dh2048.pem\n";
+        $OUT .= "ca /var/lib/nethserver/openvpn-tunnels/keys/ca.crt\n";
+        $OUT .= "cert /var/lib/nethserver/openvpn-tunnels/keys/ca.crt\n";
+        $OUT .= "key /var/lib/nethserver/openvpn-tunnels/keys/ca.key\n";
+        $OUT .= "duplicate-cn\n";
+    }
+}
+

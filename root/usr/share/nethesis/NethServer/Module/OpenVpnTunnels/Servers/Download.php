@@ -1,6 +1,6 @@
 <?php
-
 namespace NethServer\Module\OpenVpnTunnels\Servers;
+
 /*
  * Copyright (C) 2017 Nethesis S.r.l.
  * http://www.nethesis.it - nethserver@nethesis.it
@@ -9,8 +9,8 @@ namespace NethServer\Module\OpenVpnTunnels\Servers;
  *
  * NethServer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License,
- * or any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * NethServer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,63 +18,61 @@ namespace NethServer\Module\OpenVpnTunnels\Servers;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with NethServer.  If not, see COPYING.
+ * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 use Nethgui\System\PlatformInterface as Validate;
 
+/**
+ * Download VPN tunnel configuration
+ *
+ * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
+ */
 class Download extends \Nethgui\Controller\Table\RowAbstractAction
 {
-     public function initialize()
-     {
-         $parameterSchema = array(
-             array('name', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::KEY),
-         );
-         $this->setSchema($parameterSchema);
-         parent::initialize();
+
+    public function initialize()
+    {
+        $parameterSchema = array(
+            array('name', Validate::USERNAME, \Nethgui\Controller\Table\Modify::KEY),
+        );
+
+        $this->setSchema($parameterSchema);
     }
 
-    public function bind(\Nethgui\Controller\RequestInterface $request)
+    private function downloadJson($name)
     {
-        $keyValue = implode('/', $request->getPath());
-        $this->getAdapter()->setKeyValue(basename($keyValue, '.txt'));
-        parent::bind($request);
-    }
-
-    public function prepareView(\Nethgui\View\ViewInterface $view)
-    {
-
-        if( ! $this->getRequest()->isValidated()) {
-            parent::prepareView($view);
-            return;
-        }
-        if(! $this->getRequest()->hasParameter('download')) {
-            $view->getCommandList('/Main')->sendQuery($view->getModuleUrl(sprintf('/OpenVpnTunnels/Servers/Download/%s.txt?OpenVpnTunnels[Servers][Download][download]=1', $this->parameters['name'])));
-            return;
-        }
-
-        while (ob_get_level() > 0) {
-            ob_end_clean();
-        }
-        $record = $this->getPlatform()->getDatabase('vpn')->getKey($this->parameters['name']);
+        $record = $this->getPlatform()->getDatabase('vpn')->getKey($name);
         $client = array(
-                         'name' => substr("clnt".$this->parameters['name'],0,8),
+                         'name' => substr("c$name",0,8),
                          'type' => 'tunnel',
-                         'AuthMode' => 'psk',
                          'Mode' => 'routed',
                          'status' => 'enabled',
                          'Compression' => $record['Compression'],
                          'RemotePort' => $record['Port'],
                          'RemoteHost' => $record['PublicAddresses'],
                          'Cipher' =>  $record['Cipher'],
-                         'Psk' => file_get_contents("/var/lib/nethserver/openvpn-tunnels/".$this->parameters['name'].".key")
+                         'Topology' => $record['Topology'],
                   );
-        $file = tempnam("sys_get_temp_dir", "openvpn-tunnel-client");
+        if ($record['Topology'] == 'p2p') {
+             $client['Psk'] = file_get_contents("/var/lib/nethserver/openvpn-tunnels/$name.key");
+             $client['LocalPeer'] = $record['RemotePeer'];
+             $client['RemotePeer'] = $record['LocalPeer'];
+             $client['RemoteNetworks'] = $record['LocalNetworks'];
+             $client['AuthMode'] = 'psk';
+        } else {
+             $client['AuthMode'] = 'certificate';
+             $pem = tempnam(sys_get_temp_dir(), "tunnel-pem");
+             $this->getPlatform()->exec("/usr/bin/sudo /usr/libexec/nethserver/openvpn-tunnel-pem $name $pem");
+             $client['Crt'] = file_get_contents($pem);
+             unlink($pem);
+        }
+        $file = tempnam(sys_get_temp_dir(), "openvpn-tunnel-client");
         file_put_contents($file, json_encode($client)); 
         if (file_exists($file)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="openvpn-tunnel-client-' . $this->parameters['name'] . '.json"');
+            header('Content-Disposition: attachment; filename="openvpn-tunnel-client-' . $name . '.json"');
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
@@ -83,10 +81,71 @@ class Download extends \Nethgui\Controller\Table\RowAbstractAction
             unlink($file);
             exit;
         }
+
     }
 
-    public function nextPath()
+    private function downloadPem($name)
     {
-        return 'read';
+        $pem = tempnam(sys_get_temp_dir(), "tunnel-pem");
+        $this->getPlatform()->exec("/usr/bin/sudo /usr/libexec/nethserver/openvpn-tunnel-pem $name $pem");
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/x-pem-file');
+        header("Content-Disposition: attachment; filename=$name.pem");
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($pem));
+        readfile($pem);
+        unlink($pem);
+        exit;
     }
+
+    private function downloadPsk($name)
+    {
+        $pem = tempnam(sys_get_temp_dir(), "tunnel-pem");
+        $psk = "/var/lib/nethserver/openvpn-tunnels/$name.key";
+        if (!file_exists($psk)) {
+            exit;
+        }
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header("Content-Disposition: attachment; filename=$name.psk");
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($psk));
+        readfile($psk);
+        exit;
+    }
+
+    public function prepareView(\Nethgui\View\ViewInterface $view)
+    {
+        parent::prepareView($view);
+
+        $name = \Nethgui\array_head($this->getRequest()->getPath()); 
+        $view['json'] = $view->getModuleUrl('/OpenVpnTunnels/Servers/download/json/' .  \Nethgui\array_head($this->getRequest()->getPath()));
+        $view['pem'] = $view->getModuleUrl('/OpenVpnTunnels/Servers/download/pem/' .  \Nethgui\array_head($this->getRequest()->getPath()));
+        $view['psk'] = $view->getModuleUrl('/OpenVpnTunnels/Servers/download/psk/' .  \Nethgui\array_head($this->getRequest()->getPath()));
+        if ($this->getRequest()->isValidated()) {
+            $command = "";
+            $file = "";
+            $path = $this->getRequest()->getPath();
+            $name = array_pop($path);
+            $type = array_pop($path);
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+
+
+            switch($type) {
+                case 'json':
+                    $this->downloadJson($name);
+                case 'pem':
+                    $this->downloadPem($name);
+                case 'psk':
+                    $this->downloadPsk($name);
+            }
+       } 
+    }
+
 }

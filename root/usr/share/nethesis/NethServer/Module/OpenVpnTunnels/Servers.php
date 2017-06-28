@@ -36,6 +36,7 @@ class Servers extends \Nethgui\Controller\TableController
         $columns = array(
             'Key',
             'Port',
+            'Topology',
             'Network',
             'LocalNetworks',
             'RemoteNetworks',
@@ -52,8 +53,7 @@ class Servers extends \Nethgui\Controller\TableController
             ->addRowAction(new \NethServer\Module\OpenVpnTunnels\Servers\Modify('delete'))
             ->addRowAction(new \NethServer\Module\OpenVpnTunnels\TunnelCtl('enable'))
             ->addRowAction(new \NethServer\Module\OpenVpnTunnels\TunnelCtl('disable'))
-            ->addRowAction(new \NethServer\Module\OpenVpnTunnels\Servers\Download())
-
+            ->addRowAction(new \NethServer\Module\OpenVpnTunnels\Servers\Download('download'))
         ;
 
         parent::initialize();
@@ -70,7 +70,7 @@ class Servers extends \Nethgui\Controller\TableController
         $ciphers = array('');
         $out = $this->getPlatform()->exec('/usr/sbin/openvpn --show-ciphers')->getOutputArray();
         foreach ($out as $line) {
-            if (strpos($line, '(') !== false && strpos($line,'TLS client/server') !== false) { # skip client-server ciphers
+            if (strpos($line, '(') !== false) {
                 $tmp = preg_split("/\s+/", $line);
                 $ciphers[] = $tmp[0];
             }
@@ -93,6 +93,14 @@ class Servers extends \Nethgui\Controller\TableController
         return $values['Port'] . " (" . strtoupper(substr($values['Protocol'],0,3)) . ")";
     }
 
+    public function prepareViewForColumnNetwork(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        if (isset($values['Network']) && $values['Network']) {
+            return $values['Network'];
+        } else {
+            return $values['LocalPeer'] . " - ". $values['RemotePeer'];
+        }
+    }
 
     public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {

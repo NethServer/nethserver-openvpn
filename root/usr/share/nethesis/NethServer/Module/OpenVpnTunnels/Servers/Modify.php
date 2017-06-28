@@ -31,6 +31,8 @@ class Modify extends \Nethgui\Controller\Table\Modify
 {
     const TUNNEL_PATH = "/var/lib/nethserver/openvpn-tunnels/";
 
+    private $topologies = array('subnet','p2p');
+
     public function initialize()
     {
         $ciphers = $this->getParent()->readCiphers();
@@ -45,21 +47,28 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('Compression', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
             array('PublicAddresses', Validate::NOTEMPTY, \Nethgui\Controller\Table\Modify::FIELD),
             array('Cipher', $this->getPlatform()->createValidator()->memberOf($ciphers), \Nethgui\Controller\Table\Modify::FIELD),
+            array('Topology', $this->getPlatform()->createValidator()->memberOf($this->topologies), \Nethgui\Controller\Table\Modify::FIELD),
+            array('LocalPeer', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
+            array('RemotePeer', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
         );
         
         $this->declareParameter('Psk', $this->createValidator()->minLength(8), $this->getPlatform()->getMapAdapter(
                 array($this, 'readPskFile'), array($this, 'writePskFile'), array()
             ));
 
+        $freeNetwork = $this->getFreeNetwork();
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('status', 'enabled');
         $this->setDefaultValue('Port', $this->getFreePort());
-        $this->setDefaultValue('Network', $this->getFreeNetwork());
+        $this->setDefaultValue('Network', $freeNetwork);
         $this->setDefaultValue('Compression', 'enabled');
         $this->setDefaultValue('LocalNetworks', $this->readNetworks());
         $this->setDefaultValue('PublicAddresses', '');
         $this->setDefaultValue('Psk', $this->generatePsk());
         $this->setDefaultValue('Cipher', '');
+        $this->setDefaultValue('Topology', 'subnet');
+        $this->setDefaultValue('LocalPeer', substr($freeNetwork,0,-4)."1");
+        $this->setDefaultValue('RemotePeer', substr($freeNetwork,0,-4)."2");
 
         parent::initialize();
     }
@@ -263,7 +272,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         if ($this->isUsedPort($this->parameters['Port'], $this->parameters['name'])) {
             $report->addValidationErrorMessage($this, 'Port', 'port_in_use');
         }
-        if ($this->isUsedNetwork($this->parameters['Network'], $this->parameters['name'])) {
+        if ($this->parameters['Topology'] == 'subnet' && $this->isUsedNetwork($this->parameters['Network'], $this->parameters['name'])) {
             $report->addValidationErrorMessage($this, 'Network', 'network_in_use');
         }
         $v_cidr = $this->getPlatform()->createValidator()->cidrBlock();
@@ -300,12 +309,12 @@ class Modify extends \Nethgui\Controller\Table\Modify
                 return array($fmt,$view->translate('Auto_label'));
             }
         }, $this->getParent()->readCiphers());
+
         $templates = array(
             'create' => 'NethServer\Template\OpenVpnTunnels\Servers\Modify',
             'update' => 'NethServer\Template\OpenVpnTunnels\Servers\Modify',
             'delete' => 'Nethgui\Template\Table\Delete',
         );
-        $view['DownloadClient'] = $view->getModuleUrl('../Download');
 
         $view->setTemplate($templates[$this->getIdentifier()]);
         if($this->getIdentifier() === 'create' && $this->getRequest()->isValidated() && ! $this->getRequest()->isMutation()) {

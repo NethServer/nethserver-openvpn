@@ -27,13 +27,46 @@ Public IPs and/or public FQDN
 Port
     Port of the VPN server.
 
+Topology
+    Available topology:
+
+    - SUBNET - One server for multiple clients, TLS certificate authentication
+
+      The server will provide IP address to clients using DHCP, and it will also
+      push all local routes to the client.
+      This is the recommended mode.
+
+
+    - P2P - One server for each client, shared key (PSK) authentication
+
+      The administrator must choose a couple of IP addresses for both
+      Point to Point hosts.
+      Make sure to use a secure channel to exchange the PSK.
+      Local and remote networks must be explictly configured on
+      both end points. 
+
 VPN network
     Network address used for VPN clients.
     The network should not be already used by any local
     network interface or route. 
+    
+    Available only for SUBNET topology.
+
+
+Local P2P IP
+    IP of the local Point to Point
+    
+    Available only for P2P topology.
+
+Remote P2P IP
+    IP of the remote Point to Point
+    
+    Available only for P2P topology.
 
 Pre-shared key
     Random key to be used as shared secret, but be 2048 bit long.
+    
+    Available only for P2P topology.
 
 Local networks
     List of local networks which will be available for remote hosts

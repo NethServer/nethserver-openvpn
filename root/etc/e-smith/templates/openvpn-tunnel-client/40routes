@@ -1,0 +1,10 @@
+{
+    use  NetAddr::IP;
+    my $topology = $client->prop('Topology') || 'subnet';
+    if ($topology eq 'p2p') {
+        foreach (split(',',$client->prop('RemoteNetworks'))) {
+            my $net = NetAddr::IP->new($_);
+            $OUT .= sprintf("route %s %s\n",$net->addr(),$net->mask());
+        }
+    }
+}

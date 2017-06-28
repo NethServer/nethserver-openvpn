@@ -44,3 +44,19 @@ if [ ! -f ${cdir}/crl.pem ]; then
 fi
 
 chmod o+r ${cdir}/{serial,crlnumber,certindex.attr,certindex,dh1024.pem,crl.pem}
+
+# Initialize easy-rsa for tunnels
+
+tdir=/var/lib/nethserver/openvpn-tunnels/keys
+edir=/usr/share/nethserver-openvpn
+
+mkdir -p ${tdir}
+
+if [ ! -f ${tdir}/dh2048.pem ]; then
+  echo 01 > ${tdir}/serial
+  touch ${tdir}/index.txt 
+  source ${edir}/vars
+  ${edir}/build-dh 2> /dev/null
+  ${edir}/pkitool --initca
+fi
+

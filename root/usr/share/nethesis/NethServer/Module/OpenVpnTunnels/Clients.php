@@ -40,8 +40,10 @@ class Clients extends \Nethgui\Controller\TableController
 
         $columns = array(
             'Key',
-            'RemoteHost',
             'RemotePort',
+            'Topology',
+            'RemoteHost',
+            'RemoteNetworks',
             'State',
             'Actions'
         );
@@ -69,6 +71,19 @@ class Clients extends \Nethgui\Controller\TableController
             $status = json_decode($this->getPlatform()->exec('sudo /usr/libexec/nethserver/openvpn-tunnels list')->getOutput(), true);
         }
         return $status;
+    }
+
+
+    public function prepareViewForColumnRemoteNetworks(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        if (isset($values['RemoteNetworks']) && $values['RemoteNetworks']) {
+            return $values['RemoteNetworks'];
+        }
+        $status = $this->readStatus();
+        if (!isset($status[$key])) {
+           return '-';
+        }
+        return $status[$key]['remote'];
     }
 
     public function prepareViewForColumnState(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
