@@ -4,7 +4,7 @@ my $mode = $openvpn{'AuthMode'} || 'password';
 if ($mode eq 'password') {
     $OUT.= "# Authentication: password\n";
     $OUT.="auth-user-pass-verify /usr/libexec/nethserver/openvpn-pam-auth via-env\n";
-    $OUT.="client-cert-not-required\n";
+    $OUT.="verify-client-cert none\n";
     $OUT.="username-as-common-name\n";
 } elsif ($mode eq 'password-certificate') {
     $OUT.= "# Authentication: certificate + password \n";
