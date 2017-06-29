@@ -76,6 +76,9 @@ sub update_fw_record
     my $status = shift;
 
     delete_fw_record($name);
+    if ($protocol =~ /tcp/) {
+        $protocol = "tcp";
+    }
     $cdb->new_record('openvpn@'.$name, {type => 'service', uc($protocol).'Port' => $port, 'status' => $status, 'access' => 'green,red'});
 }
 
