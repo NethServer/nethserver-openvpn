@@ -36,7 +36,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
     public function initialize()
     {
         $parameterSchema = array(
-            array('name', Validate::USERNAME, \Nethgui\Controller\Table\Modify::KEY),
+            array('name', $this->createValidator(Validate::USERNAME)->maxLength(13), \Nethgui\Controller\Table\Modify::KEY),
             array('Mode', $this->createValidator()->memberOf(array('routed','bridged')), \Nethgui\Controller\Table\Modify::FIELD),
             array('Password', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
             array('RemoteHost', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),

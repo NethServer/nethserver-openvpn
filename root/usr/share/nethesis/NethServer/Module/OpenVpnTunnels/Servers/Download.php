@@ -34,7 +34,7 @@ class Download extends \Nethgui\Controller\Table\RowAbstractAction
     public function initialize()
     {
         $parameterSchema = array(
-            array('name', Validate::USERNAME, \Nethgui\Controller\Table\Modify::KEY),
+            array('name', $this->createValidator(Validate::USERNAME)->maxLength(13), \Nethgui\Controller\Table\Modify::KEY),
         );
 
         $this->setSchema($parameterSchema);
@@ -44,7 +44,7 @@ class Download extends \Nethgui\Controller\Table\RowAbstractAction
     {
         $record = $this->getPlatform()->getDatabase('vpn')->getKey($name);
         $client = array(
-                         'name' => substr("c$name",0,8),
+                         'name' => substr("c$name",0,13),
                          'type' => 'tunnel',
                          'Mode' => 'routed',
                          'status' => 'enabled',

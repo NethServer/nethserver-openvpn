@@ -37,7 +37,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
     {
         $ciphers = $this->getParent()->readCiphers();
         $parameterSchema = array(
-            array('name', Validate::USERNAME, \Nethgui\Controller\Table\Modify::KEY),
+            array('name', $this->createValidator(Validate::USERNAME)->maxLength(13), \Nethgui\Controller\Table\Modify::KEY),
             array('status', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
             array('Port', Validate::PORTNUMBER, \Nethgui\Controller\Table\Modify::FIELD),
             array('Network', $this->getPlatform()->createValidator()->cidrBlock(), \Nethgui\Controller\Table\Modify::FIELD),
