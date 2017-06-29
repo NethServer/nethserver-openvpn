@@ -17,6 +17,7 @@
         $OUT .= "client\n";
     }
 
+    $OUT .= "proto $protocol\n";
 }
 rport {{$client->prop('RemotePort')}}
 float
