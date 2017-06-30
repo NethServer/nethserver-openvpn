@@ -329,6 +329,17 @@ Database: ``vpn``
     Topology=p2p
     status=disabled
 
+Templates
+=========
+
+The main templates for the configuration are:
+
+- ``/etc/e-smith/templates/etc/openvpn/host-to-net.conf``: allows the customization of roadwarrior server
+- ``/etc/e-smith/templates/openvpn-tunnel-server/``: allows the customization of tunnel server, it's expanded
+  in ``/etc/openvpn/<tunnel_server_name>.conf``
+- ``/etc/e-smith/templates/openvpn-tunnel-client/``: allows the customization of tunnel client, it's expanded
+  in ``/etc/openvpn/<tunnel_client_name>.conf``
+
 Log files and systemd instances
 ===============================
 
