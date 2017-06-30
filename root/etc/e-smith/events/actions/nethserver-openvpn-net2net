@@ -10,7 +10,7 @@ sub write_route($) {
     my $outFile = $path . "/" . $acc->key;
     my %props = $acc->props;
 
-    if ($props{'type'} eq 'vpn') {
+    if ($props{'type'} eq 'vpn' || $props{'type'}  eq 'vpn-user') {
          if (!defined($props{VPNRemoteNetwork}) || $props{VPNRemoteNetwork} eq '') {
              return;
          }
@@ -23,7 +23,7 @@ sub write_route($) {
         
         foreach (split(',',$props{'RemoteNetworks'})) {
             my $net = NetAddr::IP->new($_);
-            $OUT .= sprintf("iroute %s %s\n",$net->addr(),$net->mask());
+            $OUT .= sprintf("route %s %s\n",$net->addr(),$net->mask());
         }
     }
 
@@ -41,7 +41,7 @@ unlink (glob("$path/*"));
 for my $acc ( $adb->get_all() )
 {
     my $type = $acc->prop('type');
-    if ($type eq 'vpn' || $type eq 'openvpn-tunnel-server') {
+    if ($type eq 'vpn' || $type eq 'openvpn-tunnel-server' || $type eq 'vpn-user') {
         write_route($acc);
     }
 }
