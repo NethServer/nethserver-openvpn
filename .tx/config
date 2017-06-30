@@ -31,3 +31,7 @@ source_lang = en
 type = PHP_ALT_ARRAY
 
 
+[nethserver.OpenVpnTunnels]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_OpenVpnTunnels.php
+source_lang = en
+type = PHP_ALT_ARRAY
