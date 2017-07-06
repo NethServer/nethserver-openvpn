@@ -5,26 +5,15 @@ loc            ovpn           ACCEPT
 ovpn           loc            ACCEPT
 ovpn           $FW            ACCEPT
 $FW            ovpn           ACCEPT
+ovpn           net            ACCEPT
 {
     use esmith::NetworksDB;
     my $ndb = esmith::NetworksDB->open_ro();
-    my $routeToVPN = ${'openvpn@host-to-net'}{'RouteToVPN'} || 'disabled';
-    my $nfqueue = $firewall{'nfqueue'} || 'disabled';
-    my $action = 'ACCEPT';
-    if ($nfqueue eq 'enabled') {
-        $action = 'ACCEPT:NFQBY';
-    }
     if (defined($ndb->blue())) {
         $OUT .= "ovpn        blue           ACCEPT\n"; 
     }
     if (defined($ndb->orange())) {
         $OUT .= "ovpn        orang          ACCEPT\n";
-    }
-
-    if($routeToVPN eq 'enabled') {
-        $OUT .= "ovpn           net            $action\n";
-    } else {
-	$OUT .= "\n# openvpn/RouteToVPN is disabled\n";
     }
 }
 
