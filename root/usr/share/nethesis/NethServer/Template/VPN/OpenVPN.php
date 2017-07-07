@@ -1,5 +1,11 @@
 <?php
 
+if (!$view['BridgeDatasource']) {
+     $warning = $view->literal('<div class="wspreline ui-state-error ui-state-highlight" style="margin-top: 10px; margin-bottom: 10px; padding: 5px; width: 20%"><i class="fa"></i>'.$T('no_bridge_label').'</div>');
+} else {
+     $warning = $view->literal('');
+}
+
 echo $view->fieldsetSwitch('ServerStatus', 'enabled',  $view::FIELDSETSWITCH_CHECKBOX)
         ->setAttribute('uncheckedValue', 'disabled')
      ->insert($view->selector('AuthMode'))
@@ -13,6 +19,7 @@ echo $view->fieldsetSwitch('ServerStatus', 'enabled',  $view::FIELDSETSWITCH_CHE
                  ->insert($view->checkbox('RouteToVPN', 'enabled')->setAttribute('uncheckedValue', 'disabled'))
                  ->insert($view->checkbox('ClientToClient', 'enabled')->setAttribute('uncheckedValue', 'disabled'))))
              ->insert($view->fieldsetSwitch('Mode', 'bridged', $view::FIELDSETSWITCH_EXPANDABLE)
+                 ->insert($warning)
                  ->insert($view->selector('Bridge', $view::SELECTOR_DROPDOWN))
                  ->insert($view->textInput('BridgeStartIP'))
                  ->insert($view->textInput('BridgeEndIP'))))
