@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.0
+Version: 1.6.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Fri Jul 07 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.1-1
+- OpenVPN firewall policy: allow ovpn to net - NethServer/dev#5328
+
 * Fri Jun 30 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.0-1
 - OpenvPN: improve net2net tunnels  - NethServer/dev#5313 
 - OpenVPN: add extra push options to roadwarrior server - NethServer/dev#5320
