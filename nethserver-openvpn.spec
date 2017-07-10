@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.1
+Version: 1.6.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Mon Jul 10 2017 Davide Principi <davide.principi@nethesis.it> - 1.6.2-1
+- Syntax error prevents ipsec tunnel from starting - Bug NethServer/dev#5332
+
 * Fri Jul 07 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.1-1
 - OpenVPN firewall policy: allow ovpn to net - NethServer/dev#5328
 
