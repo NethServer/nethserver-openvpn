@@ -4,7 +4,15 @@
     #
 
     $cdb = esmith::ConfigDB->open('vpn');
-    foreach my $vpn ($cdb->get_all(type => 'tunnel')) {
+    foreach my $vpn ($cdb->get_all()) {
+
+        if($vpn->prop('type') ne 'tunnel') {
+            # Fix regression bug #5332
+            $vpn->delete_prop('Protocol') if(($vpn->prop('Protocol') || '') eq 'udp');
+            $vpn->delete_prop('Topology') if(($vpn->prop('Topology') || '') eq 'subnet');
+            next;
+        }
+
         my $status = $vpn->prop('status');
         if (!defined($status)) {
             $vpn->set_prop('status','enabled');
