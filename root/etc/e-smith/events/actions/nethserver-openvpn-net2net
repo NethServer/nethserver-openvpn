@@ -23,7 +23,7 @@ sub write_route($) {
         
         foreach (split(',',$props{'RemoteNetworks'})) {
             my $net = NetAddr::IP->new($_);
-            $OUT .= sprintf("route %s %s\n",$net->addr(),$net->mask());
+            $OUT .= sprintf("iroute %s %s\n",$net->addr(),$net->mask());
         }
     }
 
