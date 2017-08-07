@@ -1,0 +1,15 @@
+{
+   use esmith::ConfigDB;
+   my $vdb = esmith::ConfigDB->open_ro('vpn');
+   foreach my $service ($DB->get_all_by_prop('type' => 'service')) {
+        my $name = $service->key;
+        if ($name !~ /^openvpn@/ || $name eq 'openvpn@host-to-net') {
+            next;
+        }
+        $name =~ s/^openvpn@//;
+        my $vpn = $vdb->get($name) || next;
+        if ($vpn->prop('type') eq 'openvpn-tunnel-server') {
+            $service->delete();
+        }
+   } 
+}
