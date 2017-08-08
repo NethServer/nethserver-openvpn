@@ -68,29 +68,6 @@ sub toggle
     }
 }
 
-sub update_fw_record
-{
-    my $name = shift;
-    my $port = shift;
-    my $protocol = shift;
-    my $status = shift;
-
-    delete_fw_record($name);
-    if ($protocol =~ /tcp/) {
-        $protocol = "tcp";
-    }
-    $cdb->new_record('openvpn@'.$name, {type => 'service', uc($protocol).'Port' => $port, 'status' => $status, 'access' => 'green,red'});
-}
-
-sub delete_fw_record
-{
-    my $name = shift;
-    my $record = $cdb->get('openvpn@'.$name);
-    if (defined($record)) {
-        $record->delete();
-    }
-}
-
 sub gen_config
 {
     my $name = shift;
@@ -108,8 +85,6 @@ sub gen_config
             system("/usr/share/nethserver-openvpn/pkitool $name");
         }
 
-        # Update firewall configuration
-        update_fw_record($name, $port, $protocol, $status); 
         esmith::templates::processTemplate({
             TEMPLATE_PATH => "openvpn-tunnel-server",
             OUTPUT_FILENAME => "/etc/openvpn/$name.conf",
@@ -142,7 +117,6 @@ if ($event eq 'openvpn-tunnel-delete') {
     # Delete existing tunnel
     unlink("/etc/openvpn/$name.conf");
     system("/usr/share/nethserver-openvpn/revoke-full $name");
-    delete_fw_record($name);
     disable($name);
 } elsif ($event eq 'openvpn-tunnel-create' || $event eq 'openvpn-tunnel-modify') {
     gen_config($name, $type);
