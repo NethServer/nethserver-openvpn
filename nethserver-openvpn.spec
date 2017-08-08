@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.3
+Version: 1.6.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Tue Aug 08 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.4-1
+- OpenVPN: tunnel server stopped after runlevel-adjust - NethServer/dev#5340
+
 * Wed Jul 26 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.3-1
 - net2net: fix typo for iroute option - NethServer/nethserver-openvpn#22
 
