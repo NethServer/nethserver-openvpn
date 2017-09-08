@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.4
+Version: 1.6.5
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Fri Sep 08 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.5-1
+- CSRF and XSS vulnerabilities in server manager - Bug NethServer/dev#5345
+
 * Tue Aug 08 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.4-1
 - OpenVPN: tunnel server stopped after runlevel-adjust - NethServer/dev#5340
 
