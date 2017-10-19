@@ -9,10 +9,10 @@
     if ($wans) {
         foreach my $remote (split(',',$client->prop('RemoteHost'))) {
             foreach my $wan (split(',',$wans)) {
-                $OUT .= "<connection>\n";
-                $OUT .= "remote $remote\n";
                 $interface = $ndb->get($wan) || next;
                 $ipaddr = $interface->prop('ipaddr') || next;
+                $OUT .= "<connection>\n";
+                $OUT .= "remote $remote\n";
                 $OUT .= "local $ipaddr\n";
                 $OUT .= "</connection>\n";
             }
