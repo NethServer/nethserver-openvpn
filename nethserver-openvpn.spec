@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.5
+Version: 1.6.6
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Thu Oct 19 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.6-1
+- OpenVpn: bogus config on systems with a single red interface - Bug NethServer/dev#5362
+
 * Fri Sep 08 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.5-1
 - CSRF and XSS vulnerabilities in server manager - Bug NethServer/dev#5345
 
