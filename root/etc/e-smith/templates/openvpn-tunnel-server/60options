@@ -12,9 +12,6 @@
     if ($compression ne 'disabled') {
         $OUT .= "comp-lzo\n";
     }
-    if ($protocol eq 'udp') {
-        $OUT .= "explicit-exit-notify 1\n";
-    }
     if ($topology eq 'subnet') {
         $OUT .= "client-config-dir ccd\n";
     }
