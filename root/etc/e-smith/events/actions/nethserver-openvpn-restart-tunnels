@@ -32,6 +32,8 @@ my $vdb = esmith::ConfigDB->open_ro('vpn') || die("Can't open vpn db");
 
 foreach ($vdb->get_all()) {
     my $type = $_->prop('type');
+    my $status = $_->prop('status') || 'disabled';
+    next if ($status eq 'disabled');
     if ( $type eq 'openvpn-tunnel-server' || $type eq 'tunnel') {
         my $instance = 'openvpn@'.$_->key;
         system("/usr/bin/systemctl restart $instance");
