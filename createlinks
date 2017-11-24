@@ -64,6 +64,9 @@ $event = "interface-update";
 
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 event_services($event, 'openvpn@host-to-net' => 'restart');
+event_actions($event,
+    'nethserver-openvpn-restart-tunnels' => '80',
+);
 
 
 #--------------------------------------------------

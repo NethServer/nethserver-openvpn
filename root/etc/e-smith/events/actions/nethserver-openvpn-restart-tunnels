@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+#
+# Restart all OpenVPN tunnels
+#
+
+use esmith::ConfigDB;
+
+my $event = shift;
+
+my $vdb = esmith::ConfigDB->open_ro('vpn') || die("Can't open vpn db");
+
+foreach ($vdb->get_all()) {
+    my $type = $_->prop('type');
+    if ( $type eq 'openvpn-tunnel-server' || $type eq 'tunnel') {
+        my $instance = 'openvpn@'.$_->key;
+        system("/usr/bin/systemctl restart $instance");
+    }
+}
+
