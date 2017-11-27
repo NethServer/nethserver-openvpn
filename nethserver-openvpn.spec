@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.6
+Version: 1.6.7
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Mon Nov 27 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.7-1
+- OpenVPN Tunnels don't restart after network modification - Bug NethServer/dev#5386
+
 * Thu Oct 19 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.6-1
 - OpenVpn: bogus config on systems with a single red interface - Bug NethServer/dev#5362
 
