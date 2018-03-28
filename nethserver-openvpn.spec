@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.7
+Version: 1.6.8
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Wed Mar 28 2018 Davide Principi <davide.principi@nethesis.it> - 1.6.8-1
+- OpenVPN tunnels revert to UDP protocol - Bug NethServer/dev#5446
+
 * Mon Nov 27 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.7-1
 - OpenVPN Tunnels don't restart after network modification - Bug NethServer/dev#5386
 
