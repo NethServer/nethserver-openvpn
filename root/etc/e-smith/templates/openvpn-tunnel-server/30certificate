@@ -9,7 +9,6 @@
         $OUT .= "ca /var/lib/nethserver/openvpn-tunnels/keys/ca.crt\n";
         $OUT .= "cert /var/lib/nethserver/openvpn-tunnels/keys/ca.crt\n";
         $OUT .= "key /var/lib/nethserver/openvpn-tunnels/keys/ca.key\n";
-        $OUT .= "duplicate-cn\n";
     }
 }
 
