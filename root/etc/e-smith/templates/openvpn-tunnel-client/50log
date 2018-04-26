@@ -1,0 +1,4 @@
+#
+# 50log
+# 
+log-append /var/log/openvpn/{{$name}}.log
