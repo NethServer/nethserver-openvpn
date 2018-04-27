@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.8
+Version: 1.6.9
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,10 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Fri Apr 27 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.9-1
+- Create a specific logfile for each OpenVPN tunnel - nethserver/dev#5471
+- Silence warning in the OpenVPN tunnels server config - Bug NethServer/dev#5469
+
 * Wed Mar 28 2018 Davide Principi <davide.principi@nethesis.it> - 1.6.8-1
 - OpenVPN tunnels revert to UDP protocol - Bug NethServer/dev#5446
 
