@@ -1,0 +1,60 @@
+HOME			= .
+RANDFILE		= $ENV::HOME/.rnd
+oid_section		= new_oids
+
+
+[ new_oids ]
+tsa_policy1 = 1.2.3.4.1
+tsa_policy2 = 1.2.3.4.5.6
+tsa_policy3 = 1.2.3.4.5.7
+
+[ ca ]
+default_ca	= CA_default	
+
+[ CA_default ]
+
+dir		= /var/lib/nethserver/certs		# Where everything is kept
+certs		= $dir		# Where the issued certs are kept
+crl_dir		= $dir/crl		# Where the issued crl are kept
+database	= $dir/certindex	# database index file.
+new_certs_dir	= $dir		# default place for new certs.
+
+certificate	= /etc/pki/tls/certs/NSRV.crt 
+serial		= $dir/serial 		# The current serial number
+crlnumber	= $dir/crlnumber	# the current crl number
+					# must be commented out to leave a V1 CRL
+crl		= $dir/crl.pem 		# The current CRL
+private_key	= /etc/pki/tls/private/NSRV.key
+RANDFILE	= $dir/private/.rand	# private random number file
+
+x509_extensions	= usr_cert		# The extentions to add to the cert
+
+name_opt 	= ca_default		# Subject Name options
+cert_opt 	= ca_default		# Certificate field options
+
+#crl_extensions	= crl_ext
+default_days	= 365
+default_crl_days= {{ $pki{'CertificateDuration'} || 3650 }}
+default_md	= default		# use public key default MD
+preserve	= no			# keep passed DN ordering
+policy		= policy_anything
+
+
+
+[ policy_anything ]
+countryName		= optional
+stateOrProvinceName	= optional
+localityName		= optional
+organizationName	= optional
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+
+[ usr_cert ]
+basicConstraints=CA:FALSE
+nsCertType = client, email, objsign
+nsComment			= "NethServer Generated Certificate"
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
+

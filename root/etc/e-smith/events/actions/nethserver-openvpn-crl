@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+#
+# Force CRL expiration after CA certificate
+#
+
+cdir=/var/lib/nethserver/certs
+
+# Read expire date for CA and CRL
+crt_end=$(LANG=C openssl x509 -in /etc/pki/tls/certs/NSRV.crt -noout  -enddate | cut -d'=' -f2)
+crl_end=$(LANG=C openssl crl -in /var/lib/nethserver/certs/crl.pem -noout  -nextupdate | cut -d'=' -f2)
+
+# Convert to UNIX timestamp
+crt_end_s=$(date -d"${crt_end}" +%s)
+crl_end_s=$(date -d"${crl_end}" +%s)
+
+if [ $crl_end_s -lt $crt_end_s ]; then
+    /usr/bin/openssl ca -gencrl -out ${cdir}/crl.pem -config ${cdir}/ca.cnf
+fi

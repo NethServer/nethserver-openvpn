@@ -31,10 +31,12 @@ my $event = "nethserver-openvpn-update";
 
 event_actions($event, 
     'initialize-default-databases' => '00',
+    'nethserver-openvpn-crl' => '30',
     'nethserver-openvpn-net2net' => '40',
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
+templates2events("/var/lib/nethserver/certs/ca.cnf",  $event);
 event_services($event, 'openvpn' => 'restart');
 
 #--------------------------------------------------
@@ -125,3 +127,15 @@ event_actions($event,
 event_services($event, 'openvpn' => 'restart');
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 
+
+#--------------------------------------------------
+# actions for certificate-update event
+#--------------------------------------------------
+
+$event = "certificate-update";
+
+event_actions($event,
+    'nethserver-openvpn-crl' => '30',
+);
+
+templates2events("/var/lib/nethserver/certs/ca.cnf",  $event);
