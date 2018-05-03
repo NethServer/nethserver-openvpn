@@ -12,3 +12,4 @@
     }
 }
 verb 3
+keepalive 10 60
