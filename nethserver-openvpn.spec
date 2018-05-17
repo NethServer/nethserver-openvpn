@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.3.2
+Version: 1.3.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -39,6 +39,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Thu May 17 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.4-1
+- Upgrade to OpenVPN 2.4 - Enhancement #3444 [NethServer 6]
+
 * Mon Dec 19 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.2-1
 - Missing logrotate for OpenVPN log file - Bug #3433
 
