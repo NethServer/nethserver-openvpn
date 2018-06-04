@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.10
+Version: 1.6.11
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Mon Jun 04 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.11-1
+- OpenVPN log compressed multiple times - Bug NethServer/dev#5506
+
 * Wed May 16 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.10-1
 - OpenVPN tunnel client doesn't switch to next remote IP  - Bug NethServer/dev#5479
 
