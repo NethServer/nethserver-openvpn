@@ -115,6 +115,25 @@ class Clients extends \Nethgui\Controller\TableController
         return $cellView;
     }
 
+    public function readDigests()
+    {
+        static $digests;
+
+        if (isset($digests)) {
+            return $digests;
+        }
+
+        $digests = array('');
+        $out = $this->getPlatform()->exec('/usr/sbin/openvpn --show-digests')->getOutputArray();
+        foreach ($out as $line) {
+            if (strpos($line, 'bit') !== false) {
+                $tmp = preg_split("/\s+/", $line);
+                $digests[] = $tmp[0];
+            }
+        }
+        return $digests;
+    }
+
     public function readCiphers()
     {
         static $ciphers;

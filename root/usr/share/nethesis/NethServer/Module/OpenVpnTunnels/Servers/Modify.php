@@ -35,6 +35,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
     public function initialize()
     {
+        $digests = $this->getParent()->readDigests();
         $ciphers = $this->getParent()->readCiphers();
         $parameterSchema = array(
             array('name', $this->createValidator(Validate::USERNAME)->maxLength(13), \Nethgui\Controller\Table\Modify::KEY),
@@ -46,10 +47,12 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('Protocol', $this->getPlatform()->createValidator()->memberOf(array('tcp-server','udp')), \Nethgui\Controller\Table\Modify::FIELD),
             array('Compression', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
             array('PublicAddresses', Validate::NOTEMPTY, \Nethgui\Controller\Table\Modify::FIELD),
+            array('Digest', $this->getPlatform()->createValidator()->memberOf($digests), \Nethgui\Controller\Table\Modify::FIELD),
             array('Cipher', $this->getPlatform()->createValidator()->memberOf($ciphers), \Nethgui\Controller\Table\Modify::FIELD),
             array('Topology', $this->getPlatform()->createValidator()->memberOf($this->topologies), \Nethgui\Controller\Table\Modify::FIELD),
             array('LocalPeer', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
             array('RemotePeer', Validate::IPv4, \Nethgui\Controller\Table\Modify::FIELD),
+            array('TlsVersionMin', $this->getPlatform()->createValidator()->memberOf('','1.1','1.2'), \Nethgui\Controller\Table\Modify::FIELD),
         );
         
         $this->declareParameter('Psk', $this->createValidator()->minLength(8), $this->getPlatform()->getMapAdapter(
@@ -61,14 +64,16 @@ class Modify extends \Nethgui\Controller\Table\Modify
         $this->setDefaultValue('status', 'enabled');
         $this->setDefaultValue('Port', $this->getFreePort());
         $this->setDefaultValue('Network', $freeNetwork);
-        $this->setDefaultValue('Compression', 'enabled');
+        $this->setDefaultValue('Compression', 'disabled');
         $this->setDefaultValue('LocalNetworks', $this->readNetworks());
         $this->setDefaultValue('PublicAddresses', '');
         $this->setDefaultValue('Psk', $this->generatePsk());
+        $this->setDefaultValue('Digest', '');
         $this->setDefaultValue('Cipher', '');
         $this->setDefaultValue('Topology', 'subnet');
         $this->setDefaultValue('LocalPeer', substr($freeNetwork,0,-4)."1");
         $this->setDefaultValue('RemotePeer', substr($freeNetwork,0,-4)."2");
+        $this->setDefaultValue('TlsVersionMin', '');
 
         parent::initialize();
     }
@@ -296,19 +301,48 @@ class Modify extends \Nethgui\Controller\Table\Modify
                 $report->addValidationErrorMessage($this, 'name', 'key_exists_message');
             }
         }
+
+        if ($this->parameters['Topology'] == 'p2p' && ( ! preg_match ("/CBC/",$this->parameters['Cipher']))) {
+            $report->addValidationErrorMessage($this, 'Cipher', 'Cipher_Not_Compatible');
+        }
+
         parent::validate($report);
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+
+        $view['DigestDatasource'] = array_map(function($fmt) use ($view) {
+            if ($fmt) {
+                $strengh =(preg_match ("/(224|256|384|512|whirlpool)/",$fmt) ?
+                    $view->translate('strong_label') :
+                    $view->translate('weak_label'));
+            return array($fmt, $fmt.' ('.$strengh.')');
+            }
+            else {
+                return array($fmt,$view->translate('Auto_label'));
+            }
+        }, $this->getParent()->readDigests());
+
         $view['CipherDatasource'] = array_map(function($fmt) use ($view) {
             if ($fmt) {
-                return array($fmt, $fmt);
-            } else {
+                $strengh = (preg_match ("/(192|256|384|512)/",$fmt) ?
+                    $view->translate('strong_label') :
+                    $view->translate('weak_label'));
+
+                return array($fmt, $fmt.' ('.$strengh.')');
+            }
+            else {
                 return array($fmt,$view->translate('Auto_label'));
             }
         }, $this->getParent()->readCiphers());
+
+        $view['TlsVersionMinDatasource'] = \Nethgui\Renderer\AbstractRenderer::hashToDatasource(array(
+            '' => $view->translate('Auto_label'),
+            '1.1' => $view->translate('1.1'),
+            '1.2' => $view->translate('1.2'),
+        ));
 
         $templates = array(
             'create' => 'NethServer\Template\OpenVpnTunnels\Servers\Modify',
