@@ -46,6 +46,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('status', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
             array('AuthMode', $this->createValidator()->memberOf(array('certificate','psk','password-certificate')), \Nethgui\Controller\Table\Modify::FIELD),
             array('Protocol', $this->getPlatform()->createValidator()->memberOf(array('tcp-client','udp')), \Nethgui\Controller\Table\Modify::FIELD),
+            array('Digest', $this->createValidator()->memberOf($this->getParent()->readDigests()), \Nethgui\Controller\Table\Modify::FIELD),
             array('Cipher', $this->createValidator()->memberOf($this->getParent()->readCiphers()), \Nethgui\Controller\Table\Modify::FIELD),
             array('WanPriorities', FALSE, \Nethgui\Controller\Table\Modify::FIELD),
             array('Topology', $this->getPlatform()->createValidator()->memberOf($this->topologies), \Nethgui\Controller\Table\Modify::FIELD),
@@ -190,6 +191,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
             }
         }
 
+        if ($this->parameters['Topology'] == 'p2p' && ( ! preg_match ("/CBC/",$this->parameters['Cipher']))) {
+            $report->addValidationErrorMessage($this, 'Cipher', 'Cipher_Not_Compatible');
+        }
+
         parent::validate($report);
     }
 
@@ -263,13 +268,31 @@ class Modify extends \Nethgui\Controller\Table\Modify
             $view['WanPriority'] = $this->getWanPriorityTable();
             $view['WanPriorityStatus'] = $this->parameters['WanPriorities'] ? 'enabled' : 'disabled';
         }
+
+        $view['DigestDatasource'] = array_map(function($fmt) use ($view) {
+            if ($fmt) {
+                $strong =(preg_match ("/(224|256|384|512|whirlpool)/",$fmt) ?
+                    $view->translate('strong_label') :
+                    $view->translate('weak_label'));
+                return array($fmt, $fmt.' ('.$strong.')'); 
+            }
+            else {
+                return array($fmt,$view->translate('Auto_label'));
+            }
+        }, $this->getParent()->readDigests());
+
         $view['CipherDatasource'] = array_map(function($fmt) use ($view) {
             if ($fmt) {
-                return array($fmt, $fmt);
-            } else {
+                $strong = (preg_match ("/(192|256|384|512)/",$fmt) ?
+                    $view->translate('strong_label') :
+                    $view->translate('weak_label'));
+                return array($fmt, $fmt.' ('.$strong.')');
+            }
+            else {
                 return array($fmt,$view->translate('Auto_label'));
             }
         }, $this->getParent()->readCiphers());
+
         $templates = array(
             'create' => 'NethServer\Template\OpenVpnTunnels\Clients\Modify',
             'update' => 'NethServer\Template\OpenVpnTunnels\Clients\Modify',

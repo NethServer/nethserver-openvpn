@@ -51,6 +51,7 @@ class Download extends \Nethgui\Controller\Table\RowAbstractAction
                          'Compression' => $record['Compression'],
                          'RemotePort' => $record['Port'],
                          'RemoteHost' => $record['PublicAddresses'],
+                         'Digest' =>  $record['Digest'],
                          'Cipher' =>  $record['Cipher'],
                          'Topology' => $record['Topology'],
                   );
