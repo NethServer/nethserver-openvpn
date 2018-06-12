@@ -2,8 +2,12 @@
 # 60options
 #
 {
+    my $digest = $client->prop('Digest') || '';
     my $cipher = $client->prop('Cipher') || '';
     my $compression = $client->prop('Compression') || 'disabled';
+    if ($digest ne '') {
+        $OUT .= "auth $digest\n";
+    }
     if ($cipher ne '') {
         $OUT .= "cipher $cipher\n";
     }

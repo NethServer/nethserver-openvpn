@@ -71,6 +71,7 @@ $advanced = $view->fieldset('', $view::FIELDSET_EXPANDABLE)->setAttribute('templ
     )
     ->insert($view->selector('Protocol', $view::SELECTOR_DROPDOWN)->setAttribute('choices', \Nethgui\Widget\XhtmlWidget::hashToDatasource($protos)))
     ->insert($view->checkbox('Compression', 'enabled')->setAttribute('uncheckedValue', 'disabled'))
+    ->insert($view->selector('Digest', $view::SELECTOR_DROPDOWN))
     ->insert($view->selector('Cipher', $view::SELECTOR_DROPDOWN));
 
 echo $view->fieldsetSwitch('status', 'enabled',  $view::FIELDSETSWITCH_CHECKBOX)
