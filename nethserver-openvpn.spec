@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.12
+Version: 1.6.13
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Wed Jun 20 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.13-1
+- OpenVPN: can't create P2P tunnel with default cipher - Bug NethServer/dev#5532
+
 * Fri Jun 15 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 1.6.12-1
 - Harden openvpn Tunnel - NethServer/dev#5498
 
