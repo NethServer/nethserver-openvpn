@@ -302,7 +302,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             }
         }
 
-        if ($this->parameters['Topology'] == 'p2p' && ( ! preg_match ("/CBC/",$this->parameters['Cipher']))) {
+        if ($this->parameters['Topology'] == 'p2p' && ( $this->parameters['Cipher'] && ! preg_match ("/CBC/",$this->parameters['Cipher']))) {
             $report->addValidationErrorMessage($this, 'Cipher', 'Cipher_Not_Compatible');
         }
 
