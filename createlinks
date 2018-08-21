@@ -31,6 +31,7 @@ my $event = "nethserver-openvpn-update";
 
 event_actions($event, 
     'initialize-default-databases' => '00',
+    'nethserver-openvpn-adjust-certs-permissions' => '10',
     'nethserver-vpn-conf' => '20',
     'nethserver-openvpn-crl' => '30',
     'nethserver-openvpn-net2net' => '40',
