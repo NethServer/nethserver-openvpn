@@ -54,6 +54,12 @@ if (defined($record)) {
     system("/sbin/e-smith/signal-event openvpn-tunnel-delete $name");
 }
 
+# Set good ownership and permissions
+my ($login,$pass,$uid,$gid) = getpwnam('srvmgr') or die "srvmgr not in passwd file";
+my $file = glob('/var/lib/nethserver/certs/clients/'.$client->{'name'}.'.*');
+chown $uid, $gid, $file;
+chmod 0640, $file;
+
 delete($client->{'name'});
 delete($client->{'Psk'});
 delete($client->{'Crt'});
