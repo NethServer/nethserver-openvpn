@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.14
+Version: 1.6.15
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,10 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Thu Aug 23 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 1.6.15-1
+- Openvpn Tunnel Client certificates are world readable - NethServer/dev#5569
+- OpenVPN tunnel client not starting  - NethServer/dev#5549
+
 * Thu Aug 09 2018 Davide Principi <davide.principi@nethesis.it> - 1.6.14-1
 - Enhancement: (un)mask password fields - NethServer/dev#5554
 
