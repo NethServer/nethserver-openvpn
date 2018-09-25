@@ -1,6 +1,6 @@
-========
-OpenVPN
-========
+==================
+nethserver-openvpn
+==================
 
 Supported VPN are:
 
