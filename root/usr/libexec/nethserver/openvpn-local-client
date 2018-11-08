@@ -61,8 +61,10 @@ $OUT .= cat("/etc/pki/tls/certs/NSRV.crt");
 $OUT .= "</ca>\n";
 
 my $compression = $openvpn->prop('Compression') || 'enabled';
-if ($compression eq 'enabled') {
-    $OUT .= "comp-lzo\n";
+if ($compression ne 'disabled' && $compression ne 'enabled') {
+    $OUT .= "compress $compression";
+} elsif ($compression eq 'enabled') { # fallback to lzo
+    $OUT .= "compress lzo";
 }
 
 $OUT .= "explicit-exit-notify 1\n";

@@ -17,8 +17,10 @@
     if ($tlsMin ne '') {
         $OUT .= "tls-version-min $tlsMin\n";
     }
-    if ($compression ne 'disabled') {
-        $OUT .= "comp-lzo\n";
+    if ($compression ne 'disabled' && $compression ne 'enabled') {
+        $OUT .= "compress $compression\n";
+    } elsif ($compression eq 'enabled') { # fallback to lzo
+        $OUT .= "compress lzo\n";
     }
     if ($topology eq 'subnet') {
         $OUT .= "client-config-dir ccd\n";

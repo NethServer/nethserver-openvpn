@@ -140,7 +140,7 @@ Properties:
 * ``UDPPort``: server listen port, default is ``1194``
 * ``Mode``: network mode, can be ``routed`` or ``bridged``. Default is ``routed``.
 * ``ClientToClient``: can be ``enabled`` or ``disabled``, default is ``disabled``. When enabled, traffic between VPN clients is allowed
-* ``Compression``: can be ``enabled`` or ``disabled``, default is ``disabled``. When enabled, adaptive LZO compression is used
+* ``Compression``: can be ``enabled``, ``disabled`` or a valid compression alghoritm (see `man openvpn`). If set to `enabled`, adaptive LZO compression is used
 * ``Remote``: comma-separated list of IPs or host names, it's used as multiple *remote* option inside client configuration generation script
 * ``PushDns``: if set, push the specified DNS as DHCP option
 * ``PushDomain``: if set, push the specified domain as DHCP option
@@ -220,7 +220,7 @@ Common properties:
   * ``password-certificate``: use user name, password and a valid x509 certificate
   * ``psk``: use a pre-shared key
 * ``Cipher``: a valid OpenVPN cipher among ``openvpn --show-ciphers``
-* ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
+* ``Compression``: can be ``enabled``, ``disabled`` or a valid compression alghoritm (see `man openvpn`). If set to `enabled`, adaptive LZO compression is used
 * ``LocalPeerIP`` and ``RemotePeerIP``: IP for the Point to Point hosts
 * ``Password``: password used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
 * ``Protocol``: can be ``udp`` or ``tcp``, default is ``udp``
@@ -286,7 +286,7 @@ Certificate generation uses a custom version of easy-rsa, see ``/usr/share/neths
 
 Properties:
 * ``Cipher``: a valid OpenVPN cipher among ``openvpn --show-ciphers``
-* ``Compression``: can be ``enabled`` or ``disabled``, default is ``enabled``. Enable/disable adaptive LZO compression.
+* ``Compression``: can be ``enabled``, ``disabled`` or a valid compression alghoritm (see `man openvpn`). If set to `enabled`, adaptive LZO compression is used
 * ``LocalNetworks``: list of networks in CIDR format, each network will be pushed as route to the client
 * ``LocalPeerIP`` and ``RemotePeerIP``: IP for the Point to Point hosts
 * ``Network``: network address of the VPN tunnel
