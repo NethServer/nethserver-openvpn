@@ -11,8 +11,10 @@
     if ($cipher ne '') {
         $OUT .= "cipher $cipher\n";
     }
-    if ($compression ne 'disabled') {
-        $OUT .= "comp-lzo\n";
+    if ($compression ne 'disabled' && $compression ne 'enabled') {
+        $OUT .= "compress $compression\n";
+    } elsif ($compression eq 'enabled') { # fallback to lzo
+        $OUT .= "compress lzo\n";
     }
 }
 verb 3

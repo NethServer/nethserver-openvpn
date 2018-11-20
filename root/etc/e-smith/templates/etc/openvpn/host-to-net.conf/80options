@@ -1,7 +1,9 @@
 {
     $compression = $openvpn{'Compression'} || 'enabled';
-    if ($compression eq 'enabled') {
-        $OUT .= "comp-lzo";
+    if ($compression ne 'disabled' && $compression ne 'enabled') {
+        $OUT .= "compress $compression";
+    } elsif ($compression eq 'enabled') { # fallback to lzo
+        $OUT .= "compress lzo";
     }
 }
 keepalive 20 120
