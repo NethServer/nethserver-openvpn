@@ -60,6 +60,15 @@ $OUT .= "<ca>\n";
 $OUT .= cat("/etc/pki/tls/certs/NSRV.crt");
 $OUT .= "</ca>\n";
 
+my $digest = $openvpn->prop('Digest') || '';
+my $cipher = $openvpn->prop('Cipher') || '';
+if ($digest ne '') {
+    $OUT .= "auth $digest\n";
+}
+if ($cipher ne '') {
+    $OUT .= "cipher $cipher\n";
+}
+
 my $compression = $openvpn->prop('Compression') || 'enabled';
 if ($compression ne 'disabled' && $compression ne 'enabled') {
     $OUT .= "compress $compression";

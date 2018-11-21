@@ -13,4 +13,17 @@ if ($mode eq 'password') {
     $OUT.= "# Authentication: certificate\n";
 }
 
+my $digest = $openvpn{'Digest'} || '';
+my $cipher = $openvpn{'Cipher'} || '';
+my $tlsMin = $openvpn{'TlsVersionMin'} || '';
+if ($digest ne '') {
+    $OUT .= "auth $digest\n";
+}
+if ($cipher ne '') {
+    $OUT .= "cipher $cipher\n";
+}
+if ($tlsMin ne '') {
+    $OUT .= "tls-version-min $tlsMin\n";
+}
+
 }
