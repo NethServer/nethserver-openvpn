@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.6.15
+Version: 1.7.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,10 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Mon Dec 03 2018 Davide Principi <davide.principi@nethesis.it> - 1.7.0-1
+- OpenVPN: remove deprecated comp-lzo option - NethServer/dev#5631
+- OpenVPN: harden roadwarrior server - NethServer/dev#5632
+
 * Thu Aug 23 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 1.6.15-1
 - Openvpn Tunnel Client certificates are world readable - NethServer/dev#5569
 - OpenVPN tunnel client not starting  - NethServer/dev#5549
