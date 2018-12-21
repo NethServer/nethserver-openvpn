@@ -1,5 +1,8 @@
 {
 
+# check and set libdir 32/64bit (for armhfp)
+my $_libdir = ( -e '/usr/lib64/' ) ? "/usr/lib64" : "/usr/lib";
+
 my $mode = $openvpn{'AuthMode'} || 'password';
 if ($mode eq 'password') {
     $OUT.= "# Authentication: password\n";
@@ -8,7 +11,7 @@ if ($mode eq 'password') {
     $OUT.="username-as-common-name\n";
 } elsif ($mode eq 'password-certificate') {
     $OUT.= "# Authentication: certificate + password \n";
-    $OUT.="plugin /usr/lib64/openvpn/plugins/openvpn-plugin-auth-pam.so /etc/pam.d/login\n";
+    $OUT.="plugin ${_libdir}/openvpn/plugins/openvpn-plugin-auth-pam.so /etc/pam.d/login\n";
 } elsif ($mode eq 'certificate') {
     $OUT.= "# Authentication: certificate\n";
 }
