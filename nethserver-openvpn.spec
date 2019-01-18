@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.7.0
+Version: 1.7.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -46,6 +46,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Fri Jan 18 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.7.1-1
+- nethserver-openvpn: failure of template expansion on armhfp - Bug NethServer/dev#5681
+
 * Mon Dec 03 2018 Davide Principi <davide.principi@nethesis.it> - 1.7.0-1
 - OpenVPN: remove deprecated comp-lzo option - NethServer/dev#5631
 - OpenVPN: harden roadwarrior server - NethServer/dev#5632
