@@ -73,7 +73,7 @@ my $compression = $openvpn->prop('Compression') || 'enabled';
 if ($compression ne 'disabled' && $compression ne 'enabled') {
     $OUT .= "compress $compression";
 } elsif ($compression eq 'enabled') { # fallback to lzo
-    $OUT .= "compress lzo";
+    $OUT .= "compress lzo\n";
 }
 
 $OUT .= "explicit-exit-notify 1\n";
