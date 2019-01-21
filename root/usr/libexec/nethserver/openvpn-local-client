@@ -71,7 +71,7 @@ if ($cipher ne '') {
 
 my $compression = $openvpn->prop('Compression') || 'enabled';
 if ($compression ne 'disabled' && $compression ne 'enabled') {
-    $OUT .= "compress $compression";
+    $OUT .= "compress $compression\n";
 } elsif ($compression eq 'enabled') { # fallback to lzo
     $OUT .= "compress lzo\n";
 }
