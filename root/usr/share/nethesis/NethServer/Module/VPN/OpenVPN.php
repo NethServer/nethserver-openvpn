@@ -85,7 +85,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $this->declareParameter('PushWins', Validate::IPv4_OR_EMPTY, array('configuration', 'openvpn@host-to-net', 'PushWins'));
         $this->declareParameter('PushNbdd', Validate::IPv4_OR_EMPTY, array('configuration', 'openvpn@host-to-net', 'PushNbdd'));
         $this->declareParameter('Netmask', Validate::NETMASK, array('configuration', 'openvpn@host-to-net', 'Netmask'));
-        $this->declareParameter('Network', "/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0)$/", array('configuration', 'openvpn@host-to-net', 'Network'));
+        $this->declareParameter('Network', Validate::IPv4, array('configuration', 'openvpn@host-to-net', 'Network'));
         $this->declareParameter('Compression', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'Compression'));
         $this->declareParameter('port', Validate::PORTNUMBER, array('configuration', 'openvpn@host-to-net', 'UDPPort'));
         $this->declareParameter('Remote', Validate::ANYTHING, array('configuration', 'openvpn@host-to-net', 'Remote'));
@@ -154,6 +154,19 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         if (!$this->getRequest()->isMutation() || $this->parameters['Mode'] == 'bridged' || $this->parameters['ServerStatus'] == 'disabled' || $report->hasValidationErrors()) {
             return;
         }
+
+        // check the "network" parameter is consistent with its "Mask" (only 0-bits in tail)
+        $net = long2ip(ip2long($this->parameters['Network']) & ip2long($this->parameters['Netmask']));
+        if ($net != $this->parameters['Network']) {
+            $report->addValidationErrorMessage($this, 'Network', 'invalid_network', array($this->parameters['Network']));
+        }
+
+        // For OpenVPN network must be 255.255.255.248 (/29) or lower
+        $cidr_net = $this->maskToCidr($this->parameters['Netmask']);
+        if ($cidr_net > 29) {
+            $report->addValidationErrorMessage($this, 'Netmask', 'netmask_lower_than_29', array($this->parameters['Netmask']));
+        }
+
         // check the network is not already used
         $interfaces = $this->getPlatform()->getDatabase('networks')->getAll();
         foreach ($interfaces as $interface => $props) {
