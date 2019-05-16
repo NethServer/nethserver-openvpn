@@ -35,6 +35,8 @@ sub openvpn_networks
 {
     my $value = shift;
 
+    return '' if(!$value);;
+
     my $config_db = esmith::DB::db->open_ro('configuration');
     if( ! $config_db ) {
         return '';
