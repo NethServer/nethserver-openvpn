@@ -17,5 +17,6 @@
         $OUT .= "compress lzo\n";
     }
 }
+passtos
 verb 3
 keepalive 10 60
