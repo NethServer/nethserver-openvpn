@@ -81,5 +81,6 @@ $OUT .= "verb 3\n";
 $OUT .= "persist-key\n";
 $OUT .= "persist-tun\n";
 $OUT .= "nobind\n";
+$OUT .= "passtos\n";
 
 print "$OUT\n";
