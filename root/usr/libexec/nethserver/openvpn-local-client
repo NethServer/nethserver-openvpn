@@ -39,7 +39,15 @@ if ($remote eq '') {
         $OUT .= "remote $_\n";
     }
 }
-$OUT .= "port ".$openvpn->prop('UDPPort')."\n";
+if ($openvpn->prop('UDPPort') ne '') {
+    $OUT .= "port ".$openvpn->prop('UDPPort')."\n";
+    $OUT .= "proto udp\n";
+    $OUT .= "explicit-exit-notify 1\n";
+} elsif ($openvpn->prop('TCPPort') ne '') {
+    $OUT .= "port ".$openvpn->prop('TCPPort')."\n";
+    $OUT .= "proto tcp-client\n";
+}
+
 $OUT .= "float\n";
 
 my $mode = $openvpn->prop('AuthMode') || 'password';
@@ -76,7 +84,6 @@ if ($compression ne 'disabled' && $compression ne 'enabled') {
     $OUT .= "compress lzo\n";
 }
 
-$OUT .= "explicit-exit-notify 1\n";
 $OUT .= "verb 3\n";
 $OUT .= "persist-key\n";
 $OUT .= "persist-tun\n";
