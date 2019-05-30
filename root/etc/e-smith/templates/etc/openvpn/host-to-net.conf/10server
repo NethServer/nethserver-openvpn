@@ -36,6 +36,7 @@
         $OUT .= "proto tcp-server\n";
     }
 }
+client-connect /usr/libexec/nethserver/openvpn-connect 
 script-security 3
 float
 multihome
