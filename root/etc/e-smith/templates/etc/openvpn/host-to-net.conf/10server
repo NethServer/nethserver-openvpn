@@ -25,8 +25,17 @@
         $OUT.="server-bridge $ip $netmask $start $end\n";
     }
     $OUT.="ifconfig-pool-persist host-to-net.pool 0\n";
+
+    if ($openvpn{UDPPort} ne '') {
+        $OUT .= "# UDP server\n";
+        $OUT .="port ".$openvpn{UDPPort}."\n";
+        $OUT .= "proto udp\n";
+    } elsif ($openvpn{TCPPort} ne '') {
+        $OUT .= "# TCP server\n";
+        $OUT .="port ".$openvpn{TCPPort}."\n";
+        $OUT .= "proto tcp-server\n";
+    }
 }
-port {$openvpn{UDPPort}}
 script-security 3
 float
 multihome
