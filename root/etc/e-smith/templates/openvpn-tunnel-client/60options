@@ -16,6 +16,7 @@
     } elsif ($compression eq 'enabled') { # fallback to lzo
         $OUT .= "compress lzo\n";
     }
+    $OUT .= "management /var/spool/openvpn/n2n-".$client->key." unix\n";
 }
 verb 3
 keepalive 10 60

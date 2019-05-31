@@ -1,0 +1,45 @@
+#!/usr/bin/perl -w
+use strict;
+use Socket;
+use IO::Handle;
+use JSON;
+
+sub help() {
+    print "Usage: openvpn-state <socket> \n\n";
+    print "   Example: openvpn-state /var/spool/openvpn/n2n-test\n\n";
+    exit(1);
+}
+
+# flush after every write
+$| = 1;
+
+if (scalar(@ARGV) < 1) {
+    help();
+}
+my $socket = $ARGV[0];
+exit(1) unless (-e $socket);
+
+socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
+connect(TSOCK, sockaddr_un($socket)) or exit(1);
+my $result;
+while (defined(my $msg = <TSOCK>)) {
+    print TSOCK "state\n";
+    TSOCK->flush;
+    exit(1) if $msg =~ /ERROR/;
+    last if $msg =~ /END/;
+    if ($msg =~ /^\d+/) {
+        # timestamp, state_name, state_description, virtual_ip, remote_server, uknown, unknown
+        my ($timestamp, $state_name, $state_description, $virtual_ip, $remote_server, $u1, $u2) = split(',', $msg);
+        $result = { 
+            virtual_address => $virtual_ip,
+            remote_server => $remote_server,
+            state => lc($state_name),
+            since => $timestamp
+        }
+    }
+}
+
+my $json = JSON->new;
+my $json_text   = $json->encode( $result );
+print $json_text;
+exit(0);
