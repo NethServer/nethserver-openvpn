@@ -18,5 +18,6 @@
     }
     $OUT .= "management /var/spool/openvpn/n2n-".$client->key." unix\n";
 }
+passtos
 verb 3
 keepalive 10 60

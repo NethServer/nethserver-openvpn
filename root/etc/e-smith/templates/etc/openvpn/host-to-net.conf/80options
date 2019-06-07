@@ -6,6 +6,7 @@
         $OUT .= "compress lzo";
     }
 }
+passtos
 keepalive 20 120
 client-config-dir ccd
 persist-key

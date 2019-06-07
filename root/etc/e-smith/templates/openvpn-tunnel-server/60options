@@ -27,6 +27,7 @@
     }
     $OUT .= "management /var/spool/openvpn/n2n-".$server->key." unix\n";
 }
+passtos
 keepalive 10 60
 ping-timer-rem
 persist-key
