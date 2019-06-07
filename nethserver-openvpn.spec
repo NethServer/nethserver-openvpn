@@ -9,6 +9,7 @@ BuildArch: noarch
 
 Requires: openvpn, bridge-utils
 Requires: nethserver-firewall-base
+Requires: nethserver-vpn-ui
 
 BuildRequires: perl
 BuildRequires: nethserver-devtools 
