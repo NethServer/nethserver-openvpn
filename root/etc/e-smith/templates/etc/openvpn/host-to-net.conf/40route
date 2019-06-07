@@ -66,6 +66,16 @@
             }
         }
     }
+
+    my $custom_routes = $openvpn{'CustomRoutes'} || '';
+    if ($custom_routes) {
+        foreach (split(",",$custom_routes)) {
+            my $block = NetAddr::IP->new( $_ ) || "";
+            if ($block) {
+                $OUT .= "push \"route ".$block->addr()." ".$block->mask()."\"\n";
+            }
+        }
+    }
     
     if ($mode ne 'bridged') {
         foreach ($ndb->get_all_by_prop('role' => 'green')) {

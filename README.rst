@@ -147,6 +147,7 @@ Properties:
 * ``PushExtraRoutes``: if ``disabled``, only routes for green interface are pushed, if enabled also all static routes will be pushed. Default is ``enabled``
 * ``PushNbdd``: if set, push the specified NBDD as DHCP option
 * ``PushWins``: if set, push the specified WINS as DHCP option
+* ``CustomRoutes``: a comma separated listed of CIDR to be pushed as extra routes to VPN clients
 
 
 If mode is ``bridged``:
