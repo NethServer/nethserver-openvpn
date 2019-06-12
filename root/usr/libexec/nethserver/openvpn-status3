@@ -6,7 +6,7 @@ use JSON;
 
 
 sub help() {
-    print "Usage: openvpn-status3 <socket> \n\n";
+    print "Usage: openvpn-status3 <socket> [subnet|p2p]\n\n";
     print "   Example: openvpn-status3 /var/spool/openvpn/host-to-net\n\n";
     exit(1);
 }
@@ -18,6 +18,7 @@ if (scalar(@ARGV) < 1) {
     help();
 }
 my $socket = $ARGV[0];
+my $topology = $ARGV[1] || 'subnet';
 exit(1) unless (-e $socket);
 
 socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
@@ -28,17 +29,37 @@ while (defined(my $msg = <TSOCK>)) {
     TSOCK->flush;
     exit(1) if $msg =~ /ERROR/;
     last if $msg =~ /END/;
-    if ($msg =~ /^CLIENT_LIST/) {
-        # Line format
-        # Header, Common Name Real Address    Virtual Address Virtual IPv6 Address    Bytes Received  Bytes Sent  Connected Since Connected Since (time_t)    Username    Client ID   Peer ID
-        my ($header, $cn, $real_address, $virtual_ipv4, $virtual_ipv6, $bytes_received, $bytes_sent, $since, $username, $client_id, $peer_id) = split('\t', $msg);
-        next if ($cn eq 'UNDEF');
-        $results{$cn} =  { 
-            real_address => $real_address, 
-            virtual_address => $virtual_ipv4, 
-            bytes_received => $bytes_received,
-            bytes_sent => $bytes_sent,
-            since => $since
+    if ($topology eq 'subnet') {
+        if ($msg =~ /^CLIENT_LIST/) {
+            # Line format
+            # Header, Common Name Real Address    Virtual Address Virtual IPv6 Address    Bytes Received  Bytes Sent  Connected Since Connected Since (time_t)    Username    Client ID   Peer ID
+            my ($header, $cn, $real_address, $virtual_ipv4, $virtual_ipv6, $bytes_received, $bytes_sent, $since, $username, $client_id, $peer_id) = split('\t', $msg);
+            next if ($cn eq 'UNDEF');
+            $results{$cn} =  { 
+                real_address => $real_address, 
+                virtual_address => $virtual_ipv4, 
+                bytes_received => $bytes_received,
+                bytes_sent => $bytes_sent,
+                since => $since
+            }
+        }
+    }
+    if ($topology eq 'p2p') {
+        # Line format: Updated,Wed Jun 12 08:29:13 2019
+        if ($msg =~ /^Updated,(.*)$/) {
+            $results{'stats'}{'since'} = $1;
+            $results{'stats'}{'since'} =~ s/\s+$//; # remove trailing \r
+        }
+        # Line format: TUN/TAP read bytes,312 
+        # Line format: TCP/UDP read bytes,2392
+        # Line format: Auth read bytes,909
+        if ($msg =~ /read bytes,(.*)$/) {
+            $results{'stats'}{'bytes_received'} += int($1);
+        }
+        # Line format: TUN/TAP write bytes,312
+        # Line format: TCP/UDP write bytes,2176
+        if ($msg =~ /write bytes,(.*)$/) {
+            $results{'stats'}{'bytes_sent'} += int($1);
         }
     }
 }
