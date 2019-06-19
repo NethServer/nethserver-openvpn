@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.7.3
+Version: 1.8.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -47,6 +47,11 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %{_nseventsdir}/%{name}-update
 
 %changelog
+* Wed Jun 19 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.8.0-1
+- VPN Cockpit UI - NethServer/dev#5760
+- Firewall library: do not break on empty value
+- Always enable passtos for roadwarror server
+
 * Tue Mar 26 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.7.3-1
 - OpenVPN server network validator - Bug NethServer/dev#5736
 
