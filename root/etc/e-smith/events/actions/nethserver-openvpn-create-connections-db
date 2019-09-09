@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
 
 #
 # Copyright (C) 2019 Nethesis S.r.l.
@@ -20,24 +20,20 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-use strict;
-use warnings;
-use esmith::ConfigDB;
+import sqlite3
+import os
 
-my $output;
-my $ret_code;
-my @connect_scripts = glob('/usr/libexec/nethserver/connect-scripts/*');
+DATABASE_PATH = '/var/lib/nethserver/openvpn/connections.db'
+database_exists = os.path.isfile(DATABASE_PATH)
 
-for(@connect_scripts){
-    # consider only executable files
-    if (-x $_) {
-        $output = `$_`;
-        $ret_code = $? >> 8;
-        if ($ret_code != 0) {
-            # exit with error code
-            exit $ret_code;
-        }
-    }
-}
+if not database_exists:
+	conn = sqlite3.connect(DATABASE_PATH)
+	c = conn.cursor()
 
-exit 0;
+	c.execute('''CREATE TABLE connections
+			(common_name text, ip_address text, start_time integer, duration integer, bytes_received integer, bytes_sent integer)''')
+
+	c.execute("CREATE INDEX idx_common_name ON connections (common_name)")
+
+	conn.commit()
+	conn.close()

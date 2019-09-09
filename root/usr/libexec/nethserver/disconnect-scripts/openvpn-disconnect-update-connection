@@ -20,14 +20,20 @@
 # along with NethServer.  If not, see COPYING.
 #
 
+import os
 import sqlite3
-conn = sqlite3.connect('/etc/openvpn/openvpn-connections.db')
+
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
 c = conn.cursor()
 
-c.execute('''CREATE TABLE connections
-		(common_name text, ip_address text, start_time integer, duration integer, bytes_received integer, bytes_sent integer)''')
+env = os.environ
+common_name = env['common_name']
+duration = int(env['time_duration'])
+bytes_received = int(env['bytes_received'])
+bytes_sent = int(env['bytes_sent'])
 
-c.execute("CREATE INDEX idx_common_name ON connections (common_name)")
+# Update connection data
+c.execute("UPDATE connections SET duration=?, bytes_received=?, bytes_sent=? WHERE common_name=? and start_time=(SELECT MAX(start_time) FROM connections WHERE common_name=?)", (duration, bytes_received, bytes_sent, common_name, common_name))
 
 conn.commit()
 conn.close()

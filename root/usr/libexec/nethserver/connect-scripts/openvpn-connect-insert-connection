@@ -23,7 +23,7 @@
 import os
 import sqlite3
 
-conn = sqlite3.connect('/etc/openvpn/openvpn-connections.db')
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
 c = conn.cursor()
 
 env = os.environ
