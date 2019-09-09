@@ -28,10 +28,11 @@ c = conn.cursor()
 
 env = os.environ
 common_name = env['common_name']
-ip_address = env['ifconfig_pool_remote_ip']
+virtual_ip_addr = env['ifconfig_pool_remote_ip']
+remote_ip_addr = env['untrusted_ip']
 start_time = int(env['time_unix'])
 
-c.execute("INSERT INTO connections (common_name, ip_address, start_time) VALUES (?, ?, ?)", (common_name, ip_address, start_time))
+c.execute("INSERT INTO connections (common_name, virtual_ip_addr, remote_ip_addr, start_time) VALUES (?, ?, ?, ?)", (common_name, virtual_ip_addr, remote_ip_addr, start_time))
 
 conn.commit()
 conn.close()

@@ -33,6 +33,7 @@ for(@connect_scripts){
     if (-x $_) {
         $output = `$_`;
         $ret_code = $? >> 8;
+
         if ($ret_code != 0) {
             # exit with error code
             exit $ret_code;
