@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
 
 #
 # Copyright (C) 2019 Nethesis S.r.l.
@@ -20,22 +20,14 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-use strict;
-use warnings;
-use esmith::ConfigDB;
+import sqlite3
+conn = sqlite3.connect('/etc/openvpn/openvpn-connections.db')
+c = conn.cursor()
 
-my $output = `/usr/libexec/nethserver/openvpn-connect-check-common-name-status`;
-my $ret_code = $? >> 8;
-if ($ret_code != 0) {
-	# return error code
-	return $ret_code;
-}
+c.execute('''CREATE TABLE connections
+		(common_name text, ip_address text, start_time integer, duration integer, bytes_received integer, bytes_sent integer)''')
 
-$output = `/usr/libexec/nethserver/openvpn-connect-insert-connection`;
-$ret_code = $? >> 8;
-if ($ret_code != 0) {
-        # return error code
-        return $ret_code;
-}
+c.execute("CREATE INDEX idx_common_name ON connections (common_name)")
 
-exit 0;
+conn.commit()
+conn.close()

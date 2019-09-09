@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
 
 #
 # Copyright (C) 2019 Nethesis S.r.l.
@@ -20,22 +20,18 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-use strict;
-use warnings;
-use esmith::ConfigDB;
+import os
+import sqlite3
 
-my $output = `/usr/libexec/nethserver/openvpn-connect-check-common-name-status`;
-my $ret_code = $? >> 8;
-if ($ret_code != 0) {
-	# return error code
-	return $ret_code;
-}
+conn = sqlite3.connect('/etc/openvpn/openvpn-connections.db')
+c = conn.cursor()
 
-$output = `/usr/libexec/nethserver/openvpn-connect-insert-connection`;
-$ret_code = $? >> 8;
-if ($ret_code != 0) {
-        # return error code
-        return $ret_code;
-}
+env = os.environ
+common_name = env['common_name']
+ip_address = env['ifconfig_pool_remote_ip']
+start_time = int(env['time_unix'])
 
-exit 0;
+c.execute("INSERT INTO connections (common_name, ip_address, start_time) VALUES (?, ?, ?)", (common_name, ip_address, start_time))
+
+conn.commit()
+conn.close()

@@ -24,18 +24,11 @@ use strict;
 use warnings;
 use esmith::ConfigDB;
 
-my $output = `/usr/libexec/nethserver/openvpn-connect-check-common-name-status`;
-my $ret_code = $? >> 8;
-if ($ret_code != 0) {
-	# return error code
-	return $ret_code;
+if (defined($ENV{'common_name'})) {
+    my $db = esmith::ConfigDB->open_ro('vpn');
+    my $status = $db->get_prop($ENV{'common_name'}, 'status') || 'enabled';
+    if ($status eq 'disabled') {
+        exit 1;
+    }
 }
-
-$output = `/usr/libexec/nethserver/openvpn-connect-insert-connection`;
-$ret_code = $? >> 8;
-if ($ret_code != 0) {
-        # return error code
-        return $ret_code;
-}
-
 exit 0;
