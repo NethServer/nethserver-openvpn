@@ -22,17 +22,15 @@
 
 use strict;
 use warnings;
-use esmith::ConfigDB;
 
-my $output;
-my $ret_code;
-my @connect_scripts = glob('/usr/libexec/nethserver/connect-scripts/*');
+my @scripts = glob('/usr/libexec/nethserver/connect-scripts/*');
 
-for(@connect_scripts){
+for(@scripts){
     # consider only executable files
     if (-x $_) {
-        $output = `$_`;
-        $ret_code = $? >> 8;
+        # script execution
+        `$_`;
+        my $ret_code = $? >> 8;
 
         if ($ret_code != 0) {
             # exit with error code
