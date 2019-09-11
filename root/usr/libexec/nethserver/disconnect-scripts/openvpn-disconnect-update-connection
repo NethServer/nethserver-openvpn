@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
 
 #
 # Copyright (C) 2019 Nethesis S.r.l.
@@ -20,23 +20,20 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-use strict;
-use warnings;
+import os
+import sqlite3
 
-my @scripts = glob('/usr/libexec/nethserver/connect-scripts/*');
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+c = conn.cursor()
 
-for(@scripts){
-    # consider only executable files
-    if (-x $_) {
-        # script execution
-        `$_`;
-        my $ret_code = $? >> 8;
+env = os.environ
+common_name = env['common_name']
+duration = int(env['time_duration'])
+bytes_received = int(env['bytes_received'])
+bytes_sent = int(env['bytes_sent'])
 
-        if ($ret_code != 0) {
-            # exit with error code
-            exit $ret_code;
-        }
-    }
-}
+# Update connection data
+c.execute("UPDATE connections SET duration=?, bytes_received=?, bytes_sent=? WHERE common_name=? and start_time=(SELECT MAX(start_time) FROM connections WHERE common_name=?)", (duration, bytes_received, bytes_sent, common_name, common_name))
 
-exit 0;
+conn.commit()
+conn.close()

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
 
 #
 # Copyright (C) 2019 Nethesis S.r.l.
@@ -20,23 +20,23 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-use strict;
-use warnings;
+import os
+import sqlite3
 
-my @scripts = glob('/usr/libexec/nethserver/connect-scripts/*');
+try:
+    conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+    c = conn.cursor()
 
-for(@scripts){
-    # consider only executable files
-    if (-x $_) {
-        # script execution
-        `$_`;
-        my $ret_code = $? >> 8;
+    env = os.environ
+    common_name = env['common_name']
+    virtual_ip_addr = env['ifconfig_pool_remote_ip']
+    remote_ip_addr = env['untrusted_ip']
+    start_time = int(env['time_unix'])
 
-        if ($ret_code != 0) {
-            # exit with error code
-            exit $ret_code;
-        }
-    }
-}
+    c.execute("INSERT INTO connections (common_name, virtual_ip_addr, remote_ip_addr, start_time) VALUES (?, ?, ?, ?)", (common_name, virtual_ip_addr, remote_ip_addr, start_time))
 
-exit 0;
+    conn.commit()
+    conn.close()
+finally:
+    # this script shouldn't prevent VPN connection, so a potential error code is never returned
+    exit(0)

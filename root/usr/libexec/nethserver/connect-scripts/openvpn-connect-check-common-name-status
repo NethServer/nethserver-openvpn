@@ -22,21 +22,13 @@
 
 use strict;
 use warnings;
+use esmith::ConfigDB;
 
-my @scripts = glob('/usr/libexec/nethserver/connect-scripts/*');
-
-for(@scripts){
-    # consider only executable files
-    if (-x $_) {
-        # script execution
-        `$_`;
-        my $ret_code = $? >> 8;
-
-        if ($ret_code != 0) {
-            # exit with error code
-            exit $ret_code;
-        }
+if (defined($ENV{'common_name'})) {
+    my $db = esmith::ConfigDB->open_ro('vpn');
+    my $status = $db->get_prop($ENV{'common_name'}, 'status') || 'enabled';
+    if ($status eq 'disabled') {
+        exit 1;
     }
 }
-
 exit 0;

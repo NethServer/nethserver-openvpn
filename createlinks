@@ -35,6 +35,7 @@ event_actions($event,
     'nethserver-vpn-conf' => '20',
     'nethserver-openvpn-crl' => '30',
     'nethserver-openvpn-net2net' => '40',
+    'nethserver-openvpn-create-connections-db' => '50',
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);

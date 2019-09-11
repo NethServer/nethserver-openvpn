@@ -23,20 +23,18 @@
 use strict;
 use warnings;
 
-my @scripts = glob('/usr/libexec/nethserver/connect-scripts/*');
+my $ret_code = 0;
+my @scripts = glob('/usr/libexec/nethserver/disconnect-scripts/*');
 
 for(@scripts){
-    # consider only executable files
-    if (-x $_) {
-        # script execution
-        `$_`;
-        my $ret_code = $? >> 8;
-
-        if ($ret_code != 0) {
-            # exit with error code
-            exit $ret_code;
-        }
-    }
+	# consider only executable files
+	if (-x $_) {
+		# script execution
+		`$_`;
+		# sum exit codes
+		$ret_code += $? >> 8;
+	}
 }
 
-exit 0;
+# return a global exit code, the sum of all exit codes
+exit $ret_code;
