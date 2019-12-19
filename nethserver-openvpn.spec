@@ -45,6 +45,7 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %files -f %{name}-%{version}-filelist
 %defattr(-,root,root)
 %dir %{_nseventsdir}/%{name}-update
+%dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
 * Wed Sep 18 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.9.0-1
