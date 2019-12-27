@@ -4,15 +4,16 @@
 {
     use esmith::ConfigDB;
     my $vdb = esmith::ConfigDB->open_ro('vpn');
-
-    foreach my $vpn ($vdb->get_all_by_prop('type' => 'openvpn-tunnel-server')) {
-        my $port = $vpn->prop('Port') || next;
-        my $protocol = $vpn->prop('Protocol') || 'udp';
-        $protocol =~ s/\-.*//; # remove '-server' substring
-        $OUT .= "?COMMENT ".$vpn->prop('type').": ".$vpn->key."\n";
-        $OUT .= "ACCEPT\tnet\t\$FW\t$protocol\t$port\n";
-        $OUT .= "ACCEPT\tloc\t\$FW\t$protocol\t$port\n";
-        $Out .= "?COMMENT";
+    
+    if (scalar @vdb > 0) {
+      foreach my $vpn ($vdb->get_all_by_prop('type' => 'openvpn-tunnel-server')) {
+          my $port = $vpn->prop('Port') || next;
+          my $protocol = $vpn->prop('Protocol') || 'udp';
+          $protocol =~ s/\-.*//; # remove '-server' substring
+          $OUT .= "?COMMENT ".$vpn->prop('type').": ".$vpn->key."\n";
+          $OUT .= "ACCEPT\tnet\t\$FW\t$protocol\t$port\n";
+          $OUT .= "ACCEPT\tloc\t\$FW\t$protocol\t$port\n";
+          $Out .= "?COMMENT";
+      }
     }
-
 }

@@ -63,13 +63,15 @@ sub openvpn_tunnels
     my $results = shift;
 
     my $vpn_db = esmith::DB::db->open_ro('vpn');
-    foreach ($vpn_db->get_all_by_prop('type' => 'vpn')) {
-        my $net = $_->prop('VPNRemoteNetwork') || next;
-        my $msk = $_->prop('VPNRemoteNetmask') || next;
-        my $cidr = esmith::util::computeLocalNetworkShortSpec($net, $msk);
+    if (defined $vpn_db) {
+      foreach ($vpn_db->get_all_by_prop('type' => 'vpn')) {
+          my $net = $_->prop('VPNRemoteNetwork') || next;
+          my $msk = $_->prop('VPNRemoteNetmask') || next;
+          my $cidr = esmith::util::computeLocalNetworkShortSpec($net, $msk);
 
-        if($cidr) {
-            push(@$results, {'cidr' => $cidr, 'provider' => 'OpenVPN'});
-        }
+          if($cidr) {
+              push(@$results, {'cidr' => $cidr, 'provider' => 'OpenVPN'});
+          }
+      }
     }
 }
