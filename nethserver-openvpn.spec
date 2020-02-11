@@ -46,6 +46,7 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %defattr(-,root,root)
 %dir %{_nseventsdir}/%{name}-update
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
+%attr(0440,root,root) /etc/sudoers.d/20_nethserver_openvpn
 
 %changelog
 * Thu Dec 19 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.9.1-1
