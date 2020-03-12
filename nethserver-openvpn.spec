@@ -35,7 +35,8 @@ rm -rf %{buildroot}
   --dir /var/lib/nethserver/certs/clients 'attr(0740,srvmgr,adm)' \
   --dir /var/lib/nethserver/openvpn-tunnels 'attr(0740,srvmgr,adm)' \
   --dir /etc/systemd/system/openvpn@.service.d 'attr(0755,root,root)' \
-  --dir /etc/openvpn/ccd 'attr(0740,srvmgr,srvmgr)' > %{name}-%{version}-filelist
+  --dir /etc/openvpn/ccd 'attr(0740,srvmgr,srvmgr)' > %{name}-%{version}-filelist \
+  --file /etc/sudoers.d/20_nethserver_openvpn 'attr(0440,root,root)'
 echo "%doc COPYING" >> %{name}-%{version}-filelist
 
 %post
