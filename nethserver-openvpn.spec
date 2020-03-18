@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.9.1
+Version: 1.9.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -49,6 +49,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Wed Mar 18 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.9.2-1
+- Bad sudoers permission - Bug Nethserver/dev#6081
+
 * Thu Dec 19 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.9.1-1
 - Bad OpenVPN roadwarrior certificate permissions - Bug NethServer/dev#6000
 
