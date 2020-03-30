@@ -163,3 +163,11 @@ event_actions('openvpn-tunnel-upload',
     'nethserver-openvpn-upload-client' => '30',
     'firewall-adjust' => '80',
 );
+
+#
+# event otp-save
+#
+$event = 'otp-save';
+event_actions($event,
+    'nethserver-openvpn-otp' => '10',
+);

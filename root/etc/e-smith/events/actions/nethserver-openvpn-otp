@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+use Convert::Base32;
+use NethServer::Password;
+use esmith::ConfigDB;
+
+my $db = esmith::ConfigDB->open_ro() || die("Can't open config db");
+my $OtpStatus = $db->get_prop('openvpn@host-to-net','OtpStatus') || 'disabled';
+
+exit 0 if ($OtpStatus ne 'enabled');
+
+my ($key,$login,$pass,$uid,$gid);
+my $mode = 0400;
+
+foreach my $name (glob('/var/lib/nethserver/home/*')) {
+
+    $name =~ s|/var/lib/nethserver/home/||g;
+    if ( -e "/var/lib/nethserver/home/$name/.2fa_openvpn.secret") {
+      $key = NethServer::Password->new('.2fa.secret',{'defaultDir' => "/var/lib/nethserver/home/$name/"})->getAscii();
+
+      ## clean up
+      $key  =~ s/\R//g;
+
+      # we need to convert the hex token to binary base32 
+      my $secret = uc encode_base32( pack("H*", $key) );
+      open(my $fh, '>', "/var/lib/nethserver/home/$name/.google_authenticator");
+      print $fh "$secret\n\" TOTP_AUTH";
+      close $fh;
+
+      # set permission & ownership
+      ($login,$pass,$uid,$gid) = getpwnam($name);
+      chown $uid,$gid, "/var/lib/nethserver/home/$name/.google_authenticator";
+      chmod $mode,"/var/lib/nethserver/home/$name/.google_authenticator";
+    } else {
+      unlink "/var/lib/nethserver/home/$name/.google_authenticator";
+    }
+}
