@@ -10,7 +10,7 @@ BuildArch: noarch
 Requires: openvpn, bridge-utils
 Requires: nethserver-firewall-base
 Requires: nethserver-vpn-ui
-
+Requires: google-authenticator perl-Convert-Base32
 BuildRequires: perl
 BuildRequires: nethserver-devtools 
 
@@ -215,5 +215,3 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 - VPN: add support for OpenVPN net2net - Feature #1958 [NethServer]
 - VPN: support for OpenVPN roadwarrior - Feature #1956 [NethServer]
 - VPN - Feature #1763 [NethServer]
-
-
