@@ -37,6 +37,7 @@ event_actions($event,
     'nethserver-openvpn-net2net' => '40',
     'nethserver-openvpn-create-connections-db' => '50',
 );
+templates2events("/etc/pam.d/openvpn-otp",  $event);
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
 templates2events("/var/lib/nethserver/certs/ca.cnf",  $event);
@@ -53,6 +54,7 @@ event_actions($event,
     'firewall-adjust' => '80',
     'trusted-networks-modify' => '95'
 );
+templates2events("/etc/pam.d/openvpn-otp",  $event);
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
 event_services($event, 'openvpn@host-to-net' => 'restart');
