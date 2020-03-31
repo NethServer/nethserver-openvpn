@@ -4,7 +4,17 @@
 my $_libdir = ( -e '/usr/lib64/' ) ? "/usr/lib64" : "/usr/lib";
 
 my $mode = $openvpn{'AuthMode'} || 'password';
-if ($mode eq 'password') {
+if (($openvpn{'OtpStatus'} eq 'enabled') && ($mode ne 'certificate')) {
+    if ($mode eq 'password') {
+        $OUT.= "# Multi factor authentication: Login + Password + One time password\n";
+        $OUT.= "verify-client-cert none\n" 
+    } else {
+        $OUT.= "# Multi factor authentication: Login + Password + One time password + certificate\n";
+    }
+    $OUT.= "reneg-sec 0\n";
+    $OUT.="plugin ${_libdir}/openvpn/plugins/openvpn-plugin-auth-pam.so /etc/pam.d/openvpn-otp\n";
+}
+elsif ($mode eq 'password') {
     $OUT.= "# Authentication: password\n";
     $OUT.="auth-user-pass-verify /usr/libexec/nethserver/openvpn-pam-auth via-env\n";
     $OUT.="verify-client-cert none\n";
