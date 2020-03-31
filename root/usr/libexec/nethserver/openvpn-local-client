@@ -23,6 +23,8 @@ my $openvpn = $cdb->get('openvpn@host-to-net');
 my $SystemName = $cdb->get('SystemName')->value();
 my $DomainName = $cdb->get('DomainName')->value();
 my $remote = $openvpn->prop('Remote') || "";
+my $otp = $openvpn->prop('OtpStatus') || "disabled";
+my ($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($name);
 
 my $mode = $openvpn->prop('Mode') || 'routed';
 if ($mode eq 'routed') {
@@ -53,7 +55,14 @@ $OUT .= "float\n";
 my $mode = $openvpn->prop('AuthMode') || 'password';
 if ($mode eq 'password' or $mode eq 'password-certificate') {
     $OUT.="auth-user-pass\n";
+    if ($otp eq 'enabled') {
+        $OUT .= "reneg-sec 0\n";
+        if ( -e "$dir/.2fa_openvpn.secret") {
+            $OUT .= "auth-nocache\n";
+      }
+    }
 };
+
 if ($mode eq 'certificate' or $mode eq 'password-certificate') {
     $OUT.= "# Authentication: certificate\n";
     $OUT .= "<cert>\n";
