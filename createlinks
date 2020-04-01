@@ -126,7 +126,6 @@ templates2events("/var/lib/nethserver/certs/ca.cnf",  $event);
 $event = "post-restore-config";
 
 event_actions($event,
-    'nethserver-openvpn-network-reset' => '03',
     'nethserver-openvpn-ns6upgrade' => '60',
 );
 
