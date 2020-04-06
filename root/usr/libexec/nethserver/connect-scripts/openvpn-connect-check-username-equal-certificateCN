@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/usr/bin/perl
 #
 # Copyright (C) 2020 Nethesis S.r.l.
 # http://www.nethesis.it - nethserver@nethesis.it
@@ -29,11 +29,10 @@ use esmith::ConfigDB;
 
 my $db = esmith::ConfigDB->open_ro();
 my $AuthMode = $db->get_prop('openvpn@host-to-net', 'AuthMode') || 'password';
-my $OtpStatus = $db->get_prop('openvpn@host-to-net', 'OtpStatus') || 'disabled';
 my $DomainName = $db->get_value('DomainName') || '';
 
-# we exclude two authentication modes (certificate without OTP & password) 
-if (($AuthMode eq 'certificate' && $OtpStatus eq 'disabled') || ($AuthMode eq 'password')) {
+# we exclude two authentication modes (certificate & password) 
+if (($AuthMode eq 'certificate') || ($AuthMode eq 'password')) {
     exit 0;
 }
 
