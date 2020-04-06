@@ -173,3 +173,10 @@ $event = 'otp-save';
 event_actions($event,
     'nethserver-openvpn-otp' => '10',
 );
+
+# restore otp with post-restore-databases
+
+$event = 'post-restore-data';
+event_actions($event,
+    'nethserver-openvpn-otp' => '10',
+);
