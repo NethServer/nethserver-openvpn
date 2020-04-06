@@ -172,3 +172,8 @@ event_actions('openvpn-tunnel-upload',
 event_templates('otp-save', qw(
     /etc/nethserver/openvpn.otp.force
 ));
+
+# restore otp with post-restore-data
+event_templates('post-restore-data', qw(
+    /etc/nethserver/openvpn.otp.force
+));
