@@ -37,7 +37,6 @@ event_actions($event,
     'nethserver-openvpn-net2net' => '40',
     'nethserver-openvpn-create-connections-db' => '50',
 );
-templates2events("/etc/nethserver/openvpn.otp.force",  $event);
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
 templates2events("/etc/openvpn/host-to-net.pool",  $event);
 templates2events("/var/lib/nethserver/certs/ca.cnf",  $event);
@@ -164,16 +163,3 @@ event_actions('openvpn-tunnel-upload',
     'nethserver-openvpn-upload-client' => '30',
     'firewall-adjust' => '80',
 );
-
-#
-# otp-save
-#
-
-event_templates('otp-save', qw(
-    /etc/nethserver/openvpn.otp.force
-));
-
-# restore otp with post-restore-data
-event_templates('post-restore-data', qw(
-    /etc/nethserver/openvpn.otp.force
-));

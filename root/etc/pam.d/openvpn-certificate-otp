@@ -1,6 +1,3 @@
 #%PAM-1.0
-auth    [default=1 success=ignore]       pam_listfile.so \
-            onerr=fail  item=user  sense=allow  file=/etc/nethserver/openvpn.otp.force
 auth    required    pam_oath.so usersfile=/etc/nethserver/otp.secret window=10 digits=6
-auth required pam_permit.so
 account required pam_permit.so
