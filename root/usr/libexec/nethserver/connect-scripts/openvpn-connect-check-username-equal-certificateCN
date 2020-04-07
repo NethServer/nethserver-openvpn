@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+#
+# Copyright (C) 2020 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+# When the remote client initates a connection, he sends a $username ENV variable
+# that we compare to the $common-name ENV variable of the certificate, if it mismatches 
+# we exit with an error
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+
+my $db = esmith::ConfigDB->open_ro();
+my $AuthMode = $db->get_prop('openvpn@host-to-net', 'AuthMode') || 'password';
+my $DomainName = $db->get_value('DomainName') || '';
+
+# we exclude two authentication modes (certificate & password) 
+if (($AuthMode eq 'certificate') || ($AuthMode eq 'password')) {
+    exit 0;
+}
+
+# we valid if the username sent by the openvpn client configuration is equal to the 
+# common name of the certificate (also for short username and long username), 
+# else we exit with an error.
+
+if ($ENV{'common_name'} eq $ENV{'username'} || ($ENV{'common_name'} eq ($ENV{'username'}.'@'.$DomainName))) {
+    exit 0;
+}
+# we exit, it mismatches
+exit 1;
