@@ -27,6 +27,9 @@ Authentication mode
     * Certificate: choose when creating a net2net configuration
     * User, password and certificate: this is the most secure combination.
       The user must be a system user.
+    * User, one time password and certificate: This policy provides a multi
+      factor of Authentication, the user must install an OTP application on his 
+      mobile phone, the code changes every 30 seconds. The user must be a system-user. 
 
 Routed mode
     (Preferred mode). Must be used if the VPN must carry only IP traffic.
@@ -113,5 +116,3 @@ Remote network
 
     * Network Address: the network address of the remote network. Eg: 10.0.0.0 
     * Netmask: Netmask of the remote network. Eg: 255.255.255.0
-
-
