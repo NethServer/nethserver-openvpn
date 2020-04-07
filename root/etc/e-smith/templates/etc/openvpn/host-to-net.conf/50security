@@ -13,13 +13,11 @@ if ($mode eq 'password') {
     $OUT.= "# Authentication: certificate + password \n";
     $OUT.="plugin ${_libdir}/openvpn/plugins/openvpn-plugin-auth-pam.so /etc/pam.d/login\n";
 } elsif ($mode eq 'certificate') {
-    if ($openvpn{'OtpStatus'} eq 'enabled') {
-        $OUT.= "# Authentication: certificate forced to OTP\n";
-        $OUT.= "reneg-sec 0\n";
-        $OUT.= "plugin /usr/lib64/openvpn/plugins/openvpn-plugin-auth-pam.so /etc/pam.d/openvpn-certificate-otp\n";
-    } else {
-        $OUT.= "# Authentication: certificate\n";
-    }
+    $OUT.= "# Authentication: certificate\n";
+} elsif ( $mode eq 'certificate-otp') {
+    $OUT.= "# Authentication: certificate + OTP\n";
+    $OUT.= "reneg-sec 0\n";
+    $OUT.= "plugin /usr/lib64/openvpn/plugins/openvpn-plugin-auth-pam.so /etc/pam.d/openvpn-certificate-otp\n";
 }
 
 my $digest = $openvpn{'Digest'} || '';

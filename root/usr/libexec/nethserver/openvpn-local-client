@@ -23,7 +23,6 @@ my $openvpn = $cdb->get('openvpn@host-to-net');
 my $SystemName = $cdb->get('SystemName')->value();
 my $DomainName = $cdb->get('DomainName')->value();
 my $remote = $openvpn->prop('Remote') || "";
-my $otp = $openvpn->prop('OtpStatus') || "disabled";
 
 my $mode = $openvpn->prop('Mode') || 'routed';
 if ($mode eq 'routed') {
@@ -56,12 +55,12 @@ if ($mode eq 'password' or $mode eq 'password-certificate') {
     $OUT.="auth-user-pass\n";
 };
 
-if ($mode eq 'certificate' and $otp eq 'enabled') {
+if ($mode eq 'certificate-otp') {
   $OUT.="auth-user-pass\n";
   $OUT.="reneg-sec 0\n";
 }
 
-if ($mode eq 'certificate' or $mode eq 'password-certificate') {
+if ($mode ne 'password') {
     $OUT.= "# Authentication: certificate\n";
     $OUT .= "<cert>\n";
     $OUT .= cat("/var/lib/nethserver/certs/$name.crt");
