@@ -57,6 +57,7 @@ if ($mode eq 'password' or $mode eq 'password-certificate') {
 
 if ($mode eq 'certificate-otp') {
   $OUT.="auth-user-pass\n";
+  $OUT.="auth-nocache\n";
   $OUT.="reneg-sec 0\n";
 }
 
