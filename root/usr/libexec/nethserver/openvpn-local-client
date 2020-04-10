@@ -54,7 +54,13 @@ my $mode = $openvpn->prop('AuthMode') || 'password';
 if ($mode eq 'password' or $mode eq 'password-certificate') {
     $OUT.="auth-user-pass\n";
 };
-if ($mode eq 'certificate' or $mode eq 'password-certificate') {
+
+if ($mode eq 'certificate-otp') {
+  $OUT.="auth-user-pass\n";
+  $OUT.="reneg-sec 0\n";
+}
+
+if ($mode ne 'password') {
     $OUT.= "# Authentication: certificate\n";
     $OUT .= "<cert>\n";
     $OUT .= cat("/var/lib/nethserver/certs/$name.crt");
