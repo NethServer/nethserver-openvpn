@@ -8,6 +8,7 @@ $L['AuthMode_label'] = 'Authentication mode';
 $L['password_mode_label'] = 'Username and password';
 $L['certificate_mode_label'] = 'Certificate';
 $L['password_certificate_mode_label'] = 'Username, password and certificate';
+$L['certificate_otp_mode_label'] = 'Username, one time password and certificate';
 $L['Network_label'] = 'Network';
 $L['Netmask_label'] = 'Netmask';
 $L['ClientToClient_label'] = 'Allow client-to-client network traffic';

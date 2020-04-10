@@ -68,7 +68,7 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         if (!$this->bridges) {
             $this->bridges = $this->readBridges();
         }
-        $authModes = $this->createValidator()->memberOf(array('password', 'certificate','password-certificate'));
+        $authModes = $this->createValidator()->memberOf(array('password', 'certificate','password-certificate', 'certificate-otp'));
         $modes = $this->createValidator()->memberOf(array('bridged', 'routed'));
         $bridges = $this->createValidator()->memberOf(array_keys($this->bridges));
         $this->declareParameter('ServerStatus', Validate::SERVICESTATUS, array('configuration', 'openvpn@host-to-net', 'status'));
@@ -108,7 +108,8 @@ class OpenVPN extends \Nethgui\Controller\AbstractController
         $view['AuthModeDatasource'] = array(
             array('password',$view->translate('password_mode_label')),
             array('certificate',$view->translate('certificate_mode_label')),
-            array('password-certificate',$view->translate('password_certificate_mode_label'))
+            array('password-certificate',$view->translate('password_certificate_mode_label')),
+            array('certificate-otp',$view->translate('certificate_otp_mode_label'))
         );
         $view['ModeDatasource'] = array(
             array('bridged',$view->translate('bridged_label')),
