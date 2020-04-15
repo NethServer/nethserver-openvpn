@@ -79,20 +79,13 @@ sub openvpn_tunnels
         }
     }
 
-    foreach ($vpn_db->get_all_by_prop('type' => 'tunnel')) {
-        my $nets = $_->prop('RemoteNetworks') || next;
-        foreach (split(/,/,$nets)) {
-            if (Net::IPv4Addr::ipv4_in_network($_, $value)) {
-                return 'ovpn';
-            }
-        }
-    }
-
-    foreach ($vpn_db->get_all_by_prop('type' => 'openvpn-tunnel-server')) {
-        my $nets = $_->prop('RemoteNetworks') || next;
-        foreach (split(/,/,$nets)) {
-            if (Net::IPv4Addr::ipv4_in_network($_, $value)) {
-                return 'ovpn';
+    foreach my $type (qw(tunnel openvpn-tunnel-server)) {
+        foreach my $t ($vpn_db->get_all_by_prop('type' => $type)) {
+            my $nets = $t->prop('RemoteNetworks') || next;
+            foreach (split(/,/,$nets)) {
+                if (Net::IPv4Addr::ipv4_in_network($_, $value)) {
+                    return 'ovpn';
+                }
             }
         }
     }

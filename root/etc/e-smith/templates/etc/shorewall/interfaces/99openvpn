@@ -1,2 +1,12 @@
-ovpn    tun+
+#
+# 99openvpn
+#
+{
+    our $rb = $openvpn{'Routeback'} || 'disabled';
+    if ($rb eq 'enabled') {
+        $OUT .= "ovpn    tun+    routeback\n";
+    } else {
+        $OUT .= "ovpn    tun+\n";
+    }
+}
 ovpn    tap+
