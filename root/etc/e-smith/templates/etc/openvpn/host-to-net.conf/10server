@@ -1,7 +1,7 @@
 {
     $mode = $openvpn{'Mode'} || 'routed';
     $routeToVPN = $openvpn{'RouteToVPN'} || 'disabled';
-    $topology = $openvpn{'Topology'} || 'net30';
+    $topology = $openvpn{'Topology'} || 'subnet';
     if ($mode eq 'routed') {
         $OUT.="dev tunrw\n";
         if(defined $openvpn{Network} and defined $openvpn{Netmask})
