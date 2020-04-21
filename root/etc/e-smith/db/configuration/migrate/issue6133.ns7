@@ -1,0 +1,17 @@
+{
+    #
+    # NethServer/ev#6133 -- set Topology to net30 for old installations
+    #
+
+    # do nothing on first installation
+    my $status = $DB->get_prop('openvpn@host-to-net', 'status') || '';
+    return '' if ($status eq '');
+
+    # set old default
+    my $topology = $DB->get_prop('openvpn@host-to-net', 'Topology') || '';
+    if ($topology eq '') {
+        $DB->set_prop('openvpn@host-to-net', 'Topology', 'net30');
+    }
+
+    '';
+}

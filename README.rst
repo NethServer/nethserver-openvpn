@@ -148,6 +148,7 @@ Properties:
 * ``PushNbdd``: if set, push the specified NBDD as DHCP option
 * ``PushWins``: if set, push the specified WINS as DHCP option
 * ``CustomRoutes``: a comma separated listed of CIDR to be pushed as extra routes to VPN clients
+* ``Topology``: set roadwarrior server topology, for valid values see ``man openvpn``
 
 
 If mode is ``bridged``:
@@ -186,6 +187,7 @@ Example: ::
     Remote=
     RouteToVPN=disabled
     TapInterfaces=tap0
+    Topology=subnet
     UDPPort=1194
     access=green,red
     status=enabled
