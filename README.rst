@@ -15,23 +15,23 @@ Events
 * ``openvpn-tunnel-delete``: fired when a new tunnel is deleted, takes the tunnel name as argument
 * ``openvpn-tunnel-modify``: fired when a new tunnel is modified, takes the tunnel name as argument
 * ``nethserver-vpn-save``: fired when roadwarrior account or server is changed
-* ``openvpn-tunnel-upload``: used to transform a given file to a read-to-use tunnel client
+* ``openvpn-tunnel-upload``: used to transform a given file into a ready-to-use tunnel client
 
 Global configuration
 ====================
 
-The ``openvpn`` is saved inside the ``configuration`` database and contains the following keys:
+The ``openvpn`` record is saved inside the ``configuration`` database and contains the following keys:
 
 - ``Routeback``: can be ``enabled`` or ``disabled``. If ``enabled``, network traffic can flow between tunnels and roadwarrior.
-  If ``disabled``, traffic between tunnels and roadwarrior is blocked by ``sfilter`` built-in Shorewall chain
+  If ``disabled``, traffic between tunnels and roadwarrior is blocked by the ``sfilter`` built-in Shorewall chain.
 
 Roadwarrior accounts
 ====================
 
-Accounts are used to identify clients connecting to the server itself. There are two types of account:
+Accounts are used to identify clients connecting to the server itself. There are two types of accounts:
 
 * user account: system user with VPN access using user name and password
-* vpn-only account: simple account with only VPN access
+* vpn-only account: simple account with VPN access only
 
 Each account can be used in a roadwarrior connection (host to net). 
 If a net to net tunnel is needed, ``VPNRemoteNetwork`` and ``VPNRemoteNetmask`` 
@@ -84,7 +84,7 @@ Certificates in PEM format can be created using the command: ::
 
 The ``commonName`` parameter is an unique name stored inside the certificate. 
 The command will generate ``key``, ``crt`` and ``csr`` file.
-Each generated certificate is referred with a numeric id and saved inside ``certindex`` database. OpenSSL will also create a certificated called as with the generated id (eg. ``02.pem``). 
+Each generated certificate is referred with a numeric id and saved inside ``certindex`` database. OpenSSL will also create a certificate named using the generated id (eg. ``02.pem``). 
 
 Certificate revocation
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -135,14 +135,14 @@ Example with netcat: ::
   Max bcast/mcast queue length,0
   END
 
-See more on management option: http://openvpn.net/index.php/open-source/documentation/miscellaneous/79-management-interface.html
+See more on management options: http://openvpn.net/index.php/open-source/documentation/miscellaneous/79-management-interface.html
 
 Configuration database
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Properties:
 
-* ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
+* ``status``: enable or disable the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
 * ``AuthMode``: authentication mode, can be ``password``, ``certificate`` or ``password-certificate``
 * ``UDPPort``: server listen port, default is ``1194``
 * ``Mode``: network mode, can be ``routed`` or ``bridged``. Default is ``routed``.
@@ -200,7 +200,7 @@ Example: ::
 Tunnel topology
 ===============
 
-Available topology are ``subnet`` and ``p2p``
+Available topologies are ``subnet`` and ``p2p``
 
 If topology is ``p2p``:
 
@@ -238,9 +238,9 @@ Common properties:
 * ``RemotePort``: remote host port
 * ``User``: username used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
 * ``WanPriorities``: an ordered list of red interfaces which will be used to connect to the server, can be
-  used to prefer a faster WAN other than a slower one
+  used to prefer a faster WAN over a slower one
 * ``Topology``: can be ``subnet`` (default) or ``p2p``
-* ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``enabled``
+* ``status``: enable or disable the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``enabled``
 
 Files:
 
@@ -284,7 +284,7 @@ Tunnel servers
 ==============
 
 Servers are instance of OpenVPN listening for incoming connections.
-Each server runs on its own port can handle many client.
+Each server runs on its own port and can handle many clients.
 
 When a server is created the following files will be generated:
 
@@ -304,7 +304,7 @@ Properties:
 * ``PublicAddresses``: list of public IPs or host names used by clients to connect to the server
 * ``RemoteNetworks``: list of networks in CIDR format, for each network will be created a local route
 * ``Topology``: can be ``subnet`` (default) or ``p2p``
-* ``status``: enable or disabled the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
+* ``status``: enable or disable the OpenVPN server, can be ``enabled`` or ``disabled``, default is ``disabled``
 
 
 Database reference
@@ -364,13 +364,13 @@ Instances can be inspected using ``systemctl`` command: ::
    systemctl status openvpn@server1
 
 
-The roadwarrior can be found here:
+The roadwarrior logs can be found here:
 
 - ``/var/log/openvpn/host-to-net-status.log``
 - ``/var/log/openvpn/openvpn.log``
 
 
-The log if each OpenVPN instance can be seen using ``journalctl`` command.
+The log of each OpenVPN instance can be seen using ``journalctl`` command.
 Example: ::
 
   journalctl -u openvpn@client1
