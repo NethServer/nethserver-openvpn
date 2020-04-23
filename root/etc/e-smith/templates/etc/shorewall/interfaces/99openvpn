@@ -1,2 +1,12 @@
-ovpn    tun+
+#
+# 99openvpn
+#
+{
+    our $policy = $firewall{'VpnPolicy'} || 'strict';
+    if ($policy eq 'permissive') {
+        $OUT .= "ovpn    tun+    routeback\n";
+    } else {
+        $OUT .= "ovpn    tun+\n";
+    }
+}
 ovpn    tap+
