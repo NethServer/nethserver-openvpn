@@ -226,7 +226,8 @@ Common properties:
 * ``Password``: password used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
 * ``Protocol``: can be ``udp`` or ``tcp``, default is ``udp``
 * ``RemoteHost``: a list of remote server hostnames or ip addresses
-* ``RemoteNetworks``: list of networks in CIDR format, for each network will be created a route
+* ``RemoteNetworks``: list of networks in CIDR format, for each network will be created a route. This networks will also be used by the firewall library
+  to calculate the zone of VPN hosts used inside the firewall rules.
 * ``RemotePort``: remote host port
 * ``User``: username used for authentication, if ``AuthMode`` is ``password`` or ``password-certificate``
 * ``WanPriorities``: an ordered list of red interfaces which will be used to connect to the server, can be
