@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.9.2
+Version: 1.10.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -50,6 +50,13 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Tue Apr 28 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.10.0-1
+- VPN: allow traffic between roadwarrior clients and tunnels - NethServer/dev#6136
+- Use subnet topology for OpenVPN roadwarrior - NethServer/dev#6133
+- OpenVPN: New policy certificate-otp for RW - NethServer/dev#6112
+- Openvpn: verify the $username ENV matches the common-name ENV - NethServer/dev#6111
+- Restore configuration without network override - NethServer/dev#6099
+
 * Wed Mar 18 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.9.2-1
 - Bad sudoers permission - Bug Nethserver/dev#6081
 
