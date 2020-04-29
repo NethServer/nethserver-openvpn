@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.10.0
+Version: 1.10.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -50,6 +50,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Wed Apr 29 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.10.1-1
+- VPN R2W : Custom certificate EOL - NethServer/dev#6145
+
 * Tue Apr 28 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.10.0-1
 - VPN: allow traffic between roadwarrior clients and tunnels - NethServer/dev#6136
 - Use subnet topology for OpenVPN roadwarrior - NethServer/dev#6133
