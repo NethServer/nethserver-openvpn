@@ -33,6 +33,7 @@ my $crtOut = "";
 my $keyOut = "";
 my $pkcsOut = "";
 my $commonName = "";
+my $duration = "";
 my $errors = 0;
 
 sub die_help()
@@ -41,8 +42,8 @@ sub die_help()
 pki-vpncert: Generate NethServer OpenVPN client certfificate.
 
 Usage:
-   pki-vpncert [-h] <commonName>
-
+   pki-vpncert [-h] <commonName> <optional certificate life in days>
+      The certificate life is a numeric value (minimal is 7)
    -h this help
 \n";
    exit 1;
@@ -56,6 +57,7 @@ if ( $#ARGV < 0 ) {
    die_help();
 } else {
     $commonName = $ARGV[0];
+    $duration = $ARGV[1];
     $csrOut = "$outputDir/$commonName.csr";
     $keyOut = "$outputDir/$commonName.key";
     $crtOut = "$outputDir/$commonName.crt";
@@ -79,7 +81,7 @@ my %conf = $configDb->as_hash();
 
 my $contact = $conf{OrganizationContact};
 my $pki = $conf{pki};
-my $certificateDuration = $pki->{CertificateDuration} || "30";
+my $certificateDuration = $duration || $pki->{CertificateDuration} || "30";
 
 if ($certificateDuration < 7) {
     warn "WARNING: pki CertificateDuration is less than 7 days! Check configuration DB.\n";
