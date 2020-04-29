@@ -32,25 +32,28 @@
         $OUT .= "client-to-client\n";
     }
 
-    my $pushDomain = $openvpn{'PushDomain'} || $DomainName;
-    $OUT .= "push \"dhcp-option DOMAIN $pushDomain\"\n";
+    if (($openvpn{'PushDhcpOptionsStatus'} || 'enabled') eq 'enabled') {
 
-    my @pushDns = $openvpn{'PushDns'} ? split(',', $openvpn{'PushDns'}) : @dns;
-    foreach my $host (@pushDns) {
-        $OUT .= "push \"dhcp-option DNS $host\"\n";
+        my $pushDomain = $openvpn{'PushDomain'} || $DomainName;
+        $OUT .= "push \"dhcp-option DOMAIN $pushDomain\"\n";
+
+        my @pushDns = $openvpn{'PushDns'} ? split(',', $openvpn{'PushDns'}) : @dns;
+        foreach my $host (@pushDns) {
+            $OUT .= "push \"dhcp-option DNS $host\"\n";
+        }
+
+        my @pushWins = $openvpn{'PushWins'} ? split(',', $openvpn{'PushWins'}) : @dns;
+        foreach my $host (@pushWins) {
+            $OUT .= "push \"dhcp-option WINS $host\"\n";
+        }
+
+        my @pushNbdd = $openvpn{'PushNbdd'} ? split(',', $openvpn{'PushNbdd'}) : @dns;
+        foreach my $host (@pushNbdd) {
+            $OUT .= "push \"dhcp-option NBDD $host\"\n";
+        }
+
+        $OUT .= "push \"dhcp-option NBT 2\"\n";
     }
-
-    my @pushWins = $openvpn{'PushWins'} ? split(',', $openvpn{'PushWins'}) : @dns;
-    foreach my $host (@pushWins) {
-        $OUT .= "push \"dhcp-option WINS $host\"\n";
-    }
-
-    my @pushNbdd = $openvpn{'PushNbdd'} ? split(',', $openvpn{'PushNbdd'}) : @dns;
-    foreach my $host (@pushNbdd) {
-        $OUT .= "push \"dhcp-option NBDD $host\"\n";
-    }
-
-    $OUT .= "push \"dhcp-option NBT 2\"\n";
 
     my $extra_routes = $openvpn{'PushExtraRoutes'} || 'enabled';
     if ($extra_routes eq 'enabled') {
