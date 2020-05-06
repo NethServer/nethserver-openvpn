@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.10.1
+Version: 1.11.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -50,6 +50,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Wed May 06 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.11.0-1
+- VPN RW: optional push dhcp settings - NethServer/dev#6146
+
 * Wed Apr 29 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.10.1-1
 - VPN R2W : Custom certificate EOL - NethServer/dev#6145
 
