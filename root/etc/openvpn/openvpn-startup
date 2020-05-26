@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Reset RoadWarrior pending changes
+/usr/bin/rm -f /var/spool/openvpn/road-warrior-lock
+
 mode=$(/sbin/e-smith/config getprop openvpn@host-to-net Mode)
 
 if [ $mode != "bridged" ]; then
