@@ -50,7 +50,7 @@ event_services($event, 'openvpn@host-to-net' => 'restart');
 $event = "nethserver-openvpn-save";
 
 event_actions($event,
-    'nethserver-openvpn-certificates-otp' => ' 10',
+    'nethserver-openvpn-otp' => ' 20',
     'nethserver-openvpn-net2net' => '30',
     'trusted-networks-modify' => '95'
 );
