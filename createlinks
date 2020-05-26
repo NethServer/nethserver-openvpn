@@ -50,7 +50,7 @@ event_services($event, 'openvpn@host-to-net' => 'restart');
 $event = "nethserver-openvpn-save";
 
 event_actions($event,
-    'firewall-adjust' => '80',
+    'nethserver-openvpn-net2net' => '30',
     'trusted-networks-modify' => '95'
 );
 templates2events("/etc/openvpn/host-to-net.conf",  $event);
@@ -79,23 +79,6 @@ $event = "static-routes-save";
 
 templates2events("/etc/openvpn/host-to-net.conf", $event);
 event_services($event, 'openvpn@host-to-net' => 'restart');
-
-
-
-#--------------------------------------------------
-# actions for nethserver-vpn-save event
-#--------------------------------------------------
-
-$event = "nethserver-vpn-save";
-
-event_actions($event,
-    'nethserver-openvpn-net2net' => '30',
-    'trusted-networks-modify' => '95'
-);
-
-event_services($event, 'openvpn@host-to-net' => 'restart');
-templates2events("/etc/openvpn/host-to-net.conf",  $event);
-templates2events("/etc/openvpn/host-to-net.pool",  $event);
 
 
 #--------------------------------------------------

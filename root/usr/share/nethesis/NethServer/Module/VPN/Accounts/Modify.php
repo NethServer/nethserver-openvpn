@@ -118,7 +118,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             $this->revokeCert($cn);
         }
         if($this->getRequest()->isMutation()) {
-            $this->exitCode = $this->getPlatform()->signalEvent('nethserver-vpn-save')->getExitCode();
+            $this->exitCode = $this->getPlatform()->signalEvent('nethserver-openvpn-save')->getExitCode();
         }
     }
 
