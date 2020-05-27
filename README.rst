@@ -14,7 +14,7 @@ Events
 * ``openvpn-tunnel-create``: fired when a new tunnel is created, takes the tunnel name as argument
 * ``openvpn-tunnel-delete``: fired when a new tunnel is deleted, takes the tunnel name as argument
 * ``openvpn-tunnel-modify``: fired when a new tunnel is modified, takes the tunnel name as argument
-* ``nethserver-vpn-save``: fired when roadwarrior account or server is changed
+* ``nethserver-openvpn-save``: fired when roadwarrior account or server is changed
 * ``openvpn-tunnel-upload``: used to transform a given file into a ready-to-use tunnel client
 
 
