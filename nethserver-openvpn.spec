@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.11.0
+Version: 1.12.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -50,6 +50,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Fri May 29 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.12.0-1
+- OpenVPN RW: Don't restart service immediately on user creation/deletion - NethServer/dev#6177
+
 * Wed May 06 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.11.0-1
 - VPN RW: optional push dhcp settings - NethServer/dev#6146
 
