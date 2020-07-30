@@ -54,4 +54,4 @@ else:
 
     if not table_exists:
         create_connections_db()
-        print('Created roadwarrior connections database {}'.format(DATABASE_PATH))
+        print('[NOTICE] Created roadwarrior connections database {}'.format(DATABASE_PATH))
