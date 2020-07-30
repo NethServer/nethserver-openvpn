@@ -23,17 +23,35 @@
 import sqlite3
 import os
 
+
+def create_connections_db():
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE connections
+				 (common_name text, virtual_ip_addr text, remote_ip_addr text, start_time integer, duration integer, bytes_received integer, bytes_sent integer)''')
+    c.execute("CREATE INDEX idx_common_name ON connections (common_name)")
+    conn.commit()
+    conn.close()
+
+
 DATABASE_PATH = '/var/lib/nethserver/openvpn/connections.db'
 database_exists = os.path.isfile(DATABASE_PATH)
 
 if not database_exists:
-	conn = sqlite3.connect(DATABASE_PATH)
-	c = conn.cursor()
+    create_connections_db()
+    print('[NOTICE] Created roadwarrior connections database {}'.format(DATABASE_PATH))
+else:
+    # ensure connections table exists
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    output = c.execute(
+        '''SELECT name FROM sqlite_master WHERE type="table" AND name="connections"''')
+    table_exists = False
+    output = output.fetchone()
 
-	c.execute('''CREATE TABLE connections
-			(common_name text, virtual_ip_addr text, remote_ip_addr text, start_time integer, duration integer, bytes_received integer, bytes_sent integer)''')
+    if output and output[0] == 'connections':
+        table_exists = True
 
-	c.execute("CREATE INDEX idx_common_name ON connections (common_name)")
-
-	conn.commit()
-	conn.close()
+    if not table_exists:
+        create_connections_db()
+        print('[NOTICE] Created roadwarrior connections database {}'.format(DATABASE_PATH))
