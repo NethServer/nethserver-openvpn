@@ -39,7 +39,7 @@ database_exists = os.path.isfile(DATABASE_PATH)
 
 if not database_exists:
     create_connections_db()
-    print('Created roadwarrior connections database {}'.format(DATABASE_PATH))
+    print('[NOTICE] Created roadwarrior connections database {}'.format(DATABASE_PATH))
 else:
     # ensure connections table exists
     conn = sqlite3.connect(DATABASE_PATH)
