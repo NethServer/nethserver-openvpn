@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.12.0
+Version: 1.12.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -50,6 +50,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Tue Aug 25 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.12.1-1
+- VPN Roadwarrior: unable to load accounts - Bug NethServer/dev#6242
+
 * Fri May 29 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.12.0-1
 - OpenVPN RW: Don't restart service immediately on user creation/deletion - NethServer/dev#6177
 
