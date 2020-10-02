@@ -289,6 +289,7 @@ When a server is created the following files will be generated:
 Certificate generation uses a custom version of easy-rsa, see ``/usr/share/nethserver-openvpn`` directory content.
 
 Properties:
+
 * ``Cipher``: a valid OpenVPN cipher among ``openvpn --show-ciphers``
 * ``Compression``: can be ``enabled``, ``disabled`` or a valid compression alghoritm (see `man openvpn`). If set to `enabled`, adaptive LZO compression is used
 * ``LocalNetworks``: list of networks in CIDR format, each network will be pushed as route to the client
@@ -370,6 +371,5 @@ Example: ::
 
   journalctl -u openvpn@client1
   journalctl -u openvpn@host-to-net
-
 
 
