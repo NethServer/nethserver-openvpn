@@ -54,12 +54,12 @@ class Download extends \Nethgui\Controller\Table\RowAbstractAction
                          'Digest' =>  $record['Digest'],
                          'Cipher' =>  $record['Cipher'],
                          'Topology' => $record['Topology'],
+                         'RemoteNetworks' => $record['LocalNetworks']
                   );
         if ($record['Topology'] == 'p2p') {
              $client['Psk'] = file_get_contents("/var/lib/nethserver/openvpn-tunnels/$name.key");
              $client['LocalPeer'] = $record['RemotePeer'];
              $client['RemotePeer'] = $record['LocalPeer'];
-             $client['RemoteNetworks'] = $record['LocalNetworks'];
              $client['AuthMode'] = 'psk';
         } else {
              $client['AuthMode'] = 'certificate';
