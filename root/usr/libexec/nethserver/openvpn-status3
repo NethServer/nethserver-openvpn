@@ -24,9 +24,14 @@ exit(1) unless (-e $socket);
 socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
 connect(TSOCK, sockaddr_un($socket)) or exit(1);
 my %results;
-while (defined(my $msg = <TSOCK>)) {
+my $greetings = <TSOCK>;
+if ($greetings) {
     print TSOCK "status 3\n";
     TSOCK->flush;
+} else {
+    exit(1);
+}
+while (defined(my $msg = <TSOCK>)) {
     exit(1) if $msg =~ /ERROR/;
     last if $msg =~ /END/;
     if ($topology eq 'subnet') {
