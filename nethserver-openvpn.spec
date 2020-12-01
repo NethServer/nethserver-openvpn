@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.12.1
+Version: 1.13.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -50,6 +50,9 @@ echo "%doc COPYING" >> %{name}-%{version}-filelist
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Tue Dec 01 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.13.0-1
+- RemoteNetworks also with the subnet topology - NethServer/dev#6345
+
 * Tue Aug 25 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.12.1-1
 - VPN Roadwarrior: unable to load accounts - Bug NethServer/dev#6242
 
