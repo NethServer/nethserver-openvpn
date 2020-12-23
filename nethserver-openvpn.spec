@@ -40,6 +40,15 @@ rm -rf %{buildroot}
   --file /etc/sudoers.d/20_nethserver_openvpn 'attr(0440,root,root)'
 echo "%doc COPYING" >> %{name}-%{version}-filelist
 
+
+%pre
+# ensure srvmgr user exists:
+# tunnel files and spool must be owned by srvmgr user otherwise
+# httpd-admin will not be able to manage them
+if ! id srvmgr >/dev/null 2>&1 ; then
+   useradd -r -U -G adm srvmgr
+fi
+
 %post
 
 %preun
