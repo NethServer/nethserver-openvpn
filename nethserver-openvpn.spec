@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.13.1
+Version: 1.13.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -59,6 +59,9 @@ fi
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Thu Apr 29 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.13.2-1
+- Add OpenVPN-Tunnel to the configuration backup - Bug NethServer/dev#6498
+
 * Wed Dec 23 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.13.1-1
 - Missing srvmgr user prevents OpenVPN file upload and cause wrong backup config history file owner - Bug NethServer/dev#6375
 
