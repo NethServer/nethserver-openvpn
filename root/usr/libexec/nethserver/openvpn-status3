@@ -3,6 +3,8 @@ use strict;
 use Socket;
 use IO::Handle;
 use JSON;
+use esmith::NetworksDB;
+my $ndb = esmith::NetworksDB->open_ro();
 
 
 sub help() {
@@ -40,12 +42,38 @@ while (defined(my $msg = <TSOCK>)) {
             # Header, Common Name Real Address    Virtual Address Virtual IPv6 Address    Bytes Received  Bytes Sent  Connected Since Connected Since (time_t)    Username    Client ID   Peer ID
             my ($header, $cn, $real_address, $virtual_ipv4, $virtual_ipv6, $bytes_received, $bytes_sent, $since, $username, $client_id, $peer_id) = split('\t', $msg);
             next if ($cn eq 'UNDEF');
+
+            # rerieve the parameters to find information in conntrack
+            #udp      17 172 src=xxx.xxx.xxx.xxx dst=xxx.xxx.xxx.xxx sport=57045 dport=1194 packets=169 bytes=32971 
+            #src=xxx.xxx.xxx.xxx dst=xxx.xxx.xxx.xxx sport=1194 dport=57045 packets=68 bytes=14663 [ASSURED] mark=0 delta-time=27 use=1
+            my ($ipConntrack,$portConntrack) = split(':',$real_address);
+            my ($provider,$RedInterface);
+            my $conntrack = `/usr/sbin/conntrack -L -p udp --src $ipConntrack --sport $portConntrack 2>/dev/null`;
+
+            # Compare and Find the good IP used in red NIC
+            my @srcIP = map { $_ =~ /^src=/ ? $_: () } split('\s', $conntrack);
+            foreach (@srcIP) {
+                next if ($_ =~ /$ipConntrack/);
+                $_ =~ s/^src=//;
+                $RedInterface = $_ ;
+            }
+            # Find the label of the red interface
+            foreach ($ndb->red()) {
+                my $key = $_->key;
+                my $ipaddr = $ndb->get_prop($key,'ipaddr');
+                if ($ipaddr eq  $RedInterface) {
+                    $provider = $ndb->get_prop($key,'nslabel');
+                }
+            }
+ 
             $results{$cn} =  { 
                 real_address => $real_address, 
                 virtual_address => $virtual_ipv4, 
                 bytes_received => $bytes_received,
                 bytes_sent => $bytes_sent,
-                since => $since
+                since => $since,
+                provider => $provider,
+                red_interface => $RedInterface
             }
         }
     }
