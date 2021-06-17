@@ -4,7 +4,9 @@ use Socket;
 use IO::Handle;
 use JSON;
 use esmith::NetworksDB;
+use esmith::ConfigDB;
 my $ndb = esmith::NetworksDB->open_ro();
+my $db = esmith::ConfigDB->open_ro();
 
 
 sub help() {
@@ -48,21 +50,28 @@ while (defined(my $msg = <TSOCK>)) {
             #src=xxx.xxx.xxx.xxx dst=xxx.xxx.xxx.xxx sport=1194 dport=57045 packets=68 bytes=14663 [ASSURED] mark=0 delta-time=27 use=1
             my ($ipConntrack,$portConntrack) = split(':',$real_address);
             my ($provider,$RedInterface);
-            my $conntrack = `/usr/sbin/conntrack -L -p udp --src $ipConntrack --sport $portConntrack 2>/dev/null`;
+            my $protocol = ($db->get_prop('openvpn@host-to-net', 'UDPPort') ne '') ? 'udp' : 'tcp';
 
-            # Compare and Find the good IP used in red NIC
-            my @srcIP = map { $_ =~ /^src=/ ? $_: () } split('\s', $conntrack);
-            foreach (@srcIP) {
-                next if ($_ =~ /$ipConntrack/);
-                $_ =~ s/^src=//;
-                $RedInterface = $_ ;
+            open(FH, "/usr/sbin/conntrack -L -p $protocol --src $ipConntrack --sport $portConntrack|");
+            my @fields;
+            while (<FH>) {
+                @fields = split('\s');
+                foreach (@fields) {
+                    # Compare and Find the good IP used in red NIC
+                    next if ($_ !~ /^src=/);
+                    next if ($_ =~ /$ipConntrack/);
+                    $_ =~ s/^src=//;
+                    $RedInterface = $_ ;
+                }
             }
+            close(FH);
+
             # Find the label of the red interface
             foreach ($ndb->red()) {
                 my $key = $_->key;
                 my $ipaddr = $ndb->get_prop($key,'ipaddr');
                 if ($ipaddr eq  $RedInterface) {
-                    $provider = $ndb->get_prop($key,'nslabel');
+                    $provider = $ndb->get_prop($key,'nslabel') || $key;
                 }
             }
  
