@@ -51,20 +51,11 @@ while (defined(my $msg = <TSOCK>)) {
             my ($ipConntrack,$portConntrack) = split(':',$real_address);
             my ($provider,$RedInterface);
             my $protocol = ($db->get_prop('openvpn@host-to-net', 'UDPPort') ne '') ? 'udp' : 'tcp';
+            my $port = $db->get_prop('openvpn@host-to-net', 'Port') || '1194';
 
-            open(FH, "/usr/sbin/conntrack -L -p $protocol --src $ipConntrack --sport $portConntrack|");
-            my @fields;
-            while (<FH>) {
-                @fields = split('\s');
-                foreach (@fields) {
-                    # Compare and Find the good IP used in red NIC
-                    next if ($_ !~ /^src=/);
-                    next if ($_ =~ /$ipConntrack/);
-                    $_ =~ s/^src=//;
-                    $RedInterface = $_ ;
-                }
-            }
-            close(FH);
+            my $out = `/usr/sbin/conntrack -L -p $protocol --src $ipConntrack --sport $portConntrack --dport $port 2>/dev/null`;
+            $out =~ m/\sdst=(\d+\.\d+\.\d+\.\d+)\s/;
+            $RedInterface = $1;
 
             # Find the label of the red interface
             foreach ($ndb->red()) {
