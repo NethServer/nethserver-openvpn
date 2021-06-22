@@ -25,6 +25,34 @@ my $socket = $ARGV[0];
 my $topology = $ARGV[1] || 'subnet';
 exit(1) unless (-e $socket);
 
+# Find the label of the red interface
+# Handle also alias and PPPoE
+my %providers;
+foreach ($ndb->get_all()) {
+    my $iname = $_->key;
+    my $role = $_->prop('role') || next;
+    my $type = $_->prop('type') || next;
+    my $ipaddr;
+    if ($role eq 'red' && $type ne 'xdsl-disabled') {
+        my $bootproto = $_->prop('bootproto') || '';
+        if ($bootproto eq 'none') {
+            $ipaddr = $_->prop('ipaddr');
+        } else {
+            my $cidr = `/sbin/ip -o -4 address show $iname primary 2>/dev/null| head -1 | awk '{print \$4}'`;
+            chomp $cidr;
+            $cidr =~ /^(.*)\/(.*)$/;
+            $ipaddr = $1;
+        }
+        $providers{$ipaddr} = $_->prop('nslabel') || $iname;
+    } elsif ($role eq 'alias') {
+        my ($parent,$id) = split(/:/, $iname);
+        my $parent_role = $ndb->get_prop($parent, 'role') || '';
+        if ($parent_role eq 'red') {
+            $providers{$_->prop('ipaddr')} = $ndb->get_prop($parent, 'nslabel') || $iname;
+        }
+    }
+}
+
 socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
 connect(TSOCK, sockaddr_un($socket)) or exit(1);
 my %results;
@@ -57,20 +85,12 @@ while (defined(my $msg = <TSOCK>)) {
             $out =~ m/\sdst=(\d+\.\d+\.\d+\.\d+)\s/;
             $RedInterface = $1;
 
-            # Find the label of the red interface
-            foreach ($ndb->red()) {
-                my $iname = $_->key;
-                my $cidr = `/sbin/ip -o -4 address show $iname primary 2>/dev/null| head -1 | awk '{print \$4}'`;
-                chomp $cidr;
-                $cidr =~ /^(.*)\/(.*)$/;
-                my $ipaddr = $1;
-                if (defined $ipaddr eq  defined $RedInterface) {
-                    $provider = $ndb->get_prop($iname,'nslabel') || $iname;
-                } else {
-                    $provider = 'unknow';
-                }
+            if ( defined $providers{$RedInterface}  ) {
+                $provider = $providers{$RedInterface}; 
+            } else {
+                $provider = 'unknow';
             }
- 
+
             $results{$cn} =  { 
                 real_address => $real_address, 
                 virtual_address => $virtual_ipv4, 
