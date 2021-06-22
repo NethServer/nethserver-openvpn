@@ -59,10 +59,15 @@ while (defined(my $msg = <TSOCK>)) {
 
             # Find the label of the red interface
             foreach ($ndb->red()) {
-                my $key = $_->key;
-                my $ipaddr = $ndb->get_prop($key,'ipaddr');
-                if ($ipaddr eq  $RedInterface) {
-                    $provider = $ndb->get_prop($key,'nslabel') || $key;
+                my $iname = $_->key;
+                my $cidr = `/sbin/ip -o -4 address show $iname primary 2>/dev/null| head -1 | awk '{print \$4}'`;
+                chomp $cidr;
+                $cidr =~ /^(.*)\/(.*)$/;
+                my $ipaddr = $1;
+                if (defined $ipaddr eq  defined $RedInterface) {
+                    $provider = $ndb->get_prop($iname,'nslabel') || $iname;
+                } else {
+                    $provider = 'unknow';
                 }
             }
  
