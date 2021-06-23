@@ -3,6 +3,10 @@ use strict;
 use Socket;
 use IO::Handle;
 use JSON;
+use esmith::NetworksDB;
+use esmith::ConfigDB;
+my $ndb = esmith::NetworksDB->open_ro();
+my $db = esmith::ConfigDB->open_ro();
 
 
 sub help() {
@@ -20,6 +24,34 @@ if (scalar(@ARGV) < 1) {
 my $socket = $ARGV[0];
 my $topology = $ARGV[1] || 'subnet';
 exit(1) unless (-e $socket);
+
+# Find the label of the red interface
+# Handle also alias and PPPoE
+my %providers;
+foreach ($ndb->get_all()) {
+    my $iname = $_->key;
+    my $role = $_->prop('role') || next;
+    my $type = $_->prop('type') || next;
+    my $ipaddr;
+    if ($role eq 'red' && $type ne 'xdsl-disabled') {
+        my $bootproto = $_->prop('bootproto') || '';
+        if ($bootproto eq 'none') {
+            $ipaddr = $_->prop('ipaddr');
+        } else {
+            my $cidr = `/sbin/ip -o -4 address show $iname primary 2>/dev/null| head -1 | awk '{print \$4}'`;
+            chomp $cidr;
+            $cidr =~ /^(.*)\/(.*)$/;
+            $ipaddr = $1;
+        }
+        $providers{$ipaddr} = $_->prop('nslabel') || $iname;
+    } elsif ($role eq 'alias') {
+        my ($parent,$id) = split(/:/, $iname);
+        my $parent_role = $ndb->get_prop($parent, 'role') || '';
+        if ($parent_role eq 'red') {
+            $providers{$_->prop('ipaddr')} = $ndb->get_prop($parent, 'nslabel') || $iname;
+        }
+    }
+}
 
 socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
 connect(TSOCK, sockaddr_un($socket)) or exit(1);
@@ -40,12 +72,33 @@ while (defined(my $msg = <TSOCK>)) {
             # Header, Common Name Real Address    Virtual Address Virtual IPv6 Address    Bytes Received  Bytes Sent  Connected Since Connected Since (time_t)    Username    Client ID   Peer ID
             my ($header, $cn, $real_address, $virtual_ipv4, $virtual_ipv6, $bytes_received, $bytes_sent, $since, $username, $client_id, $peer_id) = split('\t', $msg);
             next if ($cn eq 'UNDEF');
+
+            # rerieve the parameters to find information in conntrack
+            #udp      17 172 src=xxx.xxx.xxx.xxx dst=xxx.xxx.xxx.xxx sport=57045 dport=1194 packets=169 bytes=32971 
+            #src=xxx.xxx.xxx.xxx dst=xxx.xxx.xxx.xxx sport=1194 dport=57045 packets=68 bytes=14663 [ASSURED] mark=0 delta-time=27 use=1
+            my ($ipConntrack,$portConntrack) = split(':',$real_address);
+            my ($provider,$RedInterface);
+            my $protocol = ($db->get_prop('openvpn@host-to-net', 'UDPPort') ne '') ? 'udp' : 'tcp';
+            my $port = $db->get_prop('openvpn@host-to-net', 'Port') || '1194';
+
+            my $out = `/usr/sbin/conntrack -L -p $protocol --src $ipConntrack --sport $portConntrack --dport $port 2>/dev/null`;
+            $out =~ m/\sdst=(\d+\.\d+\.\d+\.\d+)\s/;
+            $RedInterface = $1;
+
+            if ( defined $providers{$RedInterface}  ) {
+                $provider = $providers{$RedInterface}; 
+            } else {
+                $provider = 'unknow';
+            }
+
             $results{$cn} =  { 
                 real_address => $real_address, 
                 virtual_address => $virtual_ipv4, 
                 bytes_received => $bytes_received,
                 bytes_sent => $bytes_sent,
-                since => $since
+                since => $since,
+                provider => $provider,
+                red_interface => $RedInterface
             }
         }
     }
