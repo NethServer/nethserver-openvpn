@@ -93,7 +93,7 @@ while (defined(my $msg = <TSOCK>)) {
             if ( defined $providers{$RedInterface}  ) {
                 $provider = $providers{$RedInterface}; 
             } else {
-                $provider = 'unknow';
+                $provider = undef;
             }
 
             $results{$cn} =  { 
