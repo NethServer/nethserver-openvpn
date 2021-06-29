@@ -1,6 +1,6 @@
 Summary: NethServer OpenVPN configuration
 Name: nethserver-openvpn
-Version: 1.13.2
+Version: 1.14.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -59,6 +59,9 @@ fi
 %dir %attr(0750,root,adm) /var/lib/nethserver/certs
 
 %changelog
+* Tue Jun 29 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.14.0-1
+- OpenVPN R2W: Display the server wan IP used by the client to connect - NethServer/dev#6531
+
 * Thu Apr 29 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.13.2-1
 - Add OpenVPN-Tunnel to the configuration backup - Bug NethServer/dev#6498
 
