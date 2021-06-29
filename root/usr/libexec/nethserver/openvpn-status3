@@ -33,7 +33,7 @@ foreach ($ndb->get_all()) {
     my $role = $_->prop('role') || next;
     my $type = $_->prop('type') || next;
     my $ipaddr;
-    if ($role eq 'red' && $type ne 'xdsl-disabled') {
+    if ($role eq 'red' && $type !~ /xdsl/ ) {
         my $bootproto = $_->prop('bootproto') || '';
         if ($bootproto eq 'none') {
             $ipaddr = $_->prop('ipaddr');
@@ -50,6 +50,11 @@ foreach ($ndb->get_all()) {
         if ($parent_role eq 'red') {
             $providers{$_->prop('ipaddr')} = $ndb->get_prop($parent, 'nslabel') || $iname;
         }
+    } elsif ($role eq 'pppoe') {
+        ### PPPoE is always dynamic
+        $ipaddr = `/sbin/ip -o -4 address show ppp0 primary 2>/dev/null| head -1 | awk '{print \$4}'`;
+        chomp $ipaddr;
+        $providers{$ipaddr} = $_->prop('nslabel') || $iname;
     }
 }
 
@@ -88,7 +93,7 @@ while (defined(my $msg = <TSOCK>)) {
             if ( defined $providers{$RedInterface}  ) {
                 $provider = $providers{$RedInterface}; 
             } else {
-                $provider = 'unknow';
+                $provider = undef;
             }
 
             $results{$cn} =  { 
