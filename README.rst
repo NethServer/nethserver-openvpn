@@ -149,6 +149,9 @@ Properties:
 * ``PushWins``: if set, push the specified WINS as DHCP option
 * ``CustomRoutes``: a comma separated listed of CIDR to be pushed as extra routes to VPN clients
 * ``Topology``: set roadwarrior server topology, for valid values see ``man openvpn``
+* ``NotifyStatus``: can be ``enabled`` or ``disabled``, default is ``disabled``. If ``enabled``, send a mail notification to ``NotifyAddresses`` upon
+  roadwarrior user connect or disconnect
+* ``NotifyAddresses``: comma-separated list of mail addresses, destinations for ``NotifyStatus`` property
 
 
 If mode is ``bridged``:
@@ -179,6 +182,8 @@ Example: ::
     Mode=routed
     Netmask=255.255.255.0
     Network=192.168.6.0
+    NotifyAddresses=root@localhost
+    NotifyStatus=enabled
     PushDns=
     PushDomain=
     PushExtraRoutes=enabled

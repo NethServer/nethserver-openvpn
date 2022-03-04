@@ -1,0 +1,63 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+#
+# Send a mail notification upon user connect
+# The script always exit with 0 to not change OpenVPN flow
+#
+
+use esmith::ConfigDB;
+use Net::Domain qw(domainname);
+use MIME::Lite;
+
+my $name = $ENV{'common_name'};
+my $vpn_ip = $ENV{'ifconfig_pool_remote_ip'};
+my $remote_ip = $ENV{'untrusted_ip'};
+my $time = scalar localtime $ENV{'time_unix'};
+
+my $db = esmith::ConfigDB->open_ro();
+my $status = $db->get_prop('openvpn@host-to-net', 'NotifyStatus') || 'disabled';
+
+# Exit early if notify is disabled
+exit 0 if ($status ne 'enabled');
+
+my $sender = $db->get_prop('root','SenderAddress') || 'no-reply@'.domainname();
+my @destinations = split(/,/, ($db->get_prop('openvpn@host-to-net', 'NotifyAddresses') || ''));
+
+# Exit
+exit 0 if (!@destinations);
+
+my $text = "The user $name established a VPN connection on $time.
+
+Public IP address:  $remote_ip
+Private IP address: $vpn_ip
+";
+
+my $msg = MIME::Lite->new(
+    From    => $sender,
+    To      => \@destinations,
+    Subject => "VPN access: $name",
+    Data => $text
+);
+$msg->send();
+
+exit 0;
