@@ -29,16 +29,16 @@ use esmith::ConfigDB;
 use Net::Domain qw(domainname);
 use MIME::Lite;
 
-my $name = $ENV{'common_name'};
-my $vpn_ip = $ENV{'ifconfig_pool_remote_ip'};
-my $remote_ip = $ENV{'untrusted_ip'};
-my $time = scalar localtime $ENV{'time_unix'};
-
 my $db = esmith::ConfigDB->open_ro();
 my $status = $db->get_prop('openvpn@host-to-net', 'NotifyStatus') || 'disabled';
 
 # Exit early if notify is disabled
 exit 0 if ($status ne 'enabled');
+
+my $name = $ENV{'common_name'};
+my $vpn_ip = $ENV{'ifconfig_pool_remote_ip'};
+my $remote_ip = $ENV{'untrusted_ip'};
+my $time = scalar localtime $ENV{'time_unix'};
 
 my $sender = $db->get_prop('root','SenderAddress') || 'no-reply@'.domainname();
 my @destinations = split(/,/, ($db->get_prop('openvpn@host-to-net', 'NotifyAddresses') || ''));
