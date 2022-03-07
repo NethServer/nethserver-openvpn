@@ -55,7 +55,7 @@ Private IP address: $vpn_ip
 my $msg = MIME::Lite->new(
     From    => $sender,
     To      => \@destinations,
-    Subject => "VPN access: $name",
+    Subject => "VPN user $name connected",
     Data => $text
 );
 $msg->send();
